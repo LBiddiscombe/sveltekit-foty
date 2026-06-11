@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+
+@layer base {
+	html {
+		-webkit-touch-callout: none;
+	}
+}
+
+@theme {
+	--color-dark: #0a0a0a;
+	--color-card: #1a1a2e;
+	--color-primary: #e0e0e0;
+	--color-success: #4ade80;
+	--color-danger: #ef4444;
+	--color-warning: #f59e0b;
+	--color-subtle: #888888;
+	--font-pixel: 'Press Start 2P', monospace;
+}
