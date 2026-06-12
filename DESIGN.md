@@ -32,12 +32,12 @@
 
 ## 2a. Season Calendar (30 weeks)
 
-| League                | Total games | Double-game weeks | Single-game weeks |
-| --------------------- | ----------- | ----------------- | ----------------- |
-| Division 1 (38 games) | 38          | 8                 | 22                |
-| Division 2 (46)       | 46          | 16                | 14                |
-| Division 3 (46)       | 46          | 16                | 14                |
-| Division 4 (46)       | 46          | 16                | 14                |
+| League                 | Total games | Double-game weeks | Single-game weeks |
+| ---------------------- | ----------- | ----------------- | ----------------- |
+| Premier Div (38 games) | 38          | 8                 | 22                |
+| Champions Div (46)     | 46          | 16                | 14                |
+| Division 1 (46)        | 46          | 16                | 14                |
+| Division 2 (46)        | 46          | 16                | 14                |
 
 Double-game weeks are randomly allocated across the season. Not visible in advance.
 
@@ -253,6 +253,24 @@ src/
 5. **Inbox** populated with incident + news → must clear before next match
 6. Repeat
 
+#### Vidiprinter example content
+
+```
+INCOMING RESULTS
+----------------
+
+ LEAGUE.
+---------
+
+HOME
+  EXETER      1 - 2    NORTHAMPTON
+  RESULT - LOSE : YOU SCORED 1
+
+AWAY
+  SHREWSBURY  0 - 1         EXETER
+  RESULT - WIN : YOU SCORED 1
+```
+
 ### Cycle 2: Goal Card Engine
 
 **Goal:** Real deck, shop, play/skip logic. Match placeholder updated to show per-chance outcome buttons (goal/miss/saved).
@@ -272,6 +290,112 @@ src/
 ### Cycle 6: League Table + Stats & Progression
 
 **Goal:** Standings table, XP tracking, stat growth, club stat caps.
+
+Team names to use;
+
+Premier League
+
+- Arsenul
+- Viller
+- Bornmuth
+- Brentfurd
+- Bryton
+- Chelsee
+- Coventry
+- Pallace
+- Evarton
+- Fullum
+- Hull
+- Ipswitch
+- Leeds
+- Liverpoool
+- Man Citeh
+- Man Untied
+- Newcassel
+- Forrist
+- Sunderlund
+- Spurs
+
+Championship
+
+- Birmingum
+- Blackbirn
+- Boltun
+- Bristol City
+- Burnlee
+- Cardif
+- Charltun
+- Darbee
+- Linkun
+- Boro
+- Millwol
+- Norrich
+- Pompee
+- Prestun
+- Cue Pee Arr
+- Sheff Yoonited
+- Saynts
+- Stoak
+- Swanzee
+- Wattfud
+- West Brom
+- West Ham
+- Woolvz
+- Rexham
+
+League One
+
+- Wimbledon
+- Barnslee
+- Blackpool
+- Bradfud
+- Bromlee
+- Burtun
+- Caimbridge
+- Doncaster
+- Huddersfeeld
+- Lestur
+- Orient
+- Looton
+- Mansfeeld
+- Em Kay Dons
+- Notts County
+- Oxfud
+- Peterbura
+- Plimuth
+- Redding
+- Sheff Wensday
+- Stevenij
+- Stockport
+- Wiggun
+- Wickham
+
+League Two
+
+- Ackrington
+- Barnett
+- Bristol Rovers
+- Cheltnum
+- Chesterfeeld
+- Colchestur
+- Crawlee
+- Croo
+- Exetur
+- Fleetwud
+- Gillingham
+- Grimzbee
+- Newport
+- Northamptun
+- Oldum
+- Port Vayle
+- Rochdayle
+- Rotherum
+- Salfud
+- Shroosbury
+- Swindun
+- Tranmere
+- Walsawl
+- York
 
 ### Cycle 7: Transfers & Clubs
 
