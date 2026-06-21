@@ -1,16 +1,21 @@
 import type { PlayerStats } from '$lib/types/game';
 
+function randomDeck(size: number): number[] {
+	return Array.from({ length: size }, () => Math.floor(Math.random() * 3) + 1);
+}
+
 function createPlayer() {
 	let name = $state('');
+	let age = $state(17);
 	const stats = $state<PlayerStats>({ power: 5, accuracy: 5, technique: 5, athleticism: 5 });
 	let trainingFocus = $state<keyof PlayerStats>('power');
 	let wage = $state(0);
-	let bankBalance = $state(0);
+	let bankBalance = $state(5000);
 	let goals = $state(0);
 	let appearances = $state(0);
 	let club = $state('Free Agent');
 	let division = $state(4);
-	let deck = $state<number[]>([3, 1, 2, 1]);
+	let deck = $state<number[]>(randomDeck(10));
 
 	return {
 		get name() {
@@ -18,6 +23,12 @@ function createPlayer() {
 		},
 		set name(v: string) {
 			name = v;
+		},
+		get age() {
+			return age;
+		},
+		set age(v: number) {
+			age = v;
 		},
 		get stats() {
 			return stats;

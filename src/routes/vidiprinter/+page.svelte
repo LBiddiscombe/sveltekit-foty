@@ -4,6 +4,7 @@
 	import { season } from '$lib/stores/season.svelte';
 	import { player } from '$lib/stores/player.svelte';
 	import { match } from '$lib/stores/match.svelte';
+	import { saveGame } from '$lib/save';
 	import Button from '$lib/components/Button.svelte';
 	import { createTeletype, type TeletypeConfig } from './teletype.svelte';
 
@@ -14,10 +15,29 @@
 	const PLAYER_CLUB = player.club !== 'Free Agent' ? player.club : 'Exetur';
 
 	const opponents = [
-		'Ackrington', 'Barnett', 'Bristol Rovers', 'Cheltnum', 'Chesterfeeld',
-		'Colchestur', 'Crawlee', 'Croo', 'Fleetwud', 'Gillingham',
-		'Grimzbee', 'Newport', 'Northamptun', 'Oldum', 'Port Vayle', 'Rochdayle',
-		'Rotherum', 'Salfud', 'Shroosbury', 'Swindun', 'Tranmere', 'Walsawl', 'York'
+		'Ackrington',
+		'Barnett',
+		'Bristol Rovers',
+		'Cheltnum',
+		'Chesterfeeld',
+		'Colchestur',
+		'Crawlee',
+		'Croo',
+		'Fleetwud',
+		'Gillingham',
+		'Grimzbee',
+		'Newport',
+		'Northamptun',
+		'Oldum',
+		'Port Vayle',
+		'Rochdayle',
+		'Rotherum',
+		'Salfud',
+		'Shroosbury',
+		'Swindun',
+		'Tranmere',
+		'Walsawl',
+		'York'
 	].filter((t) => t !== PLAYER_CLUB);
 
 	const shuffledOpponents = [...opponents].sort(() => Math.random() - 0.5);
@@ -41,8 +61,6 @@
 		isHome: false
 	};
 
-	const results = [homeResult, awayResult];
-
 	const lines = [
 		'INCOMING RESULTS',
 		'----------------',
@@ -63,7 +81,9 @@
 	const tty = createTeletype(lines, config);
 
 	const pastLines = $derived(lines.slice(0, tty.currentLine));
-	const currentText = $derived(tty.currentLine < lines.length ? tty.textForLine(tty.currentLine) : '');
+	const currentText = $derived(
+		tty.currentLine < lines.length ? tty.textForLine(tty.currentLine) : ''
+	);
 </script>
 
 <svelte:window
@@ -111,6 +131,13 @@
 	</div>
 
 	<div class="mt-auto pt-4 {tty.done ? '' : 'invisible'}">
-		<Button onclick={async () => await goto(resolve('/hub'))}>Continue</Button>
+		<Button
+			onclick={async () => {
+				saveGame();
+				await goto(resolve('/hub'));
+			}}
+		>
+			Continue
+		</Button>
 	</div>
 </div>

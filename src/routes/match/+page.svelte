@@ -11,6 +11,7 @@
 	import { createPenaltySketch } from '$lib/components/minigames/PenaltySketch';
 	import { createVolleySketch } from '$lib/components/minigames/VolleySketch';
 	import type { Outcome } from '$lib/types/game';
+	import { MORALE_CONFIG } from '$lib/config/morale';
 
 	type GameType = 'penalty' | 'volley';
 
@@ -28,15 +29,41 @@
 		return Math.random() < 0.5 ? 'penalty' : 'volley';
 	}
 
+	function consumeDeck(skipped: boolean) {
+		if (player.deck.length === 0) return;
+		const used = player.deck.shift()!;
+		if (skipped) {
+			player.deck.push(used);
+		}
+	}
+
+	function updateMorale(score: [number, number], goals: number) {
+		const [us, them] = score;
+		const result = us > them ? 'win' : us === them ? 'draw' : 'loss';
+		let delta = MORALE_CONFIG.deltas[result];
+		if (goals >= 2) delta = MORALE_CONFIG.deltas.twoGoalBonus;
+		season.morale = MORALE_CONFIG.adjustMorale(season.morale, delta);
+	}
+
+	function recordMatchStats(goals: number) {
+		player.appearances++;
+		player.goals += goals;
+	}
+
 	onMount(() => {
 		if (match.totalChances) return;
+		const skipped = $page.url.searchParams.has('skipped');
 		const chances = player.deck[0] ?? 1;
-		if ($page.url.searchParams.has('skipped')) {
-			match.skip(chances);
+		if (skipped) {
+			consumeDeck(true);
+			match.skip(chances, season.morale);
+			const res = match.result!;
+			updateMorale(res.score, 0);
+			recordMatchStats(0);
 			step = 'result';
 		} else {
 			gameType = pickGameType();
-			match.start(chances);
+			match.start(chances, season.morale);
 		}
 	});
 
@@ -46,10 +73,7 @@
 		if (awaitingAdvance) return;
 		awaitingAdvance = true;
 
-		currentOutcomeText =
-			outcome === 'goal' ? 'Goal!'
-			: outcome === 'saved' ? 'Saved!'
-			: 'Missed!';
+		currentOutcomeText = outcome === 'goal' ? 'Goal!' : outcome === 'saved' ? 'Saved!' : 'Missed!';
 
 		match.recordOutcome(outcome);
 
@@ -60,6 +84,11 @@
 				currentChance++;
 				gameType = pickGameType();
 			} else {
+				consumeDeck(false);
+				const res = match.result!;
+				const goalsScored = res.outcomes.filter((o) => o === 'goal').length;
+				updateMorale(res.score, goalsScored);
+				recordMatchStats(goalsScored);
 				step = 'result';
 			}
 		}, 1500);

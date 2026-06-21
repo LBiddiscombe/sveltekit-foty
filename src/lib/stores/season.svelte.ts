@@ -1,4 +1,5 @@
 import type { Fixture, Phase } from '$lib/types/game';
+import { MORALE_CONFIG } from '$lib/config/morale';
 
 function createSeason() {
 	let weekNumber = $state(1);
@@ -6,6 +7,7 @@ function createSeason() {
 	let fixtures = $state<Fixture[]>([]);
 	let gamesPlayed = $state(0);
 	let phase = $state<Phase>('hub');
+	let morale = $state(MORALE_CONFIG.scale.start);
 
 	return {
 		get weekNumber() {
@@ -37,6 +39,12 @@ function createSeason() {
 		},
 		set phase(v: Phase) {
 			phase = v;
+		},
+		get morale() {
+			return morale;
+		},
+		set morale(v: number) {
+			morale = v;
 		}
 	};
 }

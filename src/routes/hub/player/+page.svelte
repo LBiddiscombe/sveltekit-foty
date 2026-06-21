@@ -19,7 +19,7 @@
 		>
 			← Hub
 		</button>
-		<h2 class="font-pixel text-sm text-primary">Profile</h2>
+		<h2 class="font-pixel text-sm text-primary">Player Status</h2>
 	</div>
 
 	<Card>
@@ -32,7 +32,10 @@
 				</span>
 			</div>
 			<h3 class="font-pixel text-sm text-primary">{player.name}</h3>
-			<p class="font-pixel text-xs text-subtle">{player.club} — Div {player.division}</p>
+			<p class="font-pixel text-xs text-subtle">
+				{player.club} — Div {player.division}
+			</p>
+			<p class="font-pixel text-xs text-subtle">Age {player.age}</p>
 		</div>
 	</Card>
 
@@ -67,6 +70,9 @@
 				<p class="font-pixel text-lg text-primary">{player.appearances}</p>
 				<p class="font-pixel text-xs text-subtle">Apps</p>
 			</div>
+		</div>
+		<div class="mt-3 text-center">
+			<p class="font-pixel text-xs text-subtle">Weekly wage: £{player.wage}</p>
 		</div>
 	</Card>
 </div>

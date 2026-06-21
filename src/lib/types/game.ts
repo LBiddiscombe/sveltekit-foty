@@ -7,6 +7,7 @@ export interface PlayerStats {
 
 export interface Player {
 	name: string;
+	age: number;
 	stats: PlayerStats;
 	trainingFocus: keyof PlayerStats;
 	wage: number;
@@ -30,6 +31,11 @@ export interface Season {
 	fixtures: Fixture[];
 	gamesPlayed: number;
 	phase: Phase;
+	morale: number;
+}
+
+export interface TeamClub {
+	name: string;
 }
 
 export type Outcome = 'goal' | 'saved' | 'miss' | 'off-target';

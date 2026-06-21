@@ -1,26 +1,7 @@
 import type { InboxItem } from '$lib/types/game';
 
-const MOCK_INBOX: InboxItem[] = [
-	{
-		id: 1,
-		type: 'news',
-		subject: 'Welcome to the club!',
-		body: 'You have signed for FC Midtable United. Report for training.',
-		actionRequired: true,
-		actioned: false
-	},
-	{
-		id: 2,
-		type: 'news',
-		subject: 'Season preview',
-		body: 'The new season kicks off this week. Best of luck!',
-		actionRequired: false,
-		actioned: false
-	}
-];
-
 function createInbox() {
-	let items = $state<InboxItem[]>(MOCK_INBOX);
+	let items = $state<InboxItem[]>([]);
 
 	function markRead(id: number) {
 		const item = items.find((i) => i.id === id);
@@ -28,6 +9,27 @@ function createInbox() {
 	}
 
 	const unreadCount = $derived(items.filter((i) => !i.actioned).length);
+
+	function init(club: string) {
+		items = [
+			{
+				id: 1,
+				type: 'news',
+				subject: 'Welcome to the club!',
+				body: `You have signed for ${club}. Report for training.`,
+				actionRequired: true,
+				actioned: false
+			},
+			{
+				id: 2,
+				type: 'news',
+				subject: 'Season preview',
+				body: 'The new season kicks off this week. Best of luck!',
+				actionRequired: false,
+				actioned: false
+			}
+		];
+	}
 
 	return {
 		get items() {
@@ -39,7 +41,8 @@ function createInbox() {
 		get unreadCount() {
 			return unreadCount;
 		},
-		markRead
+		markRead,
+		init
 	};
 }
 

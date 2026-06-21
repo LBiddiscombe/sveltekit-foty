@@ -14,7 +14,8 @@
 		{ label: 'Shop', href: '/hub/shop' },
 		{ label: 'Fixtures', href: '/hub/fixtures' },
 		{ label: 'Inbox', href: '/hub/inbox' },
-		{ label: 'Profile', href: '/hub/profile' }
+		{ label: 'Player Status', href: '/hub/player' },
+		{ label: 'State of Affairs', href: '/hub/affairs' }
 	];
 
 	const hasUnread = $derived(inbox.unreadCount > 0);
