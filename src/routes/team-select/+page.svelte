@@ -1,38 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { player } from '$lib/stores/player.svelte';
+	import { season } from '$lib/stores/season.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
-
-	const DIVISION_4_CLUBS = [
-		'Ackrington',
-		'Barnett',
-		'Bristol Rovers',
-		'Cheltnum',
-		'Chesterfeeld',
-		'Colchestur',
-		'Crawlee',
-		'Croo',
-		'Exetur',
-		'Fleetwud',
-		'Gillingham',
-		'Grimzbee',
-		'Newport',
-		'Northamptun',
-		'Oldum',
-		'Port Vayle',
-		'Rochdayle',
-		'Rotherum',
-		'Salfud',
-		'Shroosbury',
-		'Swindun',
-		'Tranmere',
-		'Walsawl',
-		'York'
-	];
+	import { DIVISION_4_CLUBS } from '$lib/config/teams';
+	import { generatePlayerFixtures } from '$lib/config/fixtures';
 
 	async function selectClub(club: string) {
 		player.club = club;
 		player.division = 4;
+		season.fixtures = generatePlayerFixtures(club, DIVISION_4_CLUBS);
 		inbox.init(club);
 		await goto('/hub');
 	}

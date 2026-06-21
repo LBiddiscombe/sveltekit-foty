@@ -2,7 +2,7 @@ import { player } from '$lib/stores/player.svelte';
 import { season } from '$lib/stores/season.svelte';
 import { inbox } from '$lib/stores/inbox.svelte';
 import { match } from '$lib/stores/match.svelte';
-import type { InboxItem, MatchResult } from '$lib/types/game';
+import type { Fixture, InboxItem, MatchResult } from '$lib/types/game';
 import { browser } from '$app/environment';
 
 const SAVE_KEY = 'foty-save';
@@ -22,6 +22,7 @@ interface SaveState {
 	season: {
 		weekNumber: number;
 		seasonNumber: number;
+		fixtures: Fixture[];
 		gamesPlayed: number;
 		phase: string;
 		morale: number;
@@ -46,6 +47,7 @@ export function saveGame(): void {
 		season: {
 			weekNumber: season.weekNumber,
 			seasonNumber: season.seasonNumber,
+			fixtures: JSON.parse(JSON.stringify(season.fixtures)),
 			gamesPlayed: season.gamesPlayed,
 			phase: season.phase,
 			morale: season.morale
@@ -81,6 +83,7 @@ export function loadGame(): boolean {
 
 		season.weekNumber = state.season.weekNumber;
 		season.seasonNumber = state.season.seasonNumber;
+		season.fixtures = state.season.fixtures ?? [];
 		season.gamesPlayed = state.season.gamesPlayed;
 		season.phase = state.season.phase as typeof season.phase;
 		season.morale = state.season.morale;

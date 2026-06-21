@@ -6,6 +6,7 @@
 	import { match } from '$lib/stores/match.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
 	import { pickRandomIncident } from '$lib/config/incidents';
+	import { DIVISION_4_CLUBS } from '$lib/config/teams';
 	import Button from '$lib/components/Button.svelte';
 	import { createTeletype, type TeletypeConfig } from './teletype.svelte';
 
@@ -15,31 +16,7 @@
 
 	const PLAYER_CLUB = player.club !== 'Free Agent' ? player.club : 'Exetur';
 
-	const opponents = [
-		'Ackrington',
-		'Barnett',
-		'Bristol Rovers',
-		'Cheltnum',
-		'Chesterfeeld',
-		'Colchestur',
-		'Crawlee',
-		'Croo',
-		'Fleetwud',
-		'Gillingham',
-		'Grimzbee',
-		'Newport',
-		'Northamptun',
-		'Oldum',
-		'Port Vayle',
-		'Rochdayle',
-		'Rotherum',
-		'Salfud',
-		'Shroosbury',
-		'Swindun',
-		'Tranmere',
-		'Walsawl',
-		'York'
-	].filter((t) => t !== PLAYER_CLUB);
+	const opponents = [...DIVISION_4_CLUBS].filter((t) => t !== PLAYER_CLUB);
 
 	const shuffledOpponents = [...opponents].sort(() => Math.random() - 0.5);
 
@@ -134,6 +111,18 @@
 	<div class="mt-auto pt-4 {tty.done ? '' : 'invisible'}">
 		<Button
 			onclick={async () => {
+				const score = match.result?.score;
+				if (score) {
+					const weekFixtures = season.fixtures.filter(
+						(f) => f.weekNumber === season.weekNumber
+					);
+					const unplayed = weekFixtures.filter((f) => !f.result);
+					if (unplayed.length > 0) {
+						unplayed[0].result = { goalsFor: score[0], goalsAgainst: score[1] };
+					}
+				}
+				season.gamesPlayed++;
+				season.weekNumber = Math.min(season.weekNumber + 1, 30);
 				const hasIncident = Math.random() < 0.25;
 				if (hasIncident) {
 					const card = pickRandomIncident();

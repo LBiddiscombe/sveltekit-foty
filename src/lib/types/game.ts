@@ -19,8 +19,16 @@ export interface Player {
 	deck: number[];
 }
 
+export interface FixtureResult {
+	goalsFor: number;
+	goalsAgainst: number;
+}
+
 export interface Fixture {
 	opponent: string;
+	isHome: boolean;
+	weekNumber: number;
+	result?: FixtureResult;
 }
 
 export type Phase = 'hub' | 'pre-match' | 'match' | 'vidiprinter';
