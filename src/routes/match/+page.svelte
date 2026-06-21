@@ -25,7 +25,7 @@
 	const currentGame = $derived(match.pendingGames[match.currentGameIndex]);
 
 	function pickGameType(): GameType {
-		return Math.random() < 0.5 ? 'penalty' : 'volley';
+		return Math.random() < 0.3 ? 'penalty' : 'volley';
 	}
 
 	function updateMorale(score: [number, number], goals: number) {
@@ -109,7 +109,9 @@
 		<div class="flex w-full flex-col items-center gap-4">
 			{#if currentGame}
 				<div class="flex flex-col items-center gap-0.5">
-					<span class="font-pixel text-xs text-subtle">{currentGame.fixture.isHome ? 'HOME' : 'AWAY'} — {currentGame.fixture.opponent}</span>
+					<span class="font-pixel text-xs text-subtle"
+						>{currentGame.fixture.isHome ? 'HOME' : 'AWAY'} — {currentGame.fixture.opponent}</span
+					>
 					<span class="font-pixel text-sm text-primary">
 						Chance {currentChance + 1} of {match.totalChances}
 					</span>

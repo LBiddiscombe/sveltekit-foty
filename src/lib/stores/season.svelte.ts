@@ -14,7 +14,7 @@ function createSeason() {
 			return weekNumber;
 		},
 		set weekNumber(v: number) {
-			weekNumber = v;
+			weekNumber = Math.max(1, v);
 		},
 		get seasonNumber() {
 			return seasonNumber;

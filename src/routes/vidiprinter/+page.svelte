@@ -7,12 +7,22 @@
 	import { pickRandomIncident } from '$lib/config/incidents';
 	import Button from '$lib/components/Button.svelte';
 	import { createTeletype, type TeletypeConfig } from './teletype.svelte';
+	import VidiprinterLine from '$lib/components/VidiprinterLine.svelte';
 
 	$effect(() => {
 		season.phase = 'vidiprinter';
 	});
 
 	const PLAYER_CLUB = player.club !== 'Free Agent' ? player.club : 'Exetur';
+
+	type ScoreLine = {
+		home: string;
+		away: string;
+		homeScore: number;
+		awayScore: number;
+	};
+
+	const scoreLines = new Map<number, ScoreLine>();
 
 	const weekFixtures = season.fixtures.filter(
 		(f) => f.weekNumber === season.weekNumber && f.result
@@ -38,6 +48,7 @@
 			const awayScore = f.isHome ? goalsAgainst : goalsFor;
 			const result = goalsFor > goalsAgainst ? 'WIN' : goalsFor === goalsAgainst ? 'DRAW' : 'LOSE';
 
+			scoreLines.set(l.length, { home, away, homeScore, awayScore });
 			l.push(`  ${home.padEnd(14)} ${homeScore} - ${awayScore}    ${away}`);
 			l.push(`  RESULT - ${result} : YOU SCORED ${playerGoals}`);
 			l.push('');
@@ -67,21 +78,28 @@
 	<div class="flex min-h-0 flex-1 flex-col justify-end overflow-hidden">
 		<div class="flex flex-col gap-0.5 font-pixel text-[10px] leading-relaxed">
 			{#each pastLines as line, i (i)}
+				{@const sc = scoreLines.get(i)}
 				{@const isResultLine = line.startsWith('  RESULT')}
-				{@const isScoreLine = line.startsWith('  ') && !isResultLine && line.length > 10}
+				{@const isScoreLine = sc !== undefined}
 				{@const isHeader = line === 'INCOMING RESULTS'}
 
 				{#if line === ''}
 					<div class="h-2"></div>
+				{:else if isScoreLine}
+					<VidiprinterLine
+						home={sc.home}
+						away={sc.away}
+						homeScore={sc.homeScore}
+						awayScore={sc.awayScore}
+						playerTeam={PLAYER_CLUB}
+					/>
 				{:else}
 					<div
 						class="whitespace-pre {isResultLine
 							? 'text-subtle'
-							: isScoreLine
-								? 'text-primary'
-								: isHeader
-									? 'text-warning'
-									: 'text-subtle'}"
+							: isHeader
+								? 'text-warning'
+								: 'text-subtle'}"
 					>
 						{line}
 					</div>

@@ -79,7 +79,6 @@
 		if (!item || !result) return;
 		applyEffects(result);
 		inbox.markRead(item.id);
-		item.actioned = true;
 		goto('/hub');
 	}
 

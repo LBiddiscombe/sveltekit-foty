@@ -32,6 +32,7 @@ interface SaveState {
 }
 
 export function saveGame(): void {
+	if (!season.fixtures || season.fixtures.length === 0) return;
 	const state: SaveState = {
 		player: {
 			name: player.name,
@@ -71,6 +72,11 @@ export function loadGame(): boolean {
 	try {
 		const state: SaveState = JSON.parse(raw);
 
+		if (!state.season.fixtures || state.season.fixtures.length === 0) {
+			localStorage.removeItem(SAVE_KEY);
+			return false;
+		}
+
 		player.name = state.player.name;
 		player.age = state.player.age;
 		player.wage = state.player.wage;
@@ -81,9 +87,9 @@ export function loadGame(): boolean {
 		player.division = state.player.division;
 		player.deck = state.player.deck;
 
-		season.weekNumber = state.season.weekNumber;
+		season.weekNumber = Math.max(1, state.season.weekNumber);
 		season.seasonNumber = state.season.seasonNumber;
-		season.fixtures = state.season.fixtures ?? [];
+		season.fixtures = state.season.fixtures;
 		season.gamesPlayed = state.season.gamesPlayed;
 		season.phase = state.season.phase as typeof season.phase;
 		season.morale = state.season.morale;

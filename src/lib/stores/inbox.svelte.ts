@@ -4,8 +4,7 @@ function createInbox() {
 	let items = $state<InboxItem[]>([]);
 
 	function markRead(id: number) {
-		const item = items.find((i) => i.id === id);
-		if (item) item.actioned = true;
+		items = items.map((i) => (i.id === id ? { ...i, actioned: true } : i));
 	}
 
 	const unreadCount = $derived(items.filter((i) => !i.actioned).length);
