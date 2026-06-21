@@ -55,7 +55,6 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 			ft.drawGoalie();
 			ft.drawBall(ball);
 
-			ft.drawOutcome(outcome);
 			drawPowerBar();
 		};
 

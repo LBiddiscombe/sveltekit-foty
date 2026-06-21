@@ -39,7 +39,7 @@ export function createTeletype(lines: string[], config: TeletypeConfig) {
 					currentLine++;
 					currentCharInLine = 0;
 					lineDone = false;
-				}, config.linePause);
+				}, config.linePause * (speed / config.charSpeed));
 			}
 		}, s);
 

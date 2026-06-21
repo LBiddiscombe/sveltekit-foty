@@ -7,8 +7,9 @@
 	import { match } from '$lib/stores/match.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import Penalty from '$lib/components/minigames/Penalty.svelte';
-	import Volley from '$lib/components/minigames/Volley.svelte';
+	import Minigame from '$lib/components/minigames/Minigame.svelte';
+	import { createPenaltySketch } from '$lib/components/minigames/PenaltySketch';
+	import { createVolleySketch } from '$lib/components/minigames/VolleySketch';
 	import type { Outcome } from '$lib/types/game';
 
 	type GameType = 'penalty' | 'volley';
@@ -21,6 +22,7 @@
 	let gameType = $state<GameType>('penalty');
 	let step = $state<'playing' | 'result'>('playing');
 	let awaitingAdvance = $state(false);
+	let currentOutcomeText = $state<string | null>(null);
 
 	function pickGameType(): GameType {
 		return Math.random() < 0.5 ? 'penalty' : 'volley';
@@ -44,9 +46,15 @@
 		if (awaitingAdvance) return;
 		awaitingAdvance = true;
 
+		currentOutcomeText =
+			outcome === 'goal' ? 'Goal!'
+			: outcome === 'saved' ? 'Saved!'
+			: 'Missed!';
+
 		match.recordOutcome(outcome);
 
 		setTimeout(() => {
+			currentOutcomeText = null;
 			awaitingAdvance = false;
 			if (currentChance < match.totalChances - 1) {
 				currentChance++;
@@ -68,11 +76,11 @@
 			</span>
 
 			{#key currentChance}
-				{#if gameType === 'penalty'}
-					<Penalty oncomplete={handleComplete} />
-				{:else}
-					<Volley oncomplete={handleComplete} />
-				{/if}
+				<Minigame
+					oncomplete={handleComplete}
+					createSketch={gameType === 'penalty' ? createPenaltySketch : createVolleySketch}
+					outcomeText={currentOutcomeText}
+				/>
 			{/key}
 		</div>
 	{:else}

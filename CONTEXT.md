@@ -26,6 +26,8 @@
 
 **Fixtures page (Cycle 1)** — Placeholder text "Fixtures would appear here". No real fixture generation until later cycles.
 
+**Minigame** — A unified Svelte wrapper (`Minigame.svelte`) that accepts a `createSketch` factory prop and renders it via `<P5Canvas>`. Eliminates per-minigame boilerplate. Sketch factories live in their own `*Sketch.ts` files and conform to the `MinigameSketchFactory` type.
+
 **Match mock (Cycle 1)** — Pre-determined outcome sequence that auto-advances through all chances, then shows result with "Continue → Vidiprinter". No per-chance choice interaction until Cycle 2.
 
 **Vidiprinter mock (Cycle 1)** — Auto-scrolling list of ~10 fake fixture lines via CSS animation. "Continue" button appears after scroll completes.

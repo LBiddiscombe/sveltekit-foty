@@ -34,6 +34,12 @@ export interface Season {
 
 export type Outcome = 'goal' | 'saved' | 'miss' | 'off-target';
 
+export type MinigameSketch = (p: import('p5').default, width: number, height: number) => void;
+
+export type MinigameSketchFactory = (options: {
+	onComplete: (outcome: Outcome) => void;
+}) => MinigameSketch;
+
 export interface MatchResult {
 	played: boolean;
 	chances: number;

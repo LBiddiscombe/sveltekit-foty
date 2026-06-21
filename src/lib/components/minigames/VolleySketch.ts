@@ -67,8 +67,6 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 			drawTrail();
 			drawGhostBall();
 			ft.drawBall(ball);
-
-			ft.drawOutcome(outcome);
 		};
 
 		p.mousePressed = (): boolean => {

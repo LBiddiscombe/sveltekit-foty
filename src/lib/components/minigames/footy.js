@@ -435,19 +435,6 @@ export function createFooty(p) {
 		p.pop();
 	}
 
-	function drawOutcome(outcome) {
-		if (!outcome) return;
-		p.push();
-		p.textSize(72);
-		p.textAlign(p.CENTER, p.CENTER);
-		p.textStyle(p.BOLD);
-		p.fill(255);
-		p.stroke(0);
-		p.strokeWeight(6);
-		p.text(outcome, p.width / 2, p.height / 2);
-		p.pop();
-	}
-
 	return {
 		gravity,
 		camera,
@@ -465,7 +452,6 @@ export function createFooty(p) {
 		goalieCollisionBounds,
 		goalieSaveCheck,
 		goalieReact,
-		drawGoalie,
-		drawOutcome
+		drawGoalie
 	};
 }
