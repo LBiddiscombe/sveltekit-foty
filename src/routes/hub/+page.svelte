@@ -2,11 +2,18 @@
 	import { goto } from '$app/navigation';
 	import { season } from '$lib/stores/season.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
+	import { saveGame } from '$lib/save';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 
+	let saved = $state(false);
+
 	$effect(() => {
 		season.phase = 'hub';
+		if (!saved) {
+			saveGame();
+			saved = true;
+		}
 	});
 
 	const menuItems = [

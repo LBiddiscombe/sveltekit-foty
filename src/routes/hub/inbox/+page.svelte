@@ -26,12 +26,21 @@
 				</div>
 				<p class="font-pixel text-xs text-primary">{item.body}</p>
 				{#if !item.actioned}
-					<button
-						onclick={() => inbox.markRead(item.id)}
-						class="self-start border border-subtle bg-dark px-3 py-1 font-pixel text-xs text-subtle transition-colors hover:border-primary hover:text-primary"
-					>
-						Mark Read
-					</button>
+					{#if item.type === 'incident' && item.incidentCardId}
+						<button
+							onclick={async () => await goto(`/hub/incident?id=${item.incidentCardId}`)}
+							class="self-start border border-warning bg-dark px-3 py-1 font-pixel text-xs text-warning transition-colors hover:border-warning hover:text-primary"
+						>
+							Play Card
+						</button>
+					{:else}
+						<button
+							onclick={() => inbox.markRead(item.id)}
+							class="self-start border border-subtle bg-dark px-3 py-1 font-pixel text-xs text-subtle transition-colors hover:border-primary hover:text-primary"
+						>
+							Mark Read
+						</button>
+					{/if}
 				{/if}
 			</div>
 		</Card>

@@ -4,7 +4,8 @@
 	import { season } from '$lib/stores/season.svelte';
 	import { player } from '$lib/stores/player.svelte';
 	import { match } from '$lib/stores/match.svelte';
-	import { saveGame } from '$lib/save';
+	import { inbox } from '$lib/stores/inbox.svelte';
+	import { pickRandomIncident } from '$lib/config/incidents';
 	import Button from '$lib/components/Button.svelte';
 	import { createTeletype, type TeletypeConfig } from './teletype.svelte';
 
@@ -133,8 +134,26 @@
 	<div class="mt-auto pt-4 {tty.done ? '' : 'invisible'}">
 		<Button
 			onclick={async () => {
-				saveGame();
-				await goto(resolve('/hub'));
+				const hasIncident = Math.random() < 0.25;
+				if (hasIncident) {
+					const card = pickRandomIncident();
+					const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
+					inbox.items = [
+						...inbox.items,
+						{
+							id: nextId,
+							type: 'incident',
+							subject: card.title,
+							body: card.description,
+							actionRequired: true,
+							actioned: false,
+							incidentCardId: card.id
+						}
+					];
+					await goto(resolve('/hub/inbox'));
+				} else {
+					await goto(resolve('/hub'));
+				}
 			}}
 		>
 			Continue

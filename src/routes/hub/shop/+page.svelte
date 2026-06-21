@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { player } from '$lib/stores/player.svelte';
+	import { inbox } from '$lib/stores/inbox.svelte';
+	import { pickRandomIncident } from '$lib/config/incidents';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 
@@ -11,12 +13,29 @@
 	} as const;
 
 	let bought = $state<Record<string, boolean>>({});
+	let showInboxHint = $state(false);
 
 	function buy(type: keyof typeof PRICES) {
 		if (player.bankBalance < PRICES[type]) return;
 		player.bankBalance -= PRICES[type];
 		if (type === 'goalCard') {
 			player.deck.push(Math.floor(Math.random() * 3) + 1);
+		} else if (type === 'incidentCard') {
+			const card = pickRandomIncident();
+			const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
+			inbox.items = [
+				...inbox.items,
+				{
+					id: nextId,
+					type: 'incident',
+					subject: card.title,
+					body: card.description,
+					actionRequired: true,
+					actioned: false,
+					incidentCardId: card.id
+				}
+			];
+			showInboxHint = true;
 		}
 		bought = { ...bought, [type]: true };
 	}
@@ -78,7 +97,15 @@
 		</p>
 		<div class="mt-3">
 			{#if bought.incidentCard}
-				<p class="font-pixel text-xs text-success">Card drawn!</p>
+				<p class="font-pixel text-xs text-success">Card added to inbox!</p>
+				{#if showInboxHint}
+					<a
+						href="/hub/inbox"
+						class="mt-2 inline-block font-pixel text-xs text-warning underline"
+					>
+						Open your inbox to play it
+					</a>
+				{/if}
 			{:else}
 				<Button
 					onclick={() => buy('incidentCard')}

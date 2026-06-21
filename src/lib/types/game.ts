@@ -63,4 +63,24 @@ export interface InboxItem {
 	body: string;
 	actionRequired: boolean;
 	actioned: boolean;
+	incidentCardId?: string;
+}
+
+export interface IncidentEffectDescriptor {
+	type: 'bankBalance' | 'morale' | 'stat';
+	delta: number;
+	key?: keyof PlayerStats;
+}
+
+export interface IncidentOutcome {
+	label: string;
+	effects: IncidentEffectDescriptor[];
+}
+
+export interface IncidentCard {
+	id: string;
+	theme: 'positive' | 'negative';
+	title: string;
+	description: string;
+	outcomes: [IncidentOutcome, IncidentOutcome, IncidentOutcome, IncidentOutcome];
 }

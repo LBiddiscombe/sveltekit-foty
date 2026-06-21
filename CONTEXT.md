@@ -28,9 +28,15 @@
 
 **Type file** — `src/lib/types/game.ts` defines all TypeScript interfaces used by stores and components. Single source of truth, avoids circular imports.
 
-**Incident cards (hybrid)** — Two sources: (1) automatic ~20-30% of weeks, appearing as a forced spinning-wheel encounter after the vidiprinter, and (2) purchasable incident cards in the shop for a pay-to-gamble option anytime.
+**Incident cards (hybrid)** — Two sources: (1) automatic ~20-30% of weeks, rolled at vidiprinter completion, and (2) purchasable incident cards in the shop for a pay-to-gamble option anytime. Both paths deliver the card to the inbox as an unactioned message.
 
-**Inbox clearing** — Each message must be individually tapped to mark `actioned`. "Next Match" enables only when all inbox items are actioned.
+**Incident resolution** — An unactioned incident message in the inbox navigates to a dedicated route (`/hub/incident`) with a 4-option text ticker. Theme (positive/negative) is baked into each card. 3 themed outcomes at escalating strength + 1 neutral. The ticker cycles through the options rapidly; the player presses a button to decelerate it to a stop, revealing the result.
+
+**Incident effect descriptor** — A declarative data structure specifying store mutations: `{ type: 'bankBalance' | 'morale' | 'stat', delta: number, key?: keyof PlayerStats }`. The incident route processes these through a switch. Card definitions live as plain data arrays so they can be future-loaded from config without importing store modules.
+
+**Inbox clearing** — Each message must be individually tapped to mark `actioned`. "Next Match" enables only when all inbox items are actioned. Incident cards auto-navigate to the incident spinner when opened from the inbox.
+
+**Save-at-hub** — Game state is persisted to `localStorage` when the player lands on the hub after completing a matchweek (post-incident if applicable). One auto-save slot. Reloading before hub landed restarts the week.
 
 **Phase progression** — Each route auto-sets its phase via `$effect` on mount. Phase is an effect of navigation, not a driver of it. Self-healing on direct URL entry.
 
@@ -46,7 +52,7 @@
 
 **Design system** — Tailwind v4 `@theme` directive in `layout.css` to register custom colors as utility classes.
 
-**Save system** — Full game state persisted to `localStorage` when the vidiprinter screen completes (end of matchweek). On fresh load, if saved state exists, offer to resume or start new career. 1 auto-save slot; no manual save/load UI until Cycle 8.
+**Save system** — Full game state persisted to `localStorage` when the player lands on the hub after completing a matchweek (post-incident if applicable). On fresh load, if saved state exists, offer to resume or start new career. 1 auto-save slot; no manual save/load UI until Cycle 8.
 
 **New career (title flow)** — Name entry on `/`, then team selection (pick from 24 Division 4 clubs), then navigate to `/hub`. If a saved game exists, offer resume option before name entry.
 
