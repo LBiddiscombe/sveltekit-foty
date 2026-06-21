@@ -2,7 +2,13 @@
 
 ## Project
 
-**FotY** — Footballer of the Year Remake (inspired reboot). A single-player career management sim with arcade mini-game resolution, built in Svelte 5 + P5.js. Takes creative inspiration from the 1986 original — mechanics may be replaced, extended, or omitted.
+**FotY** — canonical short name for the app. Used in `short_name` for the web app manifest. "Footballer of the Year Remake" is the full title; "FotY Reboot" is the display name.
+
+**FotY Reboot** — display name for the web app manifest (`name` field).
+
+**PWA icon** — SVG football (classic pentagonal pattern), used as the sole icon source in the web app manifest. Serves all sizes via SVG scaling.
+
+**Footballer of the Year Remake (FotY)** — full project title. A single-player career management sim with arcade mini-game resolution, built in Svelte 5 + P5.js. Takes creative inspiration from the 1986 original — mechanics may be replaced, extended, or omitted.
 
 ## Terms
 
