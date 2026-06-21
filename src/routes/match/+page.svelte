@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { season } from '$lib/stores/season.svelte';
 	import { player } from '$lib/stores/player.svelte';
 	import { match } from '$lib/stores/match.svelte';
-	import Card from '$lib/components/Card.svelte';
-	import Button from '$lib/components/Button.svelte';
 	import Minigame from '$lib/components/minigames/Minigame.svelte';
 	import { createPenaltySketch } from '$lib/components/minigames/PenaltySketch';
 	import { createVolleySketch } from '$lib/components/minigames/VolleySketch';
@@ -21,20 +18,14 @@
 
 	let currentChance = $state(0);
 	let gameType = $state<GameType>('penalty');
-	let step = $state<'playing' | 'result'>('playing');
+	let step = $state<'loading' | 'playing'>('loading');
 	let awaitingAdvance = $state(false);
 	let currentOutcomeText = $state<string | null>(null);
 
+	const currentGame = $derived(match.pendingGames[match.currentGameIndex]);
+
 	function pickGameType(): GameType {
 		return Math.random() < 0.5 ? 'penalty' : 'volley';
-	}
-
-	function consumeDeck(skipped: boolean) {
-		if (player.deck.length === 0) return;
-		const used = player.deck.shift()!;
-		if (skipped) {
-			player.deck.push(used);
-		}
 	}
 
 	function updateMorale(score: [number, number], goals: number) {
@@ -46,28 +37,48 @@
 	}
 
 	function recordMatchStats(goals: number) {
-		player.appearances++;
-		player.goals += goals;
+		if (goals > 0) {
+			player.appearances++;
+			player.goals += goals;
+		}
+	}
+
+	function finishCurrentGame() {
+		const res = match.result!;
+		const goalsScored = res.outcomes.filter((o) => o === 'goal').length;
+		updateMorale(res.score, goalsScored);
+		recordMatchStats(goalsScored);
+		match.nextGame(season.morale);
+
+		if (match.batchDone) {
+			goto('/vidiprinter');
+		} else {
+			setupNextGame();
+		}
+	}
+
+	function setupNextGame() {
+		currentChance = 0;
+		gameType = pickGameType();
+		awaitingAdvance = false;
+		currentOutcomeText = null;
+
+		const game = match.pendingGames[match.currentGameIndex];
+		if (game?.skipped) {
+			match.consumeDeck(true);
+			finishCurrentGame();
+		} else {
+			step = 'playing';
+		}
 	}
 
 	onMount(() => {
-		if (match.totalChances) return;
-		const skipped = $page.url.searchParams.has('skipped');
-		const chances = player.deck[0] ?? 1;
-		if (skipped) {
-			consumeDeck(true);
-			match.skip(chances, season.morale);
-			const res = match.result!;
-			updateMorale(res.score, 0);
-			recordMatchStats(0);
-			step = 'result';
-		} else {
-			gameType = pickGameType();
-			match.start(chances, season.morale);
+		if (match.pendingGames.length === 0) {
+			goto('/vidiprinter');
+			return;
 		}
+		setupNextGame();
 	});
-
-	const finalResult = $derived(match.result);
 
 	function handleComplete(outcome: Outcome) {
 		if (awaitingAdvance) return;
@@ -84,25 +95,30 @@
 				currentChance++;
 				gameType = pickGameType();
 			} else {
-				consumeDeck(false);
-				const res = match.result!;
-				const goalsScored = res.outcomes.filter((o) => o === 'goal').length;
-				updateMorale(res.score, goalsScored);
-				recordMatchStats(goalsScored);
-				step = 'result';
+				match.consumeDeck(false);
+				finishCurrentGame();
 			}
 		}, 1500);
 	}
 </script>
 
 <div class="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-8 px-4">
-	{#if match.totalChances === 0}
+	{#if step === 'loading'}
 		<p class="font-pixel text-xs text-subtle">Loading...</p>
 	{:else if step === 'playing'}
 		<div class="flex w-full flex-col items-center gap-4">
-			<span class="font-pixel text-sm text-primary">
-				Chance {currentChance + 1} of {match.totalChances}
-			</span>
+			{#if currentGame}
+				<div class="flex flex-col items-center gap-0.5">
+					<span class="font-pixel text-xs text-subtle">{currentGame.fixture.isHome ? 'HOME' : 'AWAY'} — {currentGame.fixture.opponent}</span>
+					<span class="font-pixel text-sm text-primary">
+						Chance {currentChance + 1} of {match.totalChances}
+					</span>
+				</div>
+			{:else}
+				<span class="font-pixel text-sm text-primary">
+					Chance {currentChance + 1} of {match.totalChances}
+				</span>
+			{/if}
 
 			{#key currentChance}
 				<Minigame
@@ -112,17 +128,5 @@
 				/>
 			{/key}
 		</div>
-	{:else}
-		<Card>
-			<div class="flex flex-col items-center gap-2 py-4 text-center">
-				<span class="font-pixel text-sm text-primary">Full Time</span>
-				<span class="font-pixel text-3xl text-success">
-					{finalResult!.score[0]} - {finalResult!.score[1]}
-				</span>
-				<span class="font-pixel text-xs text-subtle">Rating: {finalResult!.rating}/10</span>
-			</div>
-		</Card>
-
-		<Button onclick={async () => await goto('/vidiprinter')}>Continue</Button>
 	{/if}
 </div>

@@ -24,7 +24,9 @@
 
 **Player Status** — Hub sub-page (`/hub/player`) showing the player's avatar, stat bars, goals, appearances, club, division, weekly earnings. Analogous to the original's Footballer Head screen. Renamed from "Profile" to disambiguate from State of Affairs.
 
-**Team morale** — A team-level stat (1–10 scale, starts at 5, clamped) stored in the `season` store. Affects match simulation: each point above/below 5 shifts your team's simulated score by ±0.05 goals. Morale deltas are defined in a single `MORALE_CONFIG` object: +1 for win, 0 for draw, −1 for loss. Scoring 2+ goals in a match always gives +2 regardless of result. Skipped matches still apply the result-based delta.
+**Team morale** — A team-level stat (1–10 scale, starts at 5, clamped) stored in the `season` store. Shifts the λ (mean) of the Poisson distribution used for both team base goals and opponent goals. Team λ ranges from 0.9 (morale=1) to 1.8 (morale=10). Opponent λ ranges from 1.2 (morale=1) to 0.3 (morale=10). Higher morale → team scores more, concedes less. Morale deltas: +1 for win, 0 for draw, −1 for loss. Scoring 2+ personal minigame goals always gives +2 regardless of result. Skipped matches still apply the result-based delta.
+
+**Match result scoring** — Two-part model. (1) The **team base** generates goals via a Poisson distribution whose λ is determined by team morale (applies in both Play and Skip paths). (2) On the Play path, the player's minigame goals are **added** to the team base to form the final score. Opponent goals are also Poisson-distributed from their own λ (derived from the inverse of team morale). This means blowout scores are possible when the player performs well in minigames on top of a strong team baseline. No randomness in the Play path's minigame outcomes — those are pure skill.
 
 **Type file** — `src/lib/types/game.ts` defines all TypeScript interfaces used by stores and components. Single source of truth, avoids circular imports.
 

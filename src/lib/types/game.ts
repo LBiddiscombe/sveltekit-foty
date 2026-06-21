@@ -22,6 +22,7 @@ export interface Player {
 export interface FixtureResult {
 	goalsFor: number;
 	goalsAgainst: number;
+	playerGoals: number;
 }
 
 export interface Fixture {

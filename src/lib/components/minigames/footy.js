@@ -1,3 +1,4 @@
+// @ts-nocheck
 export function createFooty(p) {
 	const gravity = 30;
 	const NET_COLS = 30;
