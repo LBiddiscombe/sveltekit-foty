@@ -34,7 +34,14 @@ function seedStores() {
 	season.morale = 6;
 
 	inbox.items = [
-		{ id: 1, type: 'news', subject: 'Welcome', body: 'hello', actionRequired: false, actioned: false }
+		{
+			id: 1,
+			type: 'news',
+			subject: 'Welcome',
+			body: 'hello',
+			actionRequired: false,
+			actioned: false
+		}
 	];
 
 	match.result = null;

@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { season } from '$lib/stores/season.svelte';
 
-	function resultClass(fixture: typeof season.fixtures[number]): string {
+	function resultClass(fixture: (typeof season.fixtures)[number]): string {
 		if (!fixture.result) return 'text-subtle';
 		const { goalsFor, goalsAgainst } = fixture.result;
 		if (goalsFor > goalsAgainst) return 'text-success';
@@ -10,7 +10,7 @@
 		return 'text-danger';
 	}
 
-	function resultText(fixture: typeof season.fixtures[number]): string {
+	function resultText(fixture: (typeof season.fixtures)[number]): string {
 		if (!fixture.result) return '';
 		const { goalsFor, goalsAgainst } = fixture.result;
 		const wdl = goalsFor > goalsAgainst ? 'won' : goalsFor === goalsAgainst ? 'drew' : 'lost';

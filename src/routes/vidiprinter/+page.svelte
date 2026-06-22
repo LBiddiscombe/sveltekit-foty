@@ -35,7 +35,7 @@
 			'',
 			' LEAGUE TWO',
 			'------------',
-			'',
+			''
 		];
 
 		for (const f of weekFixtures) {

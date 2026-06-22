@@ -68,6 +68,12 @@
 
 **Starting deck** — 10 goal cards in the player's deck at career start.
 
+**Weekly wage** — £200 paid to the player's bank balance each week on hub arrival. Makes shop purchases sustainable over a full season. Applied once per week via the hub's `$effect`.
+
+**Empty deck sim** — When `player.deck` is empty, all matches for the current week are forced to sim (Skip path only). The pre-match page shows an informational message and a single Continue button instead of the per-game Play/Skip loop.
+
+**Repeated shop buys** — Shop purchase buttons remain visible and usable after each purchase (no `bought` guard). The player can tap repeatedly to buy multiple items in one visit. A brief "Card added!" flash confirms each purchase.
+
 **Training focus (Cycle 1)** — Radio buttons update `player.trainingFocus` in the store. No XP effect until Cycle 6.
 
 **Transfers (hybrid)** — Two paths to move clubs: (1) stat-threshold manager interest triggers naturally when stats are sufficient, and (2) purchasable transfer cards in the shop give a chance of early scouting evaluation regardless of current stats. Both lead to negotiation + contract screen (Cycle 7).

@@ -110,7 +110,7 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 
 			ball.vx = -(dx / d) * p.map(d, 0, 50, 0, 16, true);
 			ball.vy = (dy / d) * p.map(d, 0, 50, 0, 18, true);
-			ball.vz = (20 * power) + 5;
+			ball.vz = 20 * power + 5;
 
 			const t = ft.goal.z / ball.vz;
 			const predX = ball.vx * t;
@@ -141,9 +141,7 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 
 			if (ball.z >= ft.goal.z && ball.z <= ft.goal.z + 1 && !scored && !saved) {
 				const inFrame =
-					ball.x > -ft.goal.width / 2 &&
-					ball.x < ft.goal.width / 2 &&
-					ball.y <= ft.goal.height;
+					ball.x > -ft.goal.width / 2 && ball.x < ft.goal.width / 2 && ball.y <= ft.goal.height;
 
 				if (inFrame && ft.goalieSaveCheck(ball.x, ball.y, ball.radius)) {
 					ball.vx *= 0.5;

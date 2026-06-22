@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { season } from '$lib/stores/season.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
+	import { player } from '$lib/stores/player.svelte';
 	import { saveGame } from '$lib/save';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
@@ -11,6 +12,7 @@
 	$effect(() => {
 		season.phase = 'hub';
 		if (!saved) {
+			player.adjustBalance(200);
 			saveGame();
 			saved = true;
 		}

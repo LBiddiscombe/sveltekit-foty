@@ -47,7 +47,11 @@ function createMatch() {
 		const game = pendingGames[currentGameIndex];
 		if (result && game) {
 			const playerGoals = result.outcomes.filter((o) => o === 'goal').length;
-			game.fixture.result = { goalsFor: result.score[0], goalsAgainst: result.score[1], playerGoals };
+			game.fixture.result = {
+				goalsFor: result.score[0],
+				goalsAgainst: result.score[1],
+				playerGoals
+			};
 		}
 	}
 

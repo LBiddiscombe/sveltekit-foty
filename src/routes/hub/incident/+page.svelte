@@ -110,7 +110,8 @@
 				<p class="mb-2 font-pixel text-xs text-subtle">Outcome:</p>
 				{#each card.outcomes as outcome, i (i)}
 					<div
-						class="flex w-full items-center gap-2 px-3 py-1.5 font-pixel text-[10px] transition-all {i === currentIndex
+						class="flex w-full items-center gap-2 px-3 py-1.5 font-pixel text-[10px] transition-all {i ===
+						currentIndex
 							? 'outline-2 outline-offset-[-2px] outline-primary text-primary bg-dark'
 							: 'text-subtle'}"
 					>
@@ -118,11 +119,7 @@
 							{i === currentIndex ? '>' : ''}
 						</span>
 						<span class="flex-1">{outcome.label}</span>
-						<span
-							class="shrink-0 {i === currentIndex
-								? 'text-warning'
-								: 'text-subtle'}"
-						>
+						<span class="shrink-0 {i === currentIndex ? 'text-warning' : 'text-subtle'}">
 							{formatEffects(outcome)}
 						</span>
 					</div>

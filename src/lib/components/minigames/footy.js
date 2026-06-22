@@ -152,9 +152,14 @@ export function createFooty(p) {
 		const bw = p.width / brands.length;
 
 		const palettes = [
-			[200, 30, 30], [30, 80, 200], [200, 180, 20],
-			[30, 160, 40], [160, 50, 140], [30, 150, 180],
-			[200, 120, 20], [80, 80, 80]
+			[200, 30, 30],
+			[30, 80, 200],
+			[200, 180, 20],
+			[30, 160, 40],
+			[160, 50, 140],
+			[30, 150, 180],
+			[200, 120, 20],
+			[80, 80, 80]
 		];
 
 		for (let i = 0; i < brands.length; i++) {
@@ -265,15 +270,23 @@ export function createFooty(p) {
 
 			for (let i = 0; i <= pRows; i++) {
 				for (let d = 0; d < sideDivs; d++) {
-					p.line(panelGrid[i][d].x, panelGrid[i][d].y,
-						panelGrid[i][d + 1].x, panelGrid[i][d + 1].y);
+					p.line(
+						panelGrid[i][d].x,
+						panelGrid[i][d].y,
+						panelGrid[i][d + 1].x,
+						panelGrid[i][d + 1].y
+					);
 				}
 			}
 
 			for (let d = 0; d <= sideDivs; d++) {
 				for (let i = 0; i < pRows; i++) {
-					p.line(panelGrid[i][d].x, panelGrid[i][d].y,
-						panelGrid[i + 1][d].x, panelGrid[i + 1][d].y);
+					p.line(
+						panelGrid[i][d].x,
+						panelGrid[i][d].y,
+						panelGrid[i + 1][d].x,
+						panelGrid[i + 1][d].y
+					);
 				}
 			}
 		}
@@ -326,12 +339,7 @@ export function createFooty(p) {
 		p.noStroke();
 		p.fill(0, 50);
 
-		p.ellipse(
-			shadow.x,
-			shadow.y,
-			ball.radius * 2 * shadow.scale,
-			ball.radius * shadow.scale * 0.8
-		);
+		p.ellipse(shadow.x, shadow.y, ball.radius * 2 * shadow.scale, ball.radius * shadow.scale * 0.8);
 
 		const pt = project(ball.x, ball.y, ball.z);
 		const dia = ball.radius * 2 * pt.scale;
@@ -381,7 +389,12 @@ export function createFooty(p) {
 
 	function goalieSaveCheck(bx, by, ballRadius) {
 		const b = goalieCollisionBounds();
-		return bx > b.left - ballRadius && bx < b.right + ballRadius && by > b.bottom - ballRadius && by < b.top + ballRadius;
+		return (
+			bx > b.left - ballRadius &&
+			bx < b.right + ballRadius &&
+			by > b.bottom - ballRadius &&
+			by < b.top + ballRadius
+		);
 	}
 
 	function goalieReact(predX, predY, decisions, maxDelayMs) {
@@ -397,7 +410,7 @@ export function createFooty(p) {
 			goalie.vy = Math.sqrt(2 * gravity * goalie.targetY);
 		} else if (decision === 'randcorner') {
 			const side = p.random() < 0.5 ? -1 : 1;
-			goalie.targetX = side * goal.width / 2;
+			goalie.targetX = (side * goal.width) / 2;
 			goalie.targetY = p.random(0, goal.height);
 			goalie.vy = Math.sqrt(2 * gravity * goalie.targetY);
 		} else {
@@ -428,7 +441,7 @@ export function createFooty(p) {
 			const rotT = elapsed >= 0 ? Math.min(elapsed / 100, 1) : 0;
 			if (Math.abs(goalie.targetX) >= 1.0) {
 				p.translate(0, -p.lerp(0, sprW / 2, rotT));
-				p.rotate(Math.sign(goalie.targetX) * rotT * Math.PI / 2);
+				p.rotate((Math.sign(goalie.targetX) * rotT * Math.PI) / 2);
 			}
 		}
 		p.imageMode(p.CORNER);

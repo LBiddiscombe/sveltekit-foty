@@ -10,15 +10,20 @@
 
 	let { oncomplete, createSketch, outcomeText = null }: Props = $props();
 
-	const sketch = $derived(createSketch({
-		onComplete: (outcome) => oncomplete?.(outcome)
-	}));
+	const sketch = $derived(
+		createSketch({
+			onComplete: (outcome) => oncomplete?.(outcome)
+		})
+	);
 
 	const outcomeColor = $derived(
-		outcomeText === 'Goal!' ? 'text-success'
-		: outcomeText === 'Saved!' ? 'text-danger'
-		: outcomeText === 'Missed!' ? 'text-subtle'
-		: ''
+		outcomeText === 'Goal!'
+			? 'text-success'
+			: outcomeText === 'Saved!'
+				? 'text-danger'
+				: outcomeText === 'Missed!'
+					? 'text-subtle'
+					: ''
 	);
 </script>
 

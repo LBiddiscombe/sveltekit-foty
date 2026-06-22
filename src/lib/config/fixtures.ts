@@ -13,7 +13,10 @@ function shuffle<T>(arr: T[]): T[] {
 	return a;
 }
 
-export function generatePlayerFixtures(playerClub: string, divisionClubs: readonly string[]): Fixture[] {
+export function generatePlayerFixtures(
+	playerClub: string,
+	divisionClubs: readonly string[]
+): Fixture[] {
 	const opponents = divisionClubs.filter((c) => c !== playerClub);
 	const shuffled = shuffle(opponents);
 
@@ -29,13 +32,12 @@ export function generatePlayerFixtures(playerClub: string, divisionClubs: readon
 
 	const allGames = [...firstHalf, ...secondHalf];
 
-	const doubleGameWeeks = shuffle(
-		Array.from({ length: 30 }, (_, i) => i)
-	).slice(0, DOUBLE_GAME_WEEKS);
-
-	const gameCounts = Array.from({ length: 30 }, (_, i) =>
-		doubleGameWeeks.includes(i) ? 2 : 1
+	const doubleGameWeeks = shuffle(Array.from({ length: 30 }, (_, i) => i)).slice(
+		0,
+		DOUBLE_GAME_WEEKS
 	);
+
+	const gameCounts = Array.from({ length: 30 }, (_, i) => (doubleGameWeeks.includes(i) ? 2 : 1));
 
 	const fixtures: Fixture[] = [];
 	let gameIndex = 0;

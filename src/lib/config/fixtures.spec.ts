@@ -53,7 +53,10 @@ describe('generatePlayerFixtures', () => {
 		}
 		for (const [opponent, venues] of opponentHome) {
 			expect(venues.filter(Boolean), `${opponent} should have 1 home`).toHaveLength(1);
-			expect(venues.filter((v) => !v), `${opponent} should have 1 away`).toHaveLength(1);
+			expect(
+				venues.filter((v) => !v),
+				`${opponent} should have 1 away`
+			).toHaveLength(1);
 		}
 	});
 

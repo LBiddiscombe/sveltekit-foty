@@ -151,9 +151,7 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 			if (ball.kicked) {
 				if (ball.z >= ft.goal.z && ball.z <= ft.goal.z + 1 && !scored && !saved) {
 					const inFrame =
-						ball.x > -ft.goal.width / 2 &&
-						ball.x < ft.goal.width / 2 &&
-						ball.y <= ft.goal.height;
+						ball.x > -ft.goal.width / 2 && ball.x < ft.goal.width / 2 && ball.y <= ft.goal.height;
 
 					if (inFrame && ft.goalieSaveCheck(ball.x, ball.y, ball.radius)) {
 						ball.vx *= 0.5;
@@ -227,7 +225,8 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 		function drawGhostBall() {
 			if (ball.kicked || outcome) return;
 
-			const ghostWorldX = (GHOST_SCREEN_X - p.width / 2) / (ft.camera.focalLength / (ball.z - ft.camera.z));
+			const ghostWorldX =
+				(GHOST_SCREEN_X - p.width / 2) / (ft.camera.focalLength / (ball.z - ft.camera.z));
 			const ghost = ft.project(ghostWorldX, ball.y, ball.z);
 			const real = ft.project(ball.x, ball.y, ball.z);
 
@@ -236,7 +235,12 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 			const ghostShadow = ft.project(ghostWorldX, 0, ball.z);
 			p.noStroke();
 			p.fill(0, 30);
-			p.ellipse(ghostShadow.x, ghostShadow.y, ball.radius * 2 * ghostShadow.scale, ball.radius * ghostShadow.scale * 0.8);
+			p.ellipse(
+				ghostShadow.x,
+				ghostShadow.y,
+				ball.radius * 2 * ghostShadow.scale,
+				ball.radius * ghostShadow.scale * 0.8
+			);
 
 			const dia = ball.radius * 2 * ghost.scale;
 			p.noStroke();

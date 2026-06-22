@@ -23,7 +23,6 @@
 	const currentFixture = $derived(unplayedFixtures[currentIndex]);
 	const nextChances = $derived(player.deck[currentIndex] ?? 1);
 	const allChosen = $derived(intents.length === unplayedFixtures.length);
-	const remainingCount = $derived(unplayedFixtures.length - currentIndex);
 
 	function handleChoice(skipped: boolean) {
 		const fixture = currentFixture;
@@ -43,14 +42,37 @@
 <div class="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-8 px-4">
 	<h2 class="font-pixel text-sm text-primary">Pre-Match</h2>
 
-	{#if !allChosen && currentFixture}
+	<p class="font-pixel text-xs text-subtle">Cards remaining: {player.deck.length}</p>
+
+	{#if player.deck.length === 0}
+		<Card>
+			<div class="flex flex-col items-center gap-2 py-4 text-center">
+				<span class="font-pixel text-sm text-subtle">
+					No cards in your deck — all matches this week will be simulated.
+				</span>
+				<span class="font-pixel text-xs text-subtle">Visit the Shop between weeks to buy more.</span
+				>
+			</div>
+		</Card>
+
+		<Button
+			onclick={() => {
+				intents = unplayedFixtures.map((f) => ({ fixture: f, skipped: true }));
+				match.setGames(intents);
+				goto('/match');
+			}}
+		>
+			Continue
+		</Button>
+	{:else if !allChosen && currentFixture}
 		<p class="font-pixel text-xs text-subtle">
 			Game {currentIndex + 1} of {unplayedFixtures.length}
 		</p>
 
 		<Card>
 			<div class="flex flex-col items-center gap-1 py-2 text-center">
-				<span class="font-pixel text-xs text-subtle">{currentFixture.isHome ? 'HOME' : 'AWAY'}</span>
+				<span class="font-pixel text-xs text-subtle">{currentFixture.isHome ? 'HOME' : 'AWAY'}</span
+				>
 				<span class="font-pixel text-lg text-primary">{currentFixture.opponent}</span>
 			</div>
 		</Card>

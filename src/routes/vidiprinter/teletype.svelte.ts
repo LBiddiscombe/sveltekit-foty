@@ -35,11 +35,14 @@ export function createTeletype(lines: string[], config: TeletypeConfig) {
 			if (currentCharInLine >= text.length) {
 				lineDone = true;
 				clearInterval(timer);
-				setTimeout(() => {
-					currentLine++;
-					currentCharInLine = 0;
-					lineDone = false;
-				}, config.linePause * (speed / config.charSpeed));
+				setTimeout(
+					() => {
+						currentLine++;
+						currentCharInLine = 0;
+						lineDone = false;
+					},
+					config.linePause * (speed / config.charSpeed)
+				);
 			}
 		}, s);
 

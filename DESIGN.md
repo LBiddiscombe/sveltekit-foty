@@ -150,6 +150,18 @@ Double-game weeks are randomly allocated across the season. Not visible in advan
 
 ## 16. Delivery Plan
 
+| Cycle                            | Status                                                |
+| -------------------------------- | ----------------------------------------------------- |
+| 1 — Clickthrough Mock            | ✅ Complete                                           |
+| 2 — Goal Card Engine             | ✅ Complete                                           |
+| 3 — Vidiprinter + Incident Cards | ✅ Complete                                           |
+| 4 — Volley Mini-Game             | ✅ Complete                                           |
+| 5 — Penalty Mini-Game            | ✅ Complete                                           |
+| 6 — League Table + Progression   | ⬜ Not started                                        |
+| 7 — Transfers                    | ⬜ Not started                                        |
+| 8 — Season Loop + Save System    | 🔄 Partial (auto-save done, manual save/load pending) |
+| 9+ — Stretch Goals               | ⬜ Not started                                        |
+
 ### Cycle 1: Clickthrough Mock
 
 **Goal:** Full SvelteKit SPA with all routes navigable, visual identity locked, no real logic.
@@ -273,17 +285,26 @@ AWAY
 
 ### Cycle 2: Goal Card Engine
 
-**Goal:** Real deck, shop, play/skip logic. Match placeholder updated to show per-chance outcome buttons (goal/miss/saved).
+**Goal:** Real deck, shop, play/skip logic. Per-chance minigame outcomes.
 
-### Cycle 3: Vidiprinter Scores + Incident Cards
+**Detail:**
+
+- **Deck:** 10 starting cards, each 1-3 chances (equal weight), hidden (only top card visible). Deck always hidden — no full inspection.
+- **Shop:** Buy goal cards (£100 each) — buy button stays visible, tap repeatedly. Deck count displayed. Incident cards also purchasable (£200). Transfer cards deferred to Cycle 7.
+- **Play/Skip:** Pre-match shows fixture + next deck card. Play consumes card, runs minigames; Skip pushes card to bottom of deck. Double-game weeks: decision per game.
+- **Empty deck:** All games forced to sim. Pre-match shows informational message, single Continue button.
+- **Match:** Real P5.js volley & penalty minigames per chance (70% volley / 30% penalty). Outcome overlay after each chance. Result summary → vidiprinter.
+- **Weekly wage:** £200 paid each week on hub arrival, making the shop economy sustainable long-term.
+
+### Cycle 3: Vidiprinter Scores + Incident Cards ✅
 
 **Goal:** Real vidiprinter with live league scores. Real incident card spinning wheel with outcomes.
 
-### Cycle 4: Volley Mini-Game
+### Cycle 4: Volley Mini-Game ✅
 
 **Goal:** First real P5.js mini-game — hold-and-release volley mechanic.
 
-### Cycle 5: Penalty Mini-Game
+### Cycle 5: Penalty Mini-Game ✅
 
 **Goal:** Second real P5.js mini-game — swipe-based penalty mechanic.
 
