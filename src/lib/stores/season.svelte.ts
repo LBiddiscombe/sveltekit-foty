@@ -9,6 +9,18 @@ function createSeason() {
 	let phase = $state<Phase>('hub');
 	let morale = $state(MORALE_CONFIG.scale.start);
 
+	function advanceWeek() {
+		weekNumber = Math.min(weekNumber + 1, 30);
+	}
+
+	function recordGamesPlayed(n: number) {
+		gamesPlayed += n;
+	}
+
+	function adjustMorale(delta: number) {
+		morale = MORALE_CONFIG.adjustMorale(morale, delta);
+	}
+
 	return {
 		get weekNumber() {
 			return weekNumber;
@@ -45,7 +57,10 @@ function createSeason() {
 		},
 		set morale(v: number) {
 			morale = v;
-		}
+		},
+		advanceWeek,
+		recordGamesPlayed,
+		adjustMorale
 	};
 }
 

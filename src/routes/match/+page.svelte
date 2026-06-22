@@ -8,7 +8,7 @@
 	import { createPenaltySketch } from '$lib/components/minigames/PenaltySketch';
 	import { createVolleySketch } from '$lib/components/minigames/VolleySketch';
 	import type { Outcome } from '$lib/types/game';
-	import { MORALE_CONFIG } from '$lib/config/morale';
+	import { playGame, skipGame, getMoraleDelta, consumeDeck, START_MORALE } from '$lib/match/engine';
 
 	type GameType = 'penalty' | 'volley';
 
@@ -28,27 +28,20 @@
 		return Math.random() < 0.3 ? 'penalty' : 'volley';
 	}
 
-	function updateMorale(score: [number, number], goals: number) {
-		const [us, them] = score;
-		const result = us > them ? 'win' : us === them ? 'draw' : 'loss';
-		let delta = MORALE_CONFIG.deltas[result];
-		if (goals >= 2) delta = MORALE_CONFIG.deltas.twoGoalBonus;
-		season.morale = MORALE_CONFIG.adjustMorale(season.morale, delta);
-	}
-
-	function recordMatchStats(goals: number) {
+	function recordPlayerStats(goals: number) {
+		player.recordAppearance();
 		if (goals > 0) {
-			player.appearances++;
-			player.goals += goals;
+			player.addGoals(goals);
 		}
 	}
 
 	function finishCurrentGame() {
 		const res = match.result!;
-		const goalsScored = res.outcomes.filter((o) => o === 'goal').length;
-		updateMorale(res.score, goalsScored);
-		recordMatchStats(goalsScored);
-		match.nextGame(season.morale);
+		const playerGoals = res.outcomes.filter((o) => o === 'goal').length;
+		season.adjustMorale(getMoraleDelta(res.score, playerGoals));
+		recordPlayerStats(playerGoals);
+		match.saveFixtureResult();
+		match.advance();
 
 		if (match.batchDone) {
 			goto('/vidiprinter');
@@ -64,10 +57,16 @@
 		currentOutcomeText = null;
 
 		const game = match.pendingGames[match.currentGameIndex];
-		if (game?.skipped) {
-			match.consumeDeck(true);
+		if (!game) return;
+
+		const chances = player.deck[0] ?? 1;
+
+		if (game.skipped) {
+			consumeDeck(player.deck, true);
+			match.setResult(skipGame(chances, START_MORALE));
 			finishCurrentGame();
 		} else {
+			match.start(chances);
 			step = 'playing';
 		}
 	}
@@ -95,7 +94,10 @@
 				currentChance++;
 				gameType = pickGameType();
 			} else {
-				match.consumeDeck(false);
+				const chances = match.totalChances;
+				const outcomes = match.pendingOutcomes;
+				consumeDeck(player.deck, false);
+				match.setResult(playGame(chances, START_MORALE, outcomes));
 				finishCurrentGame();
 			}
 		}, 1500);

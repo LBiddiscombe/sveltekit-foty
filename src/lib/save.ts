@@ -3,9 +3,56 @@ import { season } from '$lib/stores/season.svelte';
 import { inbox } from '$lib/stores/inbox.svelte';
 import { match } from '$lib/stores/match.svelte';
 import type { Fixture, InboxItem, MatchResult } from '$lib/types/game';
-import { browser } from '$app/environment';
 
 const SAVE_KEY = 'foty-save';
+
+export interface SaveAdapter {
+	getItem(key: string): string | null;
+	setItem(key: string, value: string): void;
+	removeItem(key: string): void;
+}
+
+export const localStorageAdapter: SaveAdapter = {
+	getItem(key: string): string | null {
+		if (typeof localStorage === 'undefined') return null;
+		try {
+			return localStorage.getItem(key);
+		} catch {
+			return null;
+		}
+	},
+	setItem(key: string, value: string): void {
+		if (typeof localStorage === 'undefined') return;
+		try {
+			localStorage.setItem(key, value);
+		} catch {
+			// storage full or unavailable — silently degrade
+		}
+	},
+	removeItem(key: string): void {
+		if (typeof localStorage === 'undefined') return;
+		try {
+			localStorage.removeItem(key);
+		} catch {
+			// silently degrade
+		}
+	}
+};
+
+export function createInMemoryAdapter(): SaveAdapter {
+	const store = new Map<string, string>();
+	return {
+		getItem(key: string): string | null {
+			return store.get(key) ?? null;
+		},
+		setItem(key: string, value: string): void {
+			store.set(key, value);
+		},
+		removeItem(key: string): void {
+			store.delete(key);
+		}
+	};
+}
 
 interface SaveState {
 	player: {
@@ -31,7 +78,7 @@ interface SaveState {
 	matchResult: MatchResult | null;
 }
 
-export function saveGame(): void {
+export function saveGame(adapter: SaveAdapter = localStorageAdapter): void {
 	if (!season.fixtures || season.fixtures.length === 0) return;
 	const state: SaveState = {
 		player: {
@@ -58,22 +105,21 @@ export function saveGame(): void {
 	};
 
 	try {
-		localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+		adapter.setItem(SAVE_KEY, JSON.stringify(state));
 	} catch {
-		// storage full or unavailable — silently degrade
+		// silently degrade
 	}
 }
 
-export function loadGame(): boolean {
-	if (!browser) return false;
-	const raw = localStorage.getItem(SAVE_KEY);
+export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
+	const raw = adapter.getItem(SAVE_KEY);
 	if (!raw) return false;
 
 	try {
 		const state: SaveState = JSON.parse(raw);
 
 		if (!state.season.fixtures || state.season.fixtures.length === 0) {
-			localStorage.removeItem(SAVE_KEY);
+			adapter.removeItem(SAVE_KEY);
 			return false;
 		}
 
@@ -100,17 +146,15 @@ export function loadGame(): boolean {
 
 		return true;
 	} catch {
-		localStorage.removeItem(SAVE_KEY);
+		adapter.removeItem(SAVE_KEY);
 		return false;
 	}
 }
 
-export function hasSavedGame(): boolean {
-	if (!browser) return false;
-	return localStorage.getItem(SAVE_KEY) !== null;
+export function hasSavedGame(adapter: SaveAdapter = localStorageAdapter): boolean {
+	return adapter.getItem(SAVE_KEY) !== null;
 }
 
-export function clearSave(): void {
-	if (!browser) return;
-	localStorage.removeItem(SAVE_KEY);
+export function clearSave(adapter: SaveAdapter = localStorageAdapter): void {
+	adapter.removeItem(SAVE_KEY);
 }

@@ -66,11 +66,11 @@
 	function applyEffects(outcome: IncidentOutcome) {
 		for (const effect of outcome.effects) {
 			if (effect.type === 'bankBalance') {
-				player.bankBalance += effect.delta;
+				player.adjustBalance(effect.delta);
 			} else if (effect.type === 'morale') {
-				season.morale = Math.max(1, Math.min(10, season.morale + effect.delta));
+				season.adjustMorale(effect.delta);
 			} else if (effect.type === 'stat' && effect.key) {
-				player.stats[effect.key] += effect.delta;
+				player.adjustStat(effect.key, effect.delta);
 			}
 		}
 	}

@@ -120,25 +120,17 @@
 	<div class="mt-auto pt-4 {tty.done ? '' : 'invisible'}">
 		<Button
 			onclick={async () => {
-				season.gamesPlayed += weekFixtures.length;
-				season.weekNumber = Math.min(season.weekNumber + 1, 30);
+				season.recordGamesPlayed(weekFixtures.length);
+				season.advanceWeek();
 				inbox.clearActioned();
 				const hasIncident = Math.random() < 0.25;
 				if (hasIncident) {
 					const card = pickRandomIncident();
-					const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
-					inbox.items = [
-						...inbox.items,
-						{
-							id: nextId,
-							type: 'incident',
-							subject: card.title,
-							body: card.description,
-							actionRequired: true,
-							actioned: false,
-							incidentCardId: card.id
-						}
-					];
+					inbox.addIncident({
+						subject: card.title,
+						body: card.description,
+						incidentCardId: card.id
+					});
 					await goto(resolve('/hub/inbox'));
 				} else {
 					await goto(resolve('/hub'));

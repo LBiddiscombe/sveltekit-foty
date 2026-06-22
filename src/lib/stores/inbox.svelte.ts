@@ -13,6 +13,22 @@ function createInbox() {
 
 	const unreadCount = $derived(items.filter((i) => !i.actioned).length);
 
+	function addIncident(card: { subject: string; body: string; incidentCardId: string }) {
+		const nextId = Math.max(0, ...items.map((i) => i.id)) + 1;
+		items = [
+			...items,
+			{
+				id: nextId,
+				type: 'incident' as const,
+				subject: card.subject,
+				body: card.body,
+				actionRequired: true,
+				actioned: false,
+				incidentCardId: card.incidentCardId
+			}
+		];
+	}
+
 	function init(club: string) {
 		items = [
 			{
@@ -46,6 +62,7 @@ function createInbox() {
 		},
 		markRead,
 		clearActioned,
+		addIncident,
 		init
 	};
 }

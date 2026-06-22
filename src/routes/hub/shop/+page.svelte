@@ -17,24 +17,16 @@
 
 	function buy(type: keyof typeof PRICES) {
 		if (player.bankBalance < PRICES[type]) return;
-		player.bankBalance -= PRICES[type];
+		player.adjustBalance(-PRICES[type]);
 		if (type === 'goalCard') {
-			player.deck.push(Math.floor(Math.random() * 3) + 1);
+			player.addToDeck(Math.floor(Math.random() * 3) + 1);
 		} else if (type === 'incidentCard') {
 			const card = pickRandomIncident();
-			const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
-			inbox.items = [
-				...inbox.items,
-				{
-					id: nextId,
-					type: 'incident',
-					subject: card.title,
-					body: card.description,
-					actionRequired: true,
-					actioned: false,
-					incidentCardId: card.id
-				}
-			];
+			inbox.addIncident({
+				subject: card.title,
+				body: card.description,
+				incidentCardId: card.id
+			});
 			showInboxHint = true;
 		}
 		bought = { ...bought, [type]: true };

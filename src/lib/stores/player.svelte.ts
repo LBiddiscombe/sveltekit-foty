@@ -17,6 +17,38 @@ function createPlayer() {
 	let division = $state(4);
 	let deck = $state<number[]>(randomDeck(10));
 
+	function adjustBalance(delta: number) {
+		bankBalance += delta;
+	}
+
+	function addToDeck(card: number) {
+		deck.push(card);
+	}
+
+	function peekDeck(): number {
+		return deck[0] ?? 1;
+	}
+
+	function drawFromDeck(): number | undefined {
+		return deck.shift();
+	}
+
+	function returnToDeck(card: number) {
+		deck.push(card);
+	}
+
+	function addGoals(n: number) {
+		goals += n;
+	}
+
+	function recordAppearance() {
+		appearances++;
+	}
+
+	function adjustStat(key: keyof PlayerStats, delta: number) {
+		stats[key] += delta;
+	}
+
 	return {
 		get name() {
 			return name;
@@ -80,7 +112,15 @@ function createPlayer() {
 		},
 		set deck(v: number[]) {
 			deck = v;
-		}
+		},
+		adjustBalance,
+		addToDeck,
+		peekDeck,
+		drawFromDeck,
+		returnToDeck,
+		addGoals,
+		recordAppearance,
+		adjustStat
 	};
 }
 

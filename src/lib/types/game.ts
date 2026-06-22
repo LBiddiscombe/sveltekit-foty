@@ -43,10 +43,6 @@ export interface Season {
 	morale: number;
 }
 
-export interface TeamClub {
-	name: string;
-}
-
 export type Outcome = 'goal' | 'saved' | 'miss' | 'off-target';
 
 export type MinigameSketch = (p: import('p5').default, width: number, height: number) => void;
