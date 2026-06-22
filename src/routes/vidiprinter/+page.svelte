@@ -122,6 +122,7 @@
 			onclick={async () => {
 				season.gamesPlayed += weekFixtures.length;
 				season.weekNumber = Math.min(season.weekNumber + 1, 30);
+				inbox.clearActioned();
 				const hasIncident = Math.random() < 0.25;
 				if (hasIncident) {
 					const card = pickRandomIncident();

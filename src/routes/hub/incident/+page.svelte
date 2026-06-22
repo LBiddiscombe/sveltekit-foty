@@ -9,9 +9,9 @@
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 
-	const incidentId = $derived($page.url.searchParams.get('id'));
-	const card = $derived(incidentCardById(incidentId ?? ''));
-	const item = $derived(inbox.items.find((i) => i.incidentCardId === incidentId));
+	const inboxId = $derived(Number($page.url.searchParams.get('inboxId')));
+	const item = $derived(inbox.items.find((i) => i.id === inboxId));
+	const card = $derived(item?.incidentCardId ? incidentCardById(item.incidentCardId) : undefined);
 
 	type TickerState = 'spinning' | 'decelerating' | 'stopped';
 

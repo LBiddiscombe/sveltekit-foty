@@ -13,16 +13,18 @@
 	$effect(() => {
 		if (!container) return;
 
-		const w = container.clientWidth;
-		const h = container.clientHeight;
+		const raf = requestAnimationFrame(() => {
+			const w = container.clientWidth;
+			const h = container.clientHeight;
+			if (w === 0 || h === 0) return;
 
-		if (w === 0 || h === 0) return;
-
-		instance = new p5((p: p5) => {
-			sketch(p, w, h);
-		}, container);
+			instance = new p5((p: p5) => {
+				sketch(p, w, h);
+			}, container);
+		});
 
 		return () => {
+			cancelAnimationFrame(raf);
 			instance?.remove();
 			instance = null;
 		};

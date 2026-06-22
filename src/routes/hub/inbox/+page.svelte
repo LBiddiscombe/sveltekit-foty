@@ -28,7 +28,7 @@
 				{#if !item.actioned}
 					{#if item.type === 'incident' && item.incidentCardId}
 						<button
-							onclick={async () => await goto(`/hub/incident?id=${item.incidentCardId}`)}
+							onclick={async () => await goto(`/hub/incident?inboxId=${item.id}`)}
 							class="self-start border border-warning bg-dark px-3 py-1 font-pixel text-xs text-warning transition-colors hover:border-warning hover:text-primary"
 						>
 							Play Card

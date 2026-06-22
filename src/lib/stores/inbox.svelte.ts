@@ -7,6 +7,10 @@ function createInbox() {
 		items = items.map((i) => (i.id === id ? { ...i, actioned: true } : i));
 	}
 
+	function clearActioned() {
+		items = items.filter((i) => !i.actioned);
+	}
+
 	const unreadCount = $derived(items.filter((i) => !i.actioned).length);
 
 	function init(club: string) {
@@ -41,6 +45,7 @@ function createInbox() {
 			return unreadCount;
 		},
 		markRead,
+		clearActioned,
 		init
 	};
 }

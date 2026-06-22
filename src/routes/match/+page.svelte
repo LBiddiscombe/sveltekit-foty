@@ -122,7 +122,7 @@
 				</span>
 			{/if}
 
-			{#key currentChance}
+			{#key `${match.currentGameIndex}-${currentChance}`}
 				<Minigame
 					oncomplete={handleComplete}
 					createSketch={gameType === 'penalty' ? createPenaltySketch : createVolleySketch}
