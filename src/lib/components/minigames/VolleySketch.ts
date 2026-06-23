@@ -14,9 +14,9 @@ const RESET_X_THRESHOLD = 15;
 const GHOST_SCREEN_X = 14;
 const PRE_KICK_SPEED_MULT = 0.2;
 const TRAIL_LENGTH = 40;
-const KICK_VX_MAX = 10;
-const KICK_VY_MAX = 14;
-const KICK_VZ = 20;
+const KICK_VX_MAX = 16;
+const KICK_VY_MAX = 18;
+const KICK_VZ = 25;
 const KICK_RADIUS = 50;
 const GOALIE_DECISIONS = ['read'];
 const MAX_REACTION_DELAY_MS = 800;
@@ -67,6 +67,7 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 			drawTrail();
 			drawGhostBall();
 			ft.drawBall(ball);
+			//ft.drawKickRadius(ball, KICK_RADIUS);
 		};
 
 		p.mousePressed = (): boolean => {
@@ -107,12 +108,9 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 			ball.kicked = true;
 
 			const ballScreen = ft.project(ball.x, ball.y, ball.z);
-			const dx = p.mouseX - ballScreen.x;
-			const dy = p.mouseY - ballScreen.y;
-			const d = Math.hypot(dx, dy) || 1;
-
-			ball.vx = -(dx / d) * KICK_VX_MAX;
-			ball.vy = (dy / d) * KICK_VY_MAX;
+			const aim = ft.computeKickAim(ballScreen, p.mouseX, p.mouseY, KICK_RADIUS, KICK_VX_MAX, KICK_VY_MAX);
+			ball.vx = aim.vx;
+			ball.vy = aim.vy;
 			ball.vz = KICK_VZ;
 
 			const t = ft.goal.z / ball.vz;

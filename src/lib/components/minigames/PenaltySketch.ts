@@ -9,6 +9,8 @@ interface PenaltySketchOptions {
 const GOALIE_DECISIONS = ['read', 'read', 'freeze', 'randcorner'];
 const MAX_REACTION_DELAY_MS = 400;
 const KICK_RADIUS = 50;
+const MAX_VX = 16;
+const MAX_VY = 18;
 const POWER_CYCLE_MS = 600;
 
 interface Ball {
@@ -54,6 +56,7 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 
 			ft.drawGoalie();
 			ft.drawBall(ball);
+			//ft.drawKickRadius(ball, KICK_RADIUS);
 
 			drawPowerBar();
 		};
@@ -104,12 +107,9 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 
 		function kickBall(power: number) {
 			const ballScreen = ft.project(ball.x, ball.y, ball.z);
-			const dx = p.mouseX - ballScreen.x;
-			const dy = p.mouseY - ballScreen.y;
-			const d = Math.hypot(dx, dy) || 1;
-
-			ball.vx = -(dx / d) * p.map(d, 0, 50, 0, 16, true);
-			ball.vy = (dy / d) * p.map(d, 0, 50, 0, 18, true);
+			const aim = ft.computeKickAim(ballScreen, p.mouseX, p.mouseY, KICK_RADIUS, MAX_VX, MAX_VY);
+			ball.vx = aim.vx;
+			ball.vy = aim.vy;
 			ball.vz = 20 * power + 5;
 
 			const t = ft.goal.z / ball.vz;

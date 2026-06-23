@@ -370,13 +370,22 @@ export function createFooty(p) {
 	}
 
 	function goalieCollisionBounds() {
-		if (goalie.diving && Math.abs(goalie.targetX) >= 1.0) {
+		const now = p.millis();
+		if (goalie.diving && Math.abs(goalie.targetX) >= 1.0 && now >= goalie.diveStartTime) {
 			const dir = Math.sign(goalie.targetX) || 1;
+			const diveT = Math.min(Math.max((now - goalie.diveStartTime) / 100, 0), 1);
+
+			const standingLeft = goalie.x - goalie.width / 2;
+			const standingRight = goalie.x + goalie.width / 2;
+
+			const divingLeft = dir >= 0 ? goalie.x : goalie.x - goalie.height;
+			const divingRight = dir >= 0 ? goalie.x + goalie.height : goalie.x;
+
 			return {
-				left: dir >= 0 ? goalie.x : goalie.x - goalie.height,
-				right: dir >= 0 ? goalie.x + goalie.height : goalie.x,
+				left: p.lerp(standingLeft, divingLeft, diveT),
+				right: p.lerp(standingRight, divingRight, diveT),
 				bottom: goalie.y,
-				top: goalie.y + goalie.width
+				top: p.lerp(goalie.y + goalie.height, goalie.y + goalie.width, diveT)
 			};
 		}
 		return {
@@ -418,6 +427,24 @@ export function createFooty(p) {
 			goalie.targetY = 0;
 			goalie.vy = 0;
 		}
+	}
+
+	function computeKickAim(ballScreen, mouseX, mouseY, radius, maxVx, maxVy) {
+		const dx = mouseX - ballScreen.x;
+		const dy = mouseY - ballScreen.y;
+		const d = Math.hypot(dx, dy) || 1;
+		return {
+			vx: -(dx / d) * p.map(d, 0, radius, 0, maxVx, true),
+			vy: (dy / d) * p.map(d, 0, radius, 0, maxVy, true)
+		};
+	}
+
+	function drawKickRadius(ball, radius) {
+		const pt = project(ball.x, ball.y, ball.z);
+		p.noFill();
+		p.stroke(255, 255, 0, 80);
+		p.strokeWeight(1);
+		p.circle(pt.x, pt.y, radius * 2);
 	}
 
 	function drawGoalie() {
@@ -466,6 +493,8 @@ export function createFooty(p) {
 		goalieCollisionBounds,
 		goalieSaveCheck,
 		goalieReact,
-		drawGoalie
+		drawGoalie,
+		drawKickRadius,
+		computeKickAim
 	};
 }

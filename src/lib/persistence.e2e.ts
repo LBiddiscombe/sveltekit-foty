@@ -32,7 +32,7 @@ test.describe('Game persistence', () => {
 					club: `Club${i + 1}`,
 					played: 1, won: 0, drawn: 0, lost: 0,
 					goalsFor: 0, goalsAgainst: 0, goalDifference: 0,
-					points: 0, lastFive: []
+					points: 0, 					lastFive: [] as string[]
 				})),
 				lastProcessedWeek: 1
 			};
