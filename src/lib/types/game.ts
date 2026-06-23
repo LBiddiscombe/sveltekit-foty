@@ -41,7 +41,7 @@ export interface Season {
 	morale: number;
 }
 
-export type Outcome = 'goal' | 'saved' | 'miss' | 'off-target';
+export type Outcome = 'goal' | 'saved' | 'miss';
 
 export type MinigameSketch = (p: import('p5').default, width: number, height: number) => void;
 

@@ -1,14 +1,13 @@
 export const XP_CONFIG = {
-	played: 5,
-	goal: 5,
+	played: 1,
+	goal: 1,
 	saved: 0,
-	miss: -5,
-	offTarget: -5,
+	miss: -1,
 	skipped: 0,
-	win: 5,
-	draw: 2,
+	win: 1,
+	draw: 0,
 	loss: 0,
-	promotion: 50
+	promotion: 10
 } as const;
 
 export type XpConfig = typeof XP_CONFIG;

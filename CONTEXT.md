@@ -72,7 +72,7 @@
 
 **Repeated shop buys** — Shop purchase buttons remain visible and usable after each purchase (no `bought` guard). The player can tap repeatedly to buy multiple items in one visit. A brief "Card added!" flash confirms each purchase.
 
-**Career XP** — Single progression metric replacing the removed stat system. Tracked per event via `XP_CONFIG`: played (+5), goal (+5), saved (0), miss (-5), off-target (-5), skipped (0), win (+5), draw (+2), loss (0), promotion (+50). Capped per division. Unaffected by above-cap matches (can still lose XP at cap for misses).
+**Career XP** — Single progression metric replacing the removed stat system. Tracked per event via `XP_CONFIG`: played (+1), goal (+1), saved (0), miss (-1), skipped (0), win (1), draw (0), loss (0), promotion (+10, conditional on actual promotion). Designed so ~100-125 XP is earnable per season of perfect play (every game played, all chances scored, all wins). Realistic play (~50% match rate, ~0.5 goals/match) yields ~30-35 XP/season. Capped per division. Unaffected by above-cap matches (can still lose XP at cap for misses).
 
 **XP level** — 12 named tiers (Park Kicker → Footballer of the Year), 3 per division. Derived from careerXp. Caps: Div 4 = 100, Div 3 = 200, Div 2 = 350, Div 1 = 500. Interest thresholds for transfers align with division XP minimums. Displayed on Player Status page with progress bar.
 

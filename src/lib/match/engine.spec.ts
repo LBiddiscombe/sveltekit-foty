@@ -15,9 +15,9 @@ describe('playGame', () => {
 	});
 
 	it('preserves outcome order', () => {
-		const outcomes = ['goal', 'saved', 'miss', 'goal', 'off-target'] as const;
+		const outcomes = ['goal', 'saved', 'miss', 'goal', 'miss'] as const;
 		const result = playGame(5, 5, [...outcomes]);
-		expect(result.outcomes).toEqual(['goal', 'saved', 'miss', 'goal', 'off-target']);
+		expect(result.outcomes).toEqual(['goal', 'saved', 'miss', 'goal', 'miss']);
 	});
 
 	it('returns a copy of outcomes array', () => {
@@ -46,7 +46,7 @@ describe('playGame', () => {
 	});
 
 	it('gives rating 5 for 0 player goals', () => {
-		const result = playGame(3, 5, ['miss', 'saved', 'off-target']);
+		const result = playGame(3, 5, ['miss', 'saved', 'miss']);
 		expect(result.rating).toBe(5);
 	});
 

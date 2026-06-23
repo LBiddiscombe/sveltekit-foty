@@ -130,9 +130,9 @@
 		const isLastWeek = season.weekNumber >= 30;
 
 		if (isLastWeek) {
-			const { newDivision } = season.endSeason(PLAYER_CLUB, player.division);
+			const { newDivision, playerInPromoted } = season.endSeason(PLAYER_CLUB, player.division);
 			player.division = newDivision;
-			player.addXp(XP_CONFIG.promotion);
+			if (playerInPromoted) player.addXp(XP_CONFIG.promotion);
 		} else {
 			season.recordGamesPlayed(weekFixtures.length);
 			season.advanceWeek();
