@@ -1,9 +1,5 @@
 import type { Fixture } from '$lib/types/game';
 
-const DOUBLE_GAME_WEEKS = 16;
-const SINGLE_GAME_WEEKS = 14;
-const TOTAL_GAMES = DOUBLE_GAME_WEEKS * 2 + SINGLE_GAME_WEEKS; // 46
-
 function shuffle<T>(arr: T[]): T[] {
 	const a = [...arr];
 	for (let i = a.length - 1; i > 0; i--) {
@@ -15,7 +11,7 @@ function shuffle<T>(arr: T[]): T[] {
 
 export function generatePlayerFixtures(
 	playerClub: string,
-	divisionClubs: readonly string[]
+	divisionClubs: string[]
 ): Fixture[] {
 	const opponents = divisionClubs.filter((c) => c !== playerClub);
 	const shuffled = shuffle(opponents);
@@ -32,10 +28,12 @@ export function generatePlayerFixtures(
 
 	const allGames = [...firstHalf, ...secondHalf];
 
-	const doubleGameWeeks = shuffle(Array.from({ length: 30 }, (_, i) => i)).slice(
-		0,
-		DOUBLE_GAME_WEEKS
-	);
+	const n = divisionClubs.length;
+	const isDiv1 = n <= 20;
+	const doubleCount = isDiv1 ? 8 : 16;
+	const totalGames = allGames.length;
+
+	const doubleGameWeeks = shuffle(Array.from({ length: 30 }, (_, i) => i)).slice(0, doubleCount);
 
 	const gameCounts = Array.from({ length: 30 }, (_, i) => (doubleGameWeeks.includes(i) ? 2 : 1));
 
@@ -43,6 +41,7 @@ export function generatePlayerFixtures(
 	let gameIndex = 0;
 	for (let week = 0; week < 30; week++) {
 		for (let g = 0; g < gameCounts[week]; g++) {
+			if (gameIndex >= allGames.length) break;
 			const game = allGames[gameIndex];
 			fixtures.push({
 				opponent: game.opponent,

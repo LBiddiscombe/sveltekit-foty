@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { player } from '$lib/stores/player.svelte';
+	import { getLevel, getNextLevelXp } from '$lib/config/levels';
 	import Card from '$lib/components/Card.svelte';
 
-	const statLabels: Record<string, string> = {
-		power: 'Power',
-		accuracy: 'Accuracy',
-		technique: 'Technique',
-		athleticism: 'Athleticism'
-	};
+	const level = $derived(getLevel(player.careerXp));
+	const nextXp = $derived(getNextLevelXp(player.careerXp));
+	const currentLevelXp = $derived(level.minXp);
+
+	const xpProgress = $derived(
+		nextXp !== null && nextXp > currentLevelXp
+			? ((player.careerXp - currentLevelXp) / (nextXp - currentLevelXp)) * 100
+			: 100
+	);
 </script>
 
 <div class="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
@@ -40,23 +44,21 @@
 	</Card>
 
 	<Card>
-		<h4 class="mb-3 font-pixel text-xs text-primary">Stats</h4>
-		<div class="flex flex-col gap-3">
-			{#each Object.entries(statLabels) as [key, label] (key)}
-				<div class="flex items-center gap-3">
-					<span class="w-24 shrink-0 font-pixel text-xs text-subtle">{label}</span>
-					<div class="h-3 flex-1 overflow-hidden rounded-full bg-dark">
-						<div
-							class="h-full rounded-full transition-all"
-							style="width: {player.stats[key as keyof typeof player.stats] *
-								10}%; background-color: #4ade80"
-						></div>
-					</div>
-					<span class="w-6 text-right font-pixel text-xs text-primary">
-						{player.stats[key as keyof typeof player.stats]}
-					</span>
-				</div>
-			{/each}
+		<h4 class="mb-3 font-pixel text-xs text-primary">Level</h4>
+		<p class="font-pixel text-sm text-success">{level.title}</p>
+		<div class="mt-2 h-3 overflow-hidden rounded-full bg-dark">
+			<div
+				class="h-full rounded-full bg-success transition-all"
+				style="width: {Math.min(xpProgress, 100)}%"
+			></div>
+		</div>
+		<div class="mt-1 flex justify-between font-pixel text-[10px] text-subtle">
+			<span>XP: {player.careerXp}</span>
+			{#if nextXp !== null}
+				<span>Next: {nextXp}</span>
+			{:else}
+				<span>MAX</span>
+			{/if}
 		</div>
 	</Card>
 
@@ -75,4 +77,23 @@
 			<p class="font-pixel text-xs text-subtle">Weekly wage: £{player.wage}</p>
 		</div>
 	</Card>
+
+	{#if player.matchXpHistory.length > 0}
+		<Card>
+			<h4 class="mb-2 font-pixel text-xs text-primary">Recent Form (XP)</h4>
+			<div class="flex gap-2 font-pixel text-xs">
+				{#each player.matchXpHistory as xp, i}
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded {xp >= 10
+							? 'bg-success text-dark'
+							: xp >= 5
+								? 'bg-warning text-dark'
+								: 'bg-danger text-dark'}"
+					>
+						{xp}
+					</div>
+				{/each}
+			</div>
+		</Card>
+	{/if}
 </div>

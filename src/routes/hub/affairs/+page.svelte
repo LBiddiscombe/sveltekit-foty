@@ -2,14 +2,26 @@
 	import { goto } from '$app/navigation';
 	import { season } from '$lib/stores/season.svelte';
 	import { player } from '$lib/stores/player.svelte';
-	import Card from '$lib/components/Card.svelte';
+	import { standings } from '$lib/stores/standings.svelte';
 	import { MORALE_CONFIG } from '$lib/config/morale';
+	import { getLevel } from '$lib/config/levels';
+	import Card from '$lib/components/Card.svelte';
 
 	const moraleBar = $derived(
 		((season.morale - MORALE_CONFIG.scale.min) /
 			(MORALE_CONFIG.scale.max - MORALE_CONFIG.scale.min)) *
 			100
 	);
+
+	const playerClubEntry = $derived(standings.getByClub(player.club));
+	const playerPosition = $derived(standings.getPosition(player.club));
+	const playerLevel = $derived(getLevel(player.careerXp));
+
+	function formClass(r: string): string {
+		if (r === 'W') return 'text-success';
+		if (r === 'D') return 'text-warning';
+		return 'text-danger';
+	}
 </script>
 
 <div class="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
@@ -55,21 +67,55 @@
 		</div>
 	</Card>
 
-	<Card>
-		<div class="grid grid-cols-2 gap-4 text-center">
-			<div>
-				<p class="font-pixel text-lg text-primary">{player.goals}</p>
-				<p class="font-pixel text-xs text-subtle">Goals scored</p>
+	{#if playerClubEntry}
+		<Card>
+			<h4 class="mb-2 font-pixel text-xs text-primary">League Standings</h4>
+			<div class="mb-3 rounded border border-subtle bg-dark p-2">
+				<div class="flex items-center gap-2 font-pixel text-xs">
+					<span class="w-6 text-center text-warning">#{playerPosition}</span>
+					<span class="flex-1 text-primary">{player.club}</span>
+					<span class="w-6 text-center text-subtle">{playerClubEntry.played}</span>
+					<span class="w-6 text-center text-subtle">{playerClubEntry.won}</span>
+					<span class="w-6 text-center text-subtle">{playerClubEntry.drawn}</span>
+					<span class="w-6 text-center text-subtle">{playerClubEntry.lost}</span>
+					<span class="w-6 text-center text-subtle">{playerClubEntry.goalsFor}</span>
+					<span class="w-6 text-center text-subtle">{playerClubEntry.goalsAgainst}</span>
+					<span class="w-6 text-center text-subtle">{playerClubEntry.goalDifference}</span>
+					<span class="w-8 text-center font-bold text-primary">{playerClubEntry.points}</span>
+				</div>
+				<div class="mt-1 flex gap-1 font-pixel text-[10px]">
+					{#each playerClubEntry.lastFive as r}
+						<span class={formClass(r)}>{r}</span>
+					{/each}
+				</div>
 			</div>
-			<div>
-				<p class="font-pixel text-lg text-primary">{player.appearances}</p>
-				<p class="font-pixel text-xs text-subtle">Appearances</p>
+
+			<div class="flex flex-col gap-0.5">
+				<div class="flex items-center gap-2 font-pixel text-[10px] text-subtle">
+					<span class="w-6 text-center">Pos</span>
+					<span class="flex-1">Club</span>
+					<span class="w-6 text-center">P</span>
+					<span class="w-8 text-center">Pts</span>
+				</div>
+				{#each standings.entries as entry, i}
+					<div
+						class="flex items-center gap-2 font-pixel text-[10px] {entry.club === player.club
+							? 'text-primary bg-dark rounded px-0 py-0.5'
+							: 'text-subtle'}"
+					>
+						<span class="w-6 text-center">{i + 1}</span>
+						<span class="flex-1 truncate">{entry.club}</span>
+						<span class="w-6 text-center">{entry.played}</span>
+						<span class="w-8 text-center font-bold">{entry.points}</span>
+					</div>
+				{/each}
 			</div>
-		</div>
-	</Card>
+		</Card>
+	{/if}
 
 	<Card>
-		<p class="font-pixel text-xs text-subtle">Games played: {season.gamesPlayed}</p>
-		<p class="mt-1 font-pixel text-xs text-subtle">League position: — (fixtures placeholder)</p>
+		<h4 class="mb-2 font-pixel text-xs text-primary">Player Progression</h4>
+		<p class="font-pixel text-xs text-subtle">Current level: {playerLevel.title}</p>
+		<p class="font-pixel text-xs text-subtle">Total XP: {player.careerXp}</p>
 	</Card>
 </div>

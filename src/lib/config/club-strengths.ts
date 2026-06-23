@@ -1,0 +1,112 @@
+import { ALL_CLUBS } from './clubs';
+
+function strengthForClub(club: string): number {
+	const map: Record<string, number> = {
+		'Man Citeh': 10,
+		'Man Untied': 9,
+		Liverpoool: 9,
+		Chelsee: 8,
+		Arsenul: 8,
+		Spurs: 8,
+		Viller: 7,
+		Newcassel: 7,
+		Forrist: 7,
+		Bryton: 6,
+		Lestur: 6,
+		Rexham: 6,
+		'West Ham': 6,
+		Boro: 5,
+		Woolvz: 5,
+		Saynts: 5,
+		'West Brom': 5,
+		Blackbirn: 5,
+		'Sheff Yoonited': 5,
+		York: 5,
+		Bornmuth: 5,
+		Brentfurd: 5,
+		Coventry: 5,
+		Pallace: 5,
+		Evarton: 5,
+		Fullum: 5,
+		Hull: 5,
+		Ipswitch: 5,
+		Leeds: 5,
+		Sunderlun: 5,
+		Norrich: 5,
+		'Cue Pee Arr': 5,
+		Stoak: 5,
+		'Bristol City': 5,
+		Swanzee: 5,
+		Wattfud: 5,
+		Cardif: 5,
+		'Sheff Wensday': 5,
+		Wickham: 5,
+		Birmingum: 4,
+		Burnlee: 4,
+		Darbee: 4,
+		Millwol: 4,
+		Pompee: 4,
+		Prestun: 4,
+		Boltun: 4,
+		Charltun: 4,
+		Linkun: 4,
+		Chesterfeeld: 4,
+		Rotherum: 4,
+		Blackpool: 4,
+		Huddersfeeld: 4,
+		Stockport: 4,
+		Wimbledon: 4,
+		Peterbura: 4,
+		Redding: 4,
+		Bradfud: 3,
+		Barnslee: 3,
+		Burtun: 3,
+		Doncaster: 3,
+		Oxfud: 3,
+		Plimuth: 3,
+		Wiggun: 3,
+		Looton: 3,
+		Mansfeeld: 3,
+		'Notts County': 3,
+		Orient: 3,
+		'Em Kay Dons': 3,
+		Stevenij: 3,
+		Bromlee: 3,
+		Caimbridge: 3,
+		'Port Vayle': 3,
+		Walsawl: 3,
+		Grimzbee: 3,
+		Tranmere: 3,
+		Shroosbury: 3,
+		Northamptun: 3,
+		'Bristol Rovers': 3,
+		Fleetwud: 3,
+		Swindun: 3,
+		Salfud: 3,
+		Colchestur: 3,
+		Oldum: 3,
+		Newport: 2,
+		Rochdayle: 2,
+		Croo: 2,
+		Barnett: 2,
+		Cheltnum: 2,
+		Ackrington: 2,
+		Crawlee: 2,
+		Exetur: 2,
+		Gillingham: 1
+	};
+
+	const s = map[club];
+	if (s !== undefined) return s;
+
+	const clubData = ALL_CLUBS.find((c) => c.name === club);
+	if (!clubData) return 5;
+
+	const baseByDivision: Record<number, number> = { 1: 6, 2: 5, 3: 4, 4: 3 };
+	return baseByDivision[clubData.division] ?? 5;
+}
+
+export const CLUB_STRENGTHS: Record<string, number> = {};
+for (const club of ALL_CLUBS) {
+	CLUB_STRENGTHS[club.name] = strengthForClub(club.name);
+}

@@ -2,9 +2,11 @@ import { player } from '$lib/stores/player.svelte';
 import { season } from '$lib/stores/season.svelte';
 import { inbox } from '$lib/stores/inbox.svelte';
 import { match } from '$lib/stores/match.svelte';
-import type { Fixture, InboxItem, MatchResult } from '$lib/types/game';
+import { standings } from '$lib/stores/standings.svelte';
+import type { DivisionSchedule, Fixture, InboxItem, MatchResult, Standing } from '$lib/types/game';
 
 const SAVE_KEY = 'foty-save';
+const SAVE_BACKUP_KEY = 'foty-save-backup';
 
 export interface SaveAdapter {
 	getItem(key: string): string | null;
@@ -65,21 +67,36 @@ interface SaveState {
 		club: string;
 		division: number;
 		deck: number[];
+		careerXp: number;
+		matchXpHistory: number[];
 	};
 	season: {
 		weekNumber: number;
 		seasonNumber: number;
 		fixtures: Fixture[];
+		divisionSchedule: DivisionSchedule;
 		gamesPlayed: number;
 		phase: string;
 		morale: number;
+		lastWageWeek: number;
 	};
 	inboxItems: InboxItem[];
 	matchResult: MatchResult | null;
+	standings: Standing[];
+	lastProcessedWeek: number;
 }
 
-export function saveGame(adapter: SaveAdapter = localStorageAdapter): void {
-	if (!season.fixtures || season.fixtures.length === 0) return;
+function hasValidState(): boolean {
+	return (
+		player.club !== 'Free Agent' &&
+		player.club !== '' &&
+		season.fixtures.length > 0
+	);
+}
+
+export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
+	if (!hasValidState()) return false;
+
 	const state: SaveState = {
 		player: {
 			name: player.name,
@@ -90,24 +107,31 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): void {
 			appearances: player.appearances,
 			club: player.club,
 			division: player.division,
-			deck: [...player.deck]
+			deck: [...player.deck],
+			careerXp: player.careerXp,
+			matchXpHistory: [...player.matchXpHistory]
 		},
 		season: {
 			weekNumber: season.weekNumber,
 			seasonNumber: season.seasonNumber,
 			fixtures: JSON.parse(JSON.stringify(season.fixtures)),
+			divisionSchedule: JSON.parse(JSON.stringify(season.divisionSchedule)),
 			gamesPlayed: season.gamesPlayed,
 			phase: season.phase,
-			morale: season.morale
+			morale: season.morale,
+			lastWageWeek: season.lastWageWeek
 		},
 		inboxItems: JSON.parse(JSON.stringify(inbox.items)),
-		matchResult: match.result ? JSON.parse(JSON.stringify(match.result)) : null
+		matchResult: match.result ? JSON.parse(JSON.stringify(match.result)) : null,
+		standings: JSON.parse(JSON.stringify(standings.entries)),
+		lastProcessedWeek: standings.lastProcessedWeek
 	};
 
 	try {
 		adapter.setItem(SAVE_KEY, JSON.stringify(state));
+		return true;
 	} catch {
-		// silently degrade
+		return false;
 	}
 }
 
@@ -115,14 +139,25 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 	const raw = adapter.getItem(SAVE_KEY);
 	if (!raw) return false;
 
+	let state: SaveState;
 	try {
-		const state: SaveState = JSON.parse(raw);
+		state = JSON.parse(raw);
+	} catch {
+		backupAndRemove(adapter, raw, 'parse-error');
+		return false;
+	}
 
-		if (!state.season.fixtures || state.season.fixtures.length === 0) {
-			adapter.removeItem(SAVE_KEY);
-			return false;
-		}
+	if (!state.season?.fixtures || state.season.fixtures.length === 0) {
+		backupAndRemove(adapter, raw, 'empty-fixtures');
+		return false;
+	}
 
+	if (!state.player?.club || state.player.club === 'Free Agent') {
+		backupAndRemove(adapter, raw, 'invalid-player');
+		return false;
+	}
+
+	try {
 		player.name = state.player.name;
 		player.age = state.player.age;
 		player.wage = state.player.wage;
@@ -132,23 +167,41 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		player.club = state.player.club;
 		player.division = state.player.division;
 		player.deck = state.player.deck;
+		player.careerXp = state.player.careerXp ?? 0;
+		player.matchXpHistory = state.player.matchXpHistory ?? [];
 
 		season.weekNumber = Math.max(1, state.season.weekNumber);
 		season.seasonNumber = state.season.seasonNumber;
 		season.fixtures = state.season.fixtures;
+		season.divisionSchedule = state.season.divisionSchedule ?? { weeks: [] };
 		season.gamesPlayed = state.season.gamesPlayed;
 		season.phase = state.season.phase as typeof season.phase;
 		season.morale = state.season.morale;
+		season.lastWageWeek = state.season.lastWageWeek ?? 0;
 
 		inbox.items = state.inboxItems;
 
 		match.result = state.matchResult;
 
+		if (state.standings && state.standings.length > 0) {
+			standings.entries = state.standings;
+		}
+		standings.lastProcessedWeek = state.lastProcessedWeek ?? 0;
+
 		return true;
-	} catch {
-		adapter.removeItem(SAVE_KEY);
+	} catch (err) {
+		backupAndRemove(adapter, raw, `restore-error: ${err}`);
 		return false;
 	}
+}
+
+function backupAndRemove(adapter: SaveAdapter, raw: string, reason: string) {
+	try {
+		adapter.setItem(`${SAVE_BACKUP_KEY}-${reason}`, raw);
+	} catch {
+		// backup storage full — just remove the save
+	}
+	adapter.removeItem(SAVE_KEY);
 }
 
 export function hasSavedGame(adapter: SaveAdapter = localStorageAdapter): boolean {

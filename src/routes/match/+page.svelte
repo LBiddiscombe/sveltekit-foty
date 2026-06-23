@@ -9,6 +9,9 @@
 	import { createVolleySketch } from '$lib/components/minigames/VolleySketch';
 	import type { Outcome } from '$lib/types/game';
 	import { playGame, skipGame, getMoraleDelta, consumeDeck, START_MORALE } from '$lib/match/engine';
+	import { XP_CONFIG } from '$lib/config/xp';
+	import { DIVISION_XP_CAPS } from '$lib/config/levels';
+	import { saveGame } from '$lib/save';
 
 	type GameType = 'penalty' | 'volley';
 
@@ -28,22 +31,44 @@
 		return Math.random() < 0.3 ? 'penalty' : 'volley';
 	}
 
-	function recordPlayerStats(goals: number) {
+	function recordPlayerMatch(goals: number) {
 		player.recordAppearance();
 		if (goals > 0) {
 			player.addGoals(goals);
 		}
 	}
 
+	function calcMatchXp(outcomes: Outcome[], result: 'win' | 'draw' | 'loss'): number {
+		const cap = DIVISION_XP_CAPS[player.division as keyof typeof DIVISION_XP_CAPS] ?? 500;
+		if (player.careerXp >= cap) return 0;
+
+		let total = 0;
+		for (const o of outcomes) {
+			total += XP_CONFIG[o as keyof typeof XP_CONFIG] ?? 0;
+		}
+		total += XP_CONFIG.played;
+		total += XP_CONFIG[result];
+
+		return total;
+	}
+
 	function finishCurrentGame() {
 		const res = match.result!;
 		const playerGoals = res.outcomes.filter((o) => o === 'goal').length;
+		const [us, them] = res.score;
+		const resultLabel = us > them ? 'win' : us === them ? 'draw' : 'loss';
 		season.adjustMorale(getMoraleDelta(res.score, playerGoals));
-		recordPlayerStats(playerGoals);
+
+		const matchXp = calcMatchXp(res.outcomes, resultLabel);
+		player.addXp(matchXp);
+		player.recordMatchXp(matchXp);
+
+		recordPlayerMatch(playerGoals);
 		match.saveFixtureResult();
 		match.advance();
 
 		if (match.batchDone) {
+			saveGame();
 			goto('/vidiprinter');
 		} else {
 			setupNextGame();

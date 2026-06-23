@@ -3,13 +3,19 @@
 	import { player } from '$lib/stores/player.svelte';
 	import { season } from '$lib/stores/season.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
-	import { DIVISION_4_CLUBS } from '$lib/config/teams';
+	import { standings } from '$lib/stores/standings.svelte';
+	import { getClubsByDivision } from '$lib/config/clubs';
 	import { generatePlayerFixtures } from '$lib/config/fixtures';
+	import { generateDivisionSchedule } from '$lib/config/schedule';
+
+	const div4Clubs = getClubsByDivision(4).map((c) => c.name);
 
 	async function selectClub(club: string) {
 		player.club = club;
 		player.division = 4;
-		season.fixtures = generatePlayerFixtures(club, DIVISION_4_CLUBS);
+		season.fixtures = generatePlayerFixtures(club, div4Clubs);
+		season.divisionSchedule = generateDivisionSchedule(4, div4Clubs);
+		standings.init(div4Clubs);
 		inbox.init(club);
 		await goto('/hub');
 	}
@@ -20,7 +26,7 @@
 	<p class="font-pixel text-xs text-subtle">Division 4</p>
 
 	<div class="flex flex-col gap-2">
-		{#each DIVISION_4_CLUBS as club (club)}
+		{#each div4Clubs as club (club)}
 			<button
 				onclick={() => selectClub(club)}
 				class="flex w-full items-center border border-subtle bg-card px-4 py-3 text-left font-pixel text-xs text-primary transition-colors hover:border-primary"

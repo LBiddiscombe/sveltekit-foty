@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { generatePlayerFixtures } from './fixtures';
-import { DIVISION_4_CLUBS } from './teams';
+import { getClubsByDivision } from './clubs';
 
 describe('generatePlayerFixtures', () => {
+	const div4Clubs = getClubsByDivision(4).map((c) => c.name);
 	const playerClub = 'Exetur';
-	const fixtures = generatePlayerFixtures(playerClub, DIVISION_4_CLUBS);
+	const fixtures = generatePlayerFixtures(playerClub, div4Clubs);
 
 	it('returns exactly 46 fixtures', () => {
 		expect(fixtures).toHaveLength(46);
@@ -62,7 +63,7 @@ describe('generatePlayerFixtures', () => {
 
 	it('includes all division clubs as opponents', () => {
 		const opponents = new Set(fixtures.map((f) => f.opponent));
-		const expected = DIVISION_4_CLUBS.filter((c) => c !== playerClub);
+		const expected = div4Clubs.filter((c) => c !== playerClub);
 		for (const club of expected) {
 			expect(opponents.has(club)).toBe(true);
 		}
@@ -76,7 +77,7 @@ describe('generatePlayerFixtures', () => {
 	});
 
 	it('produces different fixture lists for different players', () => {
-		const otherFixtures = generatePlayerFixtures('Croo', DIVISION_4_CLUBS);
+		const otherFixtures = generatePlayerFixtures('Croo', div4Clubs);
 		const firstOpponents = fixtures.map((f) => f.opponent).join(',');
 		const secondOpponents = otherFixtures.map((f) => f.opponent).join(',');
 		expect(firstOpponents).not.toBe(secondOpponents);

@@ -1,5 +1,3 @@
-import type { PlayerStats } from '$lib/types/game';
-
 function randomDeck(size: number): number[] {
 	return Array.from({ length: size }, () => Math.floor(Math.random() * 3) + 1);
 }
@@ -7,8 +5,6 @@ function randomDeck(size: number): number[] {
 function createPlayer() {
 	let name = $state('');
 	let age = $state(17);
-	const stats = $state<PlayerStats>({ power: 5, accuracy: 5, technique: 5, athleticism: 5 });
-	let trainingFocus = $state<keyof PlayerStats>('power');
 	let wage = $state(0);
 	let bankBalance = $state(5000);
 	let goals = $state(0);
@@ -16,6 +12,8 @@ function createPlayer() {
 	let club = $state('Free Agent');
 	let division = $state(4);
 	let deck = $state<number[]>(randomDeck(10));
+	let careerXp = $state(0);
+	let matchXpHistory = $state<number[]>([]);
 
 	function adjustBalance(delta: number) {
 		bankBalance += delta;
@@ -45,8 +43,12 @@ function createPlayer() {
 		appearances++;
 	}
 
-	function adjustStat(key: keyof PlayerStats, delta: number) {
-		stats[key] += delta;
+	function addXp(delta: number) {
+		careerXp = Math.max(0, careerXp + delta);
+	}
+
+	function recordMatchXp(xp: number) {
+		matchXpHistory = [...matchXpHistory.slice(-4), xp];
 	}
 
 	return {
@@ -61,15 +63,6 @@ function createPlayer() {
 		},
 		set age(v: number) {
 			age = v;
-		},
-		get stats() {
-			return stats;
-		},
-		get trainingFocus() {
-			return trainingFocus;
-		},
-		set trainingFocus(v: keyof PlayerStats) {
-			trainingFocus = v;
 		},
 		get wage() {
 			return wage;
@@ -113,6 +106,18 @@ function createPlayer() {
 		set deck(v: number[]) {
 			deck = v;
 		},
+		get careerXp() {
+			return careerXp;
+		},
+		set careerXp(v: number) {
+			careerXp = v;
+		},
+		get matchXpHistory() {
+			return matchXpHistory;
+		},
+		set matchXpHistory(v: number[]) {
+			matchXpHistory = v;
+		},
 		adjustBalance,
 		addToDeck,
 		peekDeck,
@@ -120,7 +125,8 @@ function createPlayer() {
 		returnToDeck,
 		addGoals,
 		recordAppearance,
-		adjustStat
+		addXp,
+		recordMatchXp
 	};
 }
 

@@ -1,25 +1,22 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { season } from '$lib/stores/season.svelte';
-	import { inbox } from '$lib/stores/inbox.svelte';
-	import { player } from '$lib/stores/player.svelte';
-	import { saveGame } from '$lib/save';
+import { season } from '$lib/stores/season.svelte';
+import { inbox } from '$lib/stores/inbox.svelte';
+import { player } from '$lib/stores/player.svelte';
+import { saveGame } from '$lib/save';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 
-	let saved = $state(false);
-
 	$effect(() => {
 		season.phase = 'hub';
-		if (!saved) {
+		if (season.weekNumber > season.lastWageWeek) {
 			player.adjustBalance(200);
-			saveGame();
-			saved = true;
+			season.lastWageWeek = season.weekNumber;
 		}
+		saveGame();
 	});
 
 	const menuItems = [
-		{ label: 'Training', href: '/hub/training' },
 		{ label: 'Shop', href: '/hub/shop' },
 		{ label: 'Fixtures', href: '/hub/fixtures' },
 		{ label: 'Inbox', href: '/hub/inbox' },

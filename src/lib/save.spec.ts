@@ -175,8 +175,51 @@ describe('clearSave', () => {
 	});
 });
 
-describe('default adapter', () => {
-	it('uses localStorageAdapter by default', () => {
-		expect(typeof saveGame).toBe('function');
+describe('saveGame validation', () => {
+	it('rejects save when club is Free Agent', () => {
+		player.club = 'Free Agent';
+		const result = saveGame(adapter);
+		expect(result).toBe(false);
+		expect(adapter.getItem('foty-save')).toBeNull();
+	});
+
+	it('rejects save when fixtures are empty', () => {
+		season.fixtures = [];
+		const result = saveGame(adapter);
+		expect(result).toBe(false);
+		expect(adapter.getItem('foty-save')).toBeNull();
+	});
+
+	it('returns true on successful save', () => {
+		const result = saveGame(adapter);
+		expect(result).toBe(true);
+		expect(adapter.getItem('foty-save')).not.toBeNull();
+	});
+});
+
+describe('loadGame resilience', () => {
+	it('backs up corrupt JSON and returns false', () => {
+		adapter.setItem('foty-save', 'not-json');
+		const result = loadGame(adapter);
+		expect(result).toBe(false);
+		expect(adapter.getItem('foty-save')).toBeNull();
+		// backup should exist under a backup key
+		const backup = adapter.getItem('foty-save-backup-parse-error');
+		expect(backup).toBe('not-json');
+	});
+
+	it('backs up save with empty fixtures and returns false', () => {
+		const state = {
+			player: { club: 'Exetur', name: 'T', age: 17, wage: 200, bankBalance: 5000, goals: 0, appearances: 0, division: 4, deck: [], careerXp: 0, matchXpHistory: [] },
+			season: { weekNumber: 1, seasonNumber: 1, fixtures: [], divisionSchedule: { weeks: [] }, gamesPlayed: 0, phase: 'hub', morale: 5, lastWageWeek: 0 },
+			inboxItems: [],
+			matchResult: null,
+			standings: [],
+			lastProcessedWeek: 0
+		};
+		adapter.setItem('foty-save', JSON.stringify(state));
+		const result = loadGame(adapter);
+		expect(result).toBe(false);
+		expect(adapter.getItem('foty-save')).toBeNull();
 	});
 });

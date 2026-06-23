@@ -1,15 +1,11 @@
-export interface PlayerStats {
-	power: number;
-	accuracy: number;
-	technique: number;
-	athleticism: number;
+export interface Club {
+	name: string;
+	division: number;
 }
 
 export interface Player {
 	name: string;
 	age: number;
-	stats: PlayerStats;
-	trainingFocus: keyof PlayerStats;
 	wage: number;
 	bankBalance: number;
 	goals: number;
@@ -17,6 +13,8 @@ export interface Player {
 	club: string;
 	division: number;
 	deck: number[];
+	careerXp: number;
+	matchXpHistory: number[];
 }
 
 export interface FixtureResult {
@@ -72,9 +70,8 @@ export interface InboxItem {
 }
 
 export interface IncidentEffectDescriptor {
-	type: 'bankBalance' | 'morale' | 'stat';
+	type: 'bankBalance' | 'morale' | 'xp';
 	delta: number;
-	key?: keyof PlayerStats;
 }
 
 export interface IncidentOutcome {
@@ -88,4 +85,46 @@ export interface IncidentCard {
 	title: string;
 	description: string;
 	outcomes: [IncidentOutcome, IncidentOutcome, IncidentOutcome, IncidentOutcome];
+}
+
+export interface Standing {
+	club: string;
+	played: number;
+	won: number;
+	drawn: number;
+	lost: number;
+	goalsFor: number;
+	goalsAgainst: number;
+	goalDifference: number;
+	points: number;
+	lastFive: string[];
+}
+
+export interface Level {
+	title: string;
+	minXp: number;
+	division: number;
+}
+
+export interface DivisionSchedule {
+	weeks: WeekFixtures[];
+}
+
+export interface WeekFixtures {
+	weekNumber: number;
+	matches: DivisionMatch[];
+}
+
+export interface DivisionMatch {
+	home: string;
+	away: string;
+	result?: {
+		homeGoals: number;
+		awayGoals: number;
+	};
+}
+
+export interface AiMatchResult {
+	homeGoals: number;
+	awayGoals: number;
 }

@@ -6,6 +6,7 @@
 	import { season } from '$lib/stores/season.svelte';
 	import { incidentCardById } from '$lib/config/incidents';
 	import type { IncidentOutcome } from '$lib/types/game';
+	import { saveGame } from '$lib/save';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 
@@ -20,7 +21,7 @@
 		const parts = outcome.effects.map((e) => {
 			if (e.type === 'bankBalance') return `${e.delta > 0 ? '+' : ''}£${e.delta}`;
 			if (e.type === 'morale') return `Morale ${e.delta > 0 ? '+' : ''}${e.delta}`;
-			if (e.type === 'stat') return `${e.key} ${e.delta > 0 ? '+' : ''}${e.delta}`;
+			if (e.type === 'xp') return `XP ${e.delta > 0 ? '+' : ''}${e.delta}`;
 			return '';
 		});
 		return parts.join(', ');
@@ -69,8 +70,8 @@
 				player.adjustBalance(effect.delta);
 			} else if (effect.type === 'morale') {
 				season.adjustMorale(effect.delta);
-			} else if (effect.type === 'stat' && effect.key) {
-				player.adjustStat(effect.key, effect.delta);
+			} else if (effect.type === 'xp') {
+				player.addXp(effect.delta);
 			}
 		}
 	}
@@ -78,6 +79,7 @@
 	function onContinue() {
 		if (!item || !result) return;
 		applyEffects(result);
+		saveGame();
 		inbox.markRead(item.id);
 		goto('/hub');
 	}
@@ -139,14 +141,14 @@
 				{#if result.effects.length === 0}
 					<p class="mt-2 font-pixel text-xs text-subtle">Nothing happens.</p>
 				{/if}
-				{#each result.effects as effect (effect.type + (effect.key ?? ''))}
+				{#each result.effects as effect (effect.type)}
 					<p class="mt-1 font-pixel text-xs text-primary">
 						{#if effect.type === 'bankBalance'}
 							£{effect.delta > 0 ? '+' : ''}{effect.delta}
 						{:else if effect.type === 'morale'}
 							Morale {effect.delta > 0 ? '+' : ''}{effect.delta}
-						{:else if effect.type === 'stat'}
-							{effect.key} {effect.delta > 0 ? '+' : ''}{effect.delta}
+						{:else if effect.type === 'xp'}
+							XP {effect.delta > 0 ? '+' : ''}{effect.delta}
 						{/if}
 					</p>
 				{/each}

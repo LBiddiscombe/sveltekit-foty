@@ -4,7 +4,12 @@
 	import { season } from '$lib/stores/season.svelte';
 	import { player } from '$lib/stores/player.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
+	import { standings } from '$lib/stores/standings.svelte';
 	import { pickRandomIncident } from '$lib/config/incidents';
+	import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
+	import { simAiMatch } from '$lib/match/engine';
+	import { XP_CONFIG } from '$lib/config/xp';
+	import { saveGame } from '$lib/save';
 	import Button from '$lib/components/Button.svelte';
 	import { createTeletype, type TeletypeConfig } from './teletype.svelte';
 	import VidiprinterLine from '$lib/components/VidiprinterLine.svelte';
@@ -28,15 +33,60 @@
 		(f) => f.weekNumber === season.weekNumber && f.result
 	);
 
+	if (season.weekNumber > standings.lastProcessedWeek) {
+		const results: {
+			home: string;
+			away: string;
+			result: { homeGoals: number; awayGoals: number };
+		}[] = [];
+
+		for (const f of weekFixtures) {
+			const home = f.isHome ? PLAYER_CLUB : f.opponent;
+			const away = f.isHome ? f.opponent : PLAYER_CLUB;
+			results.push({
+				home,
+				away,
+				result: {
+					homeGoals: f.isHome ? f.result!.goalsFor : f.result!.goalsAgainst,
+					awayGoals: f.isHome ? f.result!.goalsAgainst : f.result!.goalsFor
+				}
+			});
+		}
+
+		const weekSchedule = season.divisionSchedule.weeks.find(
+			(w) => w.weekNumber === season.weekNumber
+		);
+		if (weekSchedule) {
+			for (const m of weekSchedule.matches) {
+				if (m.home === PLAYER_CLUB || m.away === PLAYER_CLUB) continue;
+				if (!m.result) {
+					const homeStrength = CLUB_STRENGTHS[m.home] ?? 5;
+					const awayStrength = CLUB_STRENGTHS[m.away] ?? 5;
+					m.result = simAiMatch(homeStrength, awayStrength);
+				}
+				results.push({ home: m.home, away: m.away, result: m.result });
+			}
+		}
+
+		standings.processWeekResults(results, season.weekNumber);
+		saveGame();
+	}
+
 	const lines = (() => {
-		const l: string[] = [
-			'INCOMING RESULTS',
-			'----------------',
-			'',
-			' LEAGUE TWO',
-			'------------',
-			''
-		];
+		const l: string[] = [];
+		const divisionNames: Record<number, string> = {
+			1: 'PREMIER DIVISION',
+			2: 'CHAMPIONSHIP',
+			3: 'LEAGUE ONE',
+			4: 'LEAGUE TWO'
+		};
+
+		l.push('INCOMING RESULTS');
+		l.push('----------------');
+		l.push('');
+		l.push(` ${divisionNames[player.division] ?? 'DIVISION ' + player.division}`);
+		l.push('------------');
+		l.push('');
 
 		for (const f of weekFixtures) {
 			const goalsFor = f.result!.goalsFor;
@@ -54,6 +104,17 @@
 			l.push('');
 		}
 
+		l.push('');
+		l.push(' LEAGUE TABLE');
+		l.push('--------------');
+		l.push('');
+
+		for (const entry of standings.entries) {
+			const pos = standings.getPosition(entry.club);
+			const marker = entry.club === PLAYER_CLUB ? '>' : ' ';
+			l.push(`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`);
+		}
+
 		return l;
 	})();
 
@@ -64,6 +125,34 @@
 	const currentText = $derived(
 		tty.currentLine < lines.length ? tty.textForLine(tty.currentLine) : ''
 	);
+
+	function onContinue() {
+		const isLastWeek = season.weekNumber >= 30;
+
+		if (isLastWeek) {
+			const { newDivision } = season.endSeason(PLAYER_CLUB, player.division);
+			player.division = newDivision;
+			player.addXp(XP_CONFIG.promotion);
+		} else {
+			season.recordGamesPlayed(weekFixtures.length);
+			season.advanceWeek();
+		}
+		saveGame();
+
+		inbox.clearActioned();
+		const hasIncident = Math.random() < 0.25;
+		if (hasIncident) {
+			const card = pickRandomIncident();
+			inbox.addIncident({
+				subject: card.title,
+				body: card.description,
+				incidentCardId: card.id
+			});
+			goto(resolve('/hub/inbox'));
+		} else {
+			goto(resolve('/hub'));
+		}
+	}
 </script>
 
 <svelte:window
@@ -81,7 +170,8 @@
 				{@const sc = scoreLines.get(i)}
 				{@const isResultLine = line.startsWith('  RESULT')}
 				{@const isScoreLine = sc !== undefined}
-				{@const isHeader = line === 'INCOMING RESULTS'}
+				{@const isHeader = line === 'INCOMING RESULTS' || line.startsWith(' LEAGUE')}
+				{@const isTableLine = line.includes('pts')}
 
 				{#if line === ''}
 					<div class="h-2"></div>
@@ -99,7 +189,9 @@
 							? 'text-subtle'
 							: isHeader
 								? 'text-warning'
-								: 'text-subtle'}"
+								: isTableLine
+									? 'text-primary'
+									: 'text-subtle'}"
 					>
 						{line}
 					</div>
@@ -118,26 +210,6 @@
 	</div>
 
 	<div class="mt-auto pt-4 {tty.done ? '' : 'invisible'}">
-		<Button
-			onclick={async () => {
-				season.recordGamesPlayed(weekFixtures.length);
-				season.advanceWeek();
-				inbox.clearActioned();
-				const hasIncident = Math.random() < 0.25;
-				if (hasIncident) {
-					const card = pickRandomIncident();
-					inbox.addIncident({
-						subject: card.title,
-						body: card.description,
-						incidentCardId: card.id
-					});
-					await goto(resolve('/hub/inbox'));
-				} else {
-					await goto(resolve('/hub'));
-				}
-			}}
-		>
-			Continue
-		</Button>
+		<Button onclick={onContinue}>Continue</Button>
 	</div>
 </div>
