@@ -50,6 +50,41 @@ function createInbox() {
 		];
 	}
 
+	function addSeasonNews(seasonNumber: number, club: string, division: number, wasPromoted: boolean, wasRelegated: boolean) {
+		const nextId = Math.max(0, ...items.map((i) => i.id)) + 1;
+		const newItems: InboxItem[] = [
+			{
+				id: nextId,
+				type: 'news',
+				subject: `Season ${seasonNumber} Preview`,
+				body: `You're at ${club} in Division ${division} for the new season. Good luck!`,
+				actionRequired: false,
+				actioned: false
+			}
+		];
+		if (wasPromoted) {
+			newItems.push({
+				id: nextId + 1,
+				type: 'news',
+				subject: 'Promotion!',
+				body: `Congratulations! ${club} have been promoted. You'll be playing in a higher division this season.`,
+				actionRequired: true,
+				actioned: false
+			});
+		}
+		if (wasRelegated) {
+			newItems.push({
+				id: nextId + 1,
+				type: 'news',
+				subject: 'Relegation',
+				body: `${club} were relegated last season. You'll be playing in a lower division this season.`,
+				actionRequired: true,
+				actioned: false
+			});
+		}
+		items = [...items, ...newItems];
+	}
+
 	return {
 		get items() {
 			return items;
@@ -63,7 +98,8 @@ function createInbox() {
 		markRead,
 		clearActioned,
 		addIncident,
-		init
+		init,
+		addSeasonNews
 	};
 }
 

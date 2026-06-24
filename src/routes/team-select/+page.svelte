@@ -16,6 +16,7 @@
 		season.fixtures = generatePlayerFixtures(club, div4Clubs);
 		season.divisionSchedule = generateDivisionSchedule(4, div4Clubs);
 		standings.init(div4Clubs);
+		season.recordSeasonSnapshot(0, 0, 0);
 		inbox.init(club);
 		await goto('/hub');
 	}

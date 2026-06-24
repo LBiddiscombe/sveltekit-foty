@@ -79,6 +79,10 @@ interface SaveState {
 		phase: string;
 		morale: number;
 		lastWageWeek: number;
+		divisionRosters: Record<string, string[]>;
+		seasonXpAtStart: number;
+		seasonGoalsAtStart: number;
+		seasonAppsAtStart: number;
 	};
 	inboxItems: InboxItem[];
 	matchResult: MatchResult | null;
@@ -119,7 +123,11 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 			gamesPlayed: season.gamesPlayed,
 			phase: season.phase,
 			morale: season.morale,
-			lastWageWeek: season.lastWageWeek
+			lastWageWeek: season.lastWageWeek,
+			divisionRosters: JSON.parse(JSON.stringify(season.divisionRosters)),
+			seasonXpAtStart: season.seasonXpAtStart,
+			seasonGoalsAtStart: season.seasonGoalsAtStart,
+			seasonAppsAtStart: season.seasonAppsAtStart
 		},
 		inboxItems: JSON.parse(JSON.stringify(inbox.items)),
 		matchResult: match.result ? JSON.parse(JSON.stringify(match.result)) : null,
@@ -178,6 +186,12 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		season.phase = state.season.phase as typeof season.phase;
 		season.morale = state.season.morale;
 		season.lastWageWeek = state.season.lastWageWeek ?? 0;
+		if (state.season.divisionRosters) {
+			season.divisionRosters = state.season.divisionRosters;
+		}
+		season.seasonXpAtStart = state.season.seasonXpAtStart ?? 0;
+		season.seasonGoalsAtStart = state.season.seasonGoalsAtStart ?? 0;
+		season.seasonAppsAtStart = state.season.seasonAppsAtStart ?? 0;
 
 		inbox.items = state.inboxItems;
 

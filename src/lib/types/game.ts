@@ -30,7 +30,7 @@ export interface Fixture {
 	result?: FixtureResult;
 }
 
-export type Phase = 'hub' | 'pre-match' | 'match' | 'vidiprinter';
+export type Phase = 'hub' | 'pre-match' | 'match' | 'vidiprinter' | 'season-review';
 
 export interface Season {
 	weekNumber: number;

@@ -8,7 +8,6 @@
 	import { pickRandomIncident } from '$lib/config/incidents';
 	import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
 	import { simAiMatch } from '$lib/match/engine';
-	import { XP_CONFIG } from '$lib/config/xp';
 	import { saveGame } from '$lib/save';
 	import Button from '$lib/components/Button.svelte';
 	import { createTeletype, type TeletypeConfig } from './teletype.svelte';
@@ -109,10 +108,36 @@
 		l.push('--------------');
 		l.push('');
 
-		for (const entry of standings.entries) {
-			const pos = standings.getPosition(entry.club);
-			const marker = entry.club === PLAYER_CLUB ? '>' : ' ';
-			l.push(`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`);
+		const total = standings.entries.length;
+		const playerPos = standings.getPosition(PLAYER_CLUB);
+		const inTop3 = playerPos <= 3;
+		const inBottom3 = playerPos > total - 3;
+
+		if (total <= 6) {
+			for (const entry of standings.entries) {
+				const pos = standings.getPosition(entry.club);
+				const marker = entry.club === PLAYER_CLUB ? '>' : ' ';
+				l.push(`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`);
+			}
+		} else {
+			function addLine(entry: (typeof standings.entries)[number]) {
+				const pos = standings.getPosition(entry.club);
+				const marker = entry.club === PLAYER_CLUB ? '>' : ' ';
+				l.push(`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`);
+			}
+
+			for (const entry of standings.entries.slice(0, 3)) addLine(entry);
+
+			if (inTop3 || inBottom3) {
+				l.push('   ...');
+			} else {
+				l.push('   ...');
+				const playerEntry = standings.getByClub(PLAYER_CLUB);
+				if (playerEntry) addLine(playerEntry);
+				l.push('   ...');
+			}
+
+			for (const entry of standings.entries.slice(-3)) addLine(entry);
 		}
 
 		return l;
@@ -130,13 +155,12 @@
 		const isLastWeek = season.weekNumber >= 30;
 
 		if (isLastWeek) {
-			const { newDivision, playerInPromoted } = season.endSeason(PLAYER_CLUB, player.division);
-			player.division = newDivision;
-			if (playerInPromoted) player.addXp(XP_CONFIG.promotion);
-		} else {
-			season.recordGamesPlayed(weekFixtures.length);
-			season.advanceWeek();
+			goto(resolve('/season-review'));
+			return;
 		}
+
+		season.recordGamesPlayed(weekFixtures.length);
+		season.advanceWeek();
 		saveGame();
 
 		inbox.clearActioned();

@@ -84,11 +84,13 @@
 
 **Career XP** — Single progression metric replacing the removed stat system. Tracked per event via `XP_CONFIG`: played (+1), goal (+1), saved (0), miss (-1), skipped (0), win (1), draw (0), loss (0), promotion (+10, conditional on actual promotion). Designed so ~100-125 XP is earnable per season of perfect play (every game played, all chances scored, all wins). Realistic play (~50% match rate, ~0.5 goals/match) yields ~30-35 XP/season. Capped per division. Unaffected by above-cap matches (can still lose XP at cap for misses).
 
-**XP level** — 12 named tiers (Park Kicker → Footballer of the Year), 3 per division. Derived from careerXp. Caps: Div 4 = 100, Div 3 = 200, Div 2 = 350, Div 1 = 500. Interest thresholds for transfers align with division XP minimums. Displayed on Player Status page with progress bar.
+**XP level** — 12 named tiers (Park Kicker → Footballer of the Year), 3 per division. Derived from careerXp. Caps: Div 4 = 100, Div 3 = 200, Div 2 = 350, Div 1 = 500. Interest thresholds for transfers align with division XP minimums. Displayed on Player Status page with progress bar. On relegation to a lower-division cap, XP is never reduced; earning is simply blocked until the player reaches a division whose cap exceeds their total.
 
-**League standings** — Stored in the `standings` store. Updated each week after AI matches are simulated. Sort order: points → goal difference → goals for → head-to-head. Top 3 promoted, bottom 3 relegated at season end. No promotion from Div 1, no relegation from Div 4.
+**League standings** — Stored in the `standings` store. Only the player's division standings are tracked each week (real). Other divisions' standings are never materialised; promotion/relegation decisions for non-player divisions use static club strength as a proxy.
 
-**Season transition** — After week 30, standings settle, promotion/relegation applied, new season generated, player receives +50 promotion XP (if their club promoted), morale reset to 5, standings re-initialised for new division.
+**Promotion/relegation (full pyramid)** — At season end, each division boundary is processed top-down (Div 1↔2, then 2↔3, then 3↔4). For each boundary U/L: top 3 of L (by real standings if L = player's division, else by strongest club strength) swap with bottom 3 of U (by real standings if U = player's division, else by weakest club strength). Strength ties among non-player-division clubs are broken randomly. Division rosters are updated in-place to reflect the swaps, so a club relegated from Div 2 into Div 3 is available when processing the 3↔4 boundary. No promotion from Div 1, no relegation from Div 4.
+
+**Season transition** — After week 30, vidiprinter's Continue navigates to the season review route rather than the hub. The season review page processes promotion/relegation, division roster updates, new-season generation, and XP awards. A new-season inbox message is created for the player to see on hub arrival. No incident card on week 30.
 
 **Division schedule** — A shared double round-robin schedule for all clubs in the player's division, generated at season start via `generateDivisionSchedule`. Each week has 1 or 2 games per club. Div 1 = 38 games (8 double weeks), others = 46 (16 double weeks).
 
