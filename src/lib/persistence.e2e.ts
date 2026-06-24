@@ -12,7 +12,7 @@ test.describe('Game persistence', () => {
 		await page.evaluate(() => {
 			const save = {
 				player: {
-					name: 'TestPlayer', age: 17, wage: 200, bankBalance: 5200,
+					name: 'TestPlayer', age: 17, bankBalance: 5075,
 					goals: 1, appearances: 1, club: 'Ackrington', division: 4,
 					deck: [3, 1, 2, 1, 3, 2, 1, 3, 2, 1],
 					careerXp: 50, matchXpHistory: [50]

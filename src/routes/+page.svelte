@@ -26,6 +26,8 @@
 		player.name = name.trim();
 		player.age = 17;
 		player.bankBalance = 5000;
+		player.careerXp = 0;
+		player.wage = 75;
 		season.morale = 5;
 		await goto('/team-select');
 	}

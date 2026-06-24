@@ -15,7 +15,7 @@ import { match } from './stores/match.svelte';
 function seedStores() {
 	player.name = 'Test Player';
 	player.age = 17;
-	player.wage = 200;
+	player.wage = 75;
 	player.bankBalance = 5000;
 	player.goals = 5;
 	player.appearances = 3;
@@ -210,7 +210,7 @@ describe('loadGame resilience', () => {
 
 	it('backs up save with empty fixtures and returns false', () => {
 		const state = {
-			player: { club: 'Exetur', name: 'T', age: 17, wage: 200, bankBalance: 5000, goals: 0, appearances: 0, division: 4, deck: [], careerXp: 0, matchXpHistory: [] },
+			player: { club: 'Exetur', name: 'T', age: 17, bankBalance: 5000, goals: 0, appearances: 0, division: 4, deck: [], careerXp: 0, matchXpHistory: [] },
 			season: { weekNumber: 1, seasonNumber: 1, fixtures: [], divisionSchedule: { weeks: [] }, gamesPlayed: 0, phase: 'hub', morale: 5, lastWageWeek: 0 },
 			inboxItems: [],
 			matchResult: null,

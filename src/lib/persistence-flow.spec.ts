@@ -10,16 +10,17 @@ import { season } from './stores/season.svelte';
 import { inbox } from './stores/inbox.svelte';
 import { standings } from './stores/standings.svelte';
 import { match } from './stores/match.svelte';
-import { getClubsByDivision } from './config/clubs';
-import { generatePlayerFixtures } from './config/fixtures';
-import { generateDivisionSchedule } from './config/schedule';
+	import { getClubsByDivision } from './config/clubs';
+	import { ECONOMY } from './config/economy';
+	import { generatePlayerFixtures } from './config/fixtures';
+	import { generateDivisionSchedule } from './config/schedule';
 
 const CLUB = 'Ackrington';
 
 function defaultStores() {
 	player.name = '';
 	player.age = 17;
-	player.wage = 0;
+	player.wage = ECONOMY.weeklyWages[4];
 	player.bankBalance = 5000;
 	player.goals = 0;
 	player.appearances = 0;
@@ -69,7 +70,7 @@ describe('full career flow persistence', () => {
 		// hub visit (week 1)
 		season.phase = 'hub';
 		if (season.weekNumber > season.lastWageWeek) {
-			player.adjustBalance(200);
+			player.adjustBalance(ECONOMY.weeklyWages[4]);
 			season.lastWageWeek = season.weekNumber;
 		}
 		saveGame(adapter);
@@ -115,7 +116,7 @@ describe('full career flow persistence', () => {
 		// hub visit (week 2)
 		season.phase = 'hub';
 		if (season.weekNumber > season.lastWageWeek) {
-			player.adjustBalance(200);
+			player.adjustBalance(ECONOMY.weeklyWages[4]);
 			season.lastWageWeek = season.weekNumber;
 		}
 		saveGame(adapter);
@@ -139,7 +140,7 @@ describe('full career flow persistence', () => {
 		// ── Simulate hub $effect ──
 		season.phase = 'hub';
 		if (season.weekNumber > season.lastWageWeek) {
-			player.adjustBalance(200);
+			player.adjustBalance(ECONOMY.weeklyWages[4]);
 			season.lastWageWeek = season.weekNumber;
 		}
 		saveGame(adapter);

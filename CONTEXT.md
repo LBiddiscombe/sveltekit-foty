@@ -76,7 +76,18 @@
 
 **Starting deck** — 10 goal cards in the player's deck at career start.
 
-**Weekly wage** — £200 paid to the player's bank balance each week on hub arrival. Makes shop purchases sustainable over a full season. Applied once per week via the hub's `$effect`.
+**Economy config** — `src/lib/config/economy.ts` defines division-based card prices and XP-level-based wages. Goal card prices rise steeply with division; incident cards cost ~¼ of goal cards. Wages are tied to XP level, not division, so one-club careers see wage growth as XP improves even before promotion.
+
+| Div | Goal card | Incident card | Wage range (3 levels per div) | Weeks per goal card |
+|-----|-----------|---------------|-------------------------------|---------------------|
+| 4   | £400      | £100          | £75 → £100 → £150             | 5.3 → 4.0 → 2.7    |
+| 3   | £800      | £200          | £200 → £275 → £375            | 4.0 → 2.9 → 2.1    |
+| 2   | £1,500    | £375          | £450 → £600 → £800            | 3.3 → 2.5 → 1.9    |
+| 1   | £2,000    | £500          | £900 → £1,050 → £1,200        | 2.2 → 1.9 → 1.7    |
+
+**Wage progression** — `player.addXp()` recalculates `player.wage` from `wageForLevel(getLevelIndex(careerXp))`. Wage is no longer persisted independently; it is derived from careerXp on save load. Promotion and XP gains automatically increase wage.
+
+**Transfer signing fee** — One-time lump sum paid on transfer: 5× weekly wage for same-division moves, 10× for one-division-up moves. Multi-division jumps are not possible (XP caps prevent exceeding the target division's minimum). Ready in `TRANSFER_SIGNING_MULTIPLIERS` for Cycle 7.
 
 **Empty deck sim** — When `player.deck` is empty, all matches for the current week are forced to sim (Skip path only). The pre-match page shows an informational message and a single Continue button instead of the per-game Play/Skip loop.
 

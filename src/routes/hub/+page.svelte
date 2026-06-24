@@ -10,7 +10,7 @@ import { saveGame } from '$lib/save';
 	$effect(() => {
 		season.phase = 'hub';
 		if (season.weekNumber > season.lastWageWeek) {
-			player.adjustBalance(200);
+			player.adjustBalance(player.wage);
 			season.lastWageWeek = season.weekNumber;
 		}
 		saveGame();

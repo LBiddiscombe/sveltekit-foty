@@ -6,6 +6,7 @@
 	import { inbox } from '$lib/stores/inbox.svelte';
 	import { saveGame } from '$lib/save';
 	import { XP_CONFIG } from '$lib/config/xp';
+
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import type { EndSeasonResult } from '$lib/stores/season.svelte';

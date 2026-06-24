@@ -1,3 +1,6 @@
+import { wageForLevel } from '$lib/config/economy';
+import { getLevelIndex } from '$lib/config/levels';
+
 function randomDeck(size: number): number[] {
 	return Array.from({ length: size }, () => Math.floor(Math.random() * 3) + 1);
 }
@@ -5,7 +8,7 @@ function randomDeck(size: number): number[] {
 function createPlayer() {
 	let name = $state('');
 	let age = $state(17);
-	let wage = $state(0);
+	let wage = $state(wageForLevel(getLevelIndex(0)));
 	let bankBalance = $state(5000);
 	let goals = $state(0);
 	let appearances = $state(0);
@@ -45,6 +48,7 @@ function createPlayer() {
 
 	function addXp(delta: number) {
 		careerXp = Math.max(0, careerXp + delta);
+		wage = wageForLevel(getLevelIndex(careerXp));
 	}
 
 	function recordMatchXp(xp: number) {

@@ -3,13 +3,12 @@
 	import { player } from '$lib/stores/player.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
 	import { pickRandomIncident } from '$lib/config/incidents';
+	import { goalCardPrice, incidentCardPrice } from '$lib/config/economy';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 
-	const PRICES = {
-		goalCard: 100,
-		incidentCard: 200
-	} as const;
+	const cardPrice = $derived(goalCardPrice(player.division));
+	const incPrice = $derived(incidentCardPrice(player.division));
 
 	let flash = $state<string | null>(null);
 	let flashTimer: ReturnType<typeof setTimeout> | undefined;
@@ -24,15 +23,15 @@
 	}
 
 	function buyGoalCard() {
-		if (player.bankBalance < PRICES.goalCard) return;
-		player.adjustBalance(-PRICES.goalCard);
+		if (player.bankBalance < cardPrice) return;
+		player.adjustBalance(-cardPrice);
 		player.addToDeck(Math.floor(Math.random() * 3) + 1);
 		showFlash('Card added!');
 	}
 
 	function buyIncidentCard() {
-		if (player.bankBalance < PRICES.incidentCard) return;
-		player.adjustBalance(-PRICES.incidentCard);
+		if (player.bankBalance < incPrice) return;
+		player.adjustBalance(-incPrice);
 		const card = pickRandomIncident();
 		inbox.addIncident({
 			subject: card.title,
@@ -61,10 +60,10 @@
 	<Card>
 		<h4 class="mb-2 font-pixel text-xs text-primary">Goal Cards</h4>
 		<p class="font-pixel text-xs text-subtle">
-			£{PRICES.goalCard} each — adds a random 1-3 chance card to your deck
+			£{cardPrice} each — adds a random 1-3 chance card to your deck
 		</p>
 		<div class="mt-3">
-			<Button onclick={buyGoalCard} disabled={player.bankBalance < PRICES.goalCard}>
+			<Button onclick={buyGoalCard} disabled={player.bankBalance < cardPrice}>
 				Buy Goal Card
 			</Button>
 		</div>
@@ -73,12 +72,12 @@
 	<Card>
 		<h4 class="mb-2 font-pixel text-xs text-primary">Incident Cards</h4>
 		<p class="font-pixel text-xs text-subtle">
-			£{PRICES.incidentCard} — a gamble that could pay off or backfire
+			£{incPrice} — a gamble that could pay off or backfire
 		</p>
 		<div class="mt-3">
 			<Button
 				onclick={buyIncidentCard}
-				disabled={player.bankBalance < PRICES.incidentCard}
+				disabled={player.bankBalance < incPrice}
 				variant="secondary"
 			>
 				Buy Incident Card

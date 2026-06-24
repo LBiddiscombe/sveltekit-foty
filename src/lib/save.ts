@@ -3,6 +3,8 @@ import { season } from '$lib/stores/season.svelte';
 import { inbox } from '$lib/stores/inbox.svelte';
 import { match } from '$lib/stores/match.svelte';
 import { standings } from '$lib/stores/standings.svelte';
+import { wageForLevel } from '$lib/config/economy';
+import { getLevelIndex } from '$lib/config/levels';
 import type { DivisionSchedule, Fixture, InboxItem, MatchResult, Standing } from '$lib/types/game';
 
 const SAVE_KEY = 'foty-save';
@@ -60,7 +62,6 @@ interface SaveState {
 	player: {
 		name: string;
 		age: number;
-		wage: number;
 		bankBalance: number;
 		goals: number;
 		appearances: number;
@@ -105,7 +106,6 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		player: {
 			name: player.name,
 			age: player.age,
-			wage: player.wage,
 			bankBalance: player.bankBalance,
 			goals: player.goals,
 			appearances: player.appearances,
@@ -168,7 +168,6 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 	try {
 		player.name = state.player.name;
 		player.age = state.player.age;
-		player.wage = state.player.wage;
 		player.bankBalance = state.player.bankBalance;
 		player.goals = state.player.goals;
 		player.appearances = state.player.appearances;
@@ -176,6 +175,7 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		player.division = state.player.division;
 		player.deck = state.player.deck;
 		player.careerXp = state.player.careerXp ?? 0;
+		player.wage = wageForLevel(getLevelIndex(player.careerXp));
 		player.matchXpHistory = state.player.matchXpHistory ?? [];
 
 		season.weekNumber = Math.max(1, state.season.weekNumber);
