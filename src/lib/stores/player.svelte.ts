@@ -20,11 +20,23 @@ function createPlayer() {
 	let matchXpHistory = $state<number[]>([]);
 
 	function adjustBalance(delta: number) {
-		bankBalance += delta;
+		bankBalance = Math.max(0, bankBalance + delta);
 	}
 
 	function addToDeck(card: number) {
 		deck.push(card);
+	}
+
+	function addDeckCards(n: number) {
+		deck.push(...randomDeck(n));
+	}
+
+	function removeDeckCards(n: number) {
+		deck.splice(0, Math.min(n, deck.length));
+	}
+
+	function multiplyWage(factor: number) {
+		wage = Math.round(wage * factor);
 	}
 
 	function peekDeck(): number {
@@ -145,6 +157,9 @@ function createPlayer() {
 		},
 		adjustBalance,
 		addToDeck,
+		addDeckCards,
+		removeDeckCards,
+		multiplyWage,
 		peekDeck,
 		drawFromDeck,
 		returnToDeck,

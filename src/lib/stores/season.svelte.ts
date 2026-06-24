@@ -41,6 +41,7 @@ function createSeason() {
 	let morale = $state(MORALE_CONFIG.scale.start);
 	let lastWageWeek = $state(0);
 	let divisionRosters = $state<Record<number, string[]>>({});
+	let appearanceSkips = $state(0);
 	let seasonXpAtStart = $state(0);
 	let seasonGoalsAtStart = $state(0);
 	let seasonAppsAtStart = $state(0);
@@ -62,6 +63,18 @@ function createSeason() {
 
 	function adjustMorale(delta: number) {
 		morale = MORALE_CONFIG.adjustMorale(morale, delta);
+	}
+
+	function addAppearanceSkips(n: number) {
+		appearanceSkips = Math.max(0, appearanceSkips + n);
+	}
+
+	function consumeAppearanceSkip(): boolean {
+		if (appearanceSkips > 0) {
+			appearanceSkips--;
+			return true;
+		}
+		return false;
 	}
 
 	function pickByStrength(clubs: string[], count: number, pickStrongest: boolean): string[] {
@@ -262,9 +275,17 @@ function createSeason() {
 		set seasonAppsAtStart(v: number) {
 			seasonAppsAtStart = v;
 		},
+		get appearanceSkips() {
+			return appearanceSkips;
+		},
+		set appearanceSkips(v: number) {
+			appearanceSkips = v;
+		},
 		advanceWeek,
 		recordGamesPlayed,
 		adjustMorale,
+		addAppearanceSkips,
+		consumeAppearanceSkip,
 		endSeason,
 		recordSeasonSnapshot,
 		getSeasonStats,

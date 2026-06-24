@@ -5,7 +5,7 @@
 	import { player } from '$lib/stores/player.svelte';
 	import { season } from '$lib/stores/season.svelte';
 	import { incidentCardById } from '$lib/config/incidents';
-	import type { IncidentOutcome } from '$lib/types/game';
+	import type { IncidentOutcome, IncidentEffectDescriptor } from '$lib/types/game';
 	import { saveGame } from '$lib/save';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
@@ -16,16 +16,34 @@
 
 	type TickerState = 'spinning' | 'decelerating' | 'stopped';
 
+	function fmt(e: IncidentEffectDescriptor): string {
+		const val = e.scale === 'wage' ? Math.round((e.delta * player.wage) / 10) * 10 : e.delta;
+		const sign = val > 0 ? '+' : '';
+		switch (e.type) {
+			case 'bankBalance':
+				return `${sign}£${val}`;
+			case 'morale':
+				return `Morale ${sign}${e.delta}`;
+			case 'xp':
+				return `XP ${sign}${e.delta}`;
+			case 'deckAdd':
+				return `+${e.delta} cards`;
+			case 'deckRemove':
+				return `${e.delta > 0 ? '-' : ''}${Math.abs(e.delta)} cards`;
+			case 'appearanceSkip':
+				return `Miss ${e.delta} match${e.delta !== 1 ? 'es' : ''}`;
+			case 'wageMultiplier':
+				return `Wage ×${e.delta}`;
+			default:
+				return '';
+		}
+	}
+
 	function formatEffects(outcome: IncidentOutcome): string {
 		if (outcome.effects.length === 0) return '—';
-		const parts = outcome.effects.map((e) => {
-			if (e.type === 'bankBalance') return `${e.delta > 0 ? '+' : ''}£${e.delta}`;
-			if (e.type === 'morale') return `Morale ${e.delta > 0 ? '+' : ''}${e.delta}`;
-			if (e.type === 'xp') return `XP ${e.delta > 0 ? '+' : ''}${e.delta}`;
-			return '';
-		});
-		return parts.join(', ');
+		return outcome.effects.map(fmt).join(', ');
 	}
+
 	let tickerState = $state<TickerState>('spinning');
 	let currentIndex = $state(0);
 	let result: IncidentOutcome | null = $state(null);
@@ -45,13 +63,13 @@
 		if (tickerState !== 'spinning' || !card) return;
 		if (intervalId) clearInterval(intervalId);
 
-		const outcomes = card.outcomes;
 		tickerState = 'decelerating';
 		const delays = [150, 250, 400, 700, 1200];
+		const c = card;
 
 		function decelerate(step: number) {
 			if (step >= delays.length) {
-				result = outcomes[currentIndex];
+				result = c.outcomes[currentIndex];
 				tickerState = 'stopped';
 				return;
 			}
@@ -66,12 +84,29 @@
 
 	function applyEffects(outcome: IncidentOutcome) {
 		for (const effect of outcome.effects) {
-			if (effect.type === 'bankBalance') {
-				player.adjustBalance(effect.delta);
-			} else if (effect.type === 'morale') {
-				season.adjustMorale(effect.delta);
-			} else if (effect.type === 'xp') {
-				player.addXp(effect.delta);
+			const delta = effect.scale === 'wage' ? Math.round((effect.delta * player.wage) / 10) * 10 : effect.delta;
+			switch (effect.type) {
+				case 'bankBalance':
+					player.adjustBalance(delta);
+					break;
+				case 'morale':
+					season.adjustMorale(effect.delta);
+					break;
+				case 'xp':
+					player.addXp(effect.delta);
+					break;
+				case 'deckAdd':
+					player.addDeckCards(effect.delta);
+					break;
+				case 'deckRemove':
+					player.removeDeckCards(effect.delta);
+					break;
+				case 'appearanceSkip':
+					season.addAppearanceSkips(effect.delta);
+					break;
+				case 'wageMultiplier':
+					player.multiplyWage(effect.delta);
+					break;
 			}
 		}
 	}
@@ -107,55 +142,28 @@
 			</div>
 		</Card>
 
-		<Card>
-			<div class="flex flex-col gap-2">
-				<p class="mb-2 font-pixel text-xs text-subtle">Outcome:</p>
-				{#each card.outcomes as outcome, i (i)}
-					<div
-						class="flex w-full items-center gap-2 px-3 py-1.5 font-pixel text-[10px] transition-all {i ===
-						currentIndex
-							? 'outline-2 outline-offset-[-2px] outline-primary text-primary bg-dark'
-							: 'text-subtle'}"
-					>
-						<span class="inline-block w-3 shrink-0 text-center">
-							{i === currentIndex ? '>' : ''}
-						</span>
-						<span class="flex-1">{outcome.label}</span>
-						<span class="shrink-0 {i === currentIndex ? 'text-warning' : 'text-subtle'}">
-							{formatEffects(outcome)}
-						</span>
-					</div>
-				{/each}
+		<div class="w-full max-w-sm">
+			<div class="flex h-36 items-center justify-center rounded-lg border border-muted bg-dark px-6">
+				<div class="flex flex-col items-center justify-center gap-3 text-center">
+					<p class="font-pixel text-sm leading-relaxed text-primary">
+						{card.outcomes[currentIndex].label}
+					</p>
+					<p class="font-pixel text-xs text-warning">
+						{formatEffects(card.outcomes[currentIndex])}
+					</p>
+				</div>
 			</div>
-		</Card>
+		</div>
 
 		{#if tickerState === 'spinning'}
 			<Button onclick={stop}>Stop</Button>
 		{:else if tickerState === 'decelerating'}
-			<p class="font-pixel text-xs text-subtle">Decelerating...</p>
+			<p class="font-pixel text-xs text-subtle">Spinning down...</p>
 		{:else if result}
-			<div class="text-center">
-				<p class="font-pixel text-xs {card.theme === 'positive' ? 'text-success' : 'text-danger'}">
-					{result.label}
-				</p>
-				{#if result.effects.length === 0}
-					<p class="mt-2 font-pixel text-xs text-subtle">Nothing happens.</p>
-				{/if}
-				{#each result.effects as effect (effect.type)}
-					<p class="mt-1 font-pixel text-xs text-primary">
-						{#if effect.type === 'bankBalance'}
-							£{effect.delta > 0 ? '+' : ''}{effect.delta}
-						{:else if effect.type === 'morale'}
-							Morale {effect.delta > 0 ? '+' : ''}{effect.delta}
-						{:else if effect.type === 'xp'}
-							XP {effect.delta > 0 ? '+' : ''}{effect.delta}
-						{/if}
-					</p>
-				{/each}
-				<div class="mt-6">
-					<Button onclick={onContinue}>Continue</Button>
-				</div>
-			</div>
+			{#if result.effects.length === 0}
+				<p class="font-pixel text-xs text-subtle">Nothing happens.</p>
+			{/if}
+			<Button onclick={onContinue}>Continue</Button>
 		{/if}
 	{/if}
 </div>

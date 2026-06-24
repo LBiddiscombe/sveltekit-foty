@@ -1,15 +1,26 @@
 import { describe, it, expect, vi } from 'vitest';
 import { INCIDENT_CARDS, pickRandomIncident, incidentCardById } from './incidents';
+import type { IncidentCategory, IncidentEffectType } from '$lib/types/game';
+
+const VALID_CATEGORIES: IncidentCategory[] = [
+	'career', 'training', 'purchases-sales', 'investments', 'family',
+	'media', 'gambling', 'dressing-room', 'travel', 'absurd'
+];
+
+const VALID_EFFECT_TYPES: IncidentEffectType[] = [
+	'bankBalance', 'morale', 'xp', 'deckAdd', 'deckRemove',
+	'appearanceSkip', 'wageMultiplier'
+];
 
 describe('INCIDENT_CARDS', () => {
-	it('has exactly 2 cards', () => {
-		expect(INCIDENT_CARDS).toHaveLength(2);
+	it('has cards', () => {
+		expect(INCIDENT_CARDS.length).toBeGreaterThanOrEqual(1);
 	});
 
-	it('each card has an id, theme, title, description, and outcomes', () => {
+	it('each card has id, category, title, description, and 4 outcomes', () => {
 		for (const card of INCIDENT_CARDS) {
 			expect(card.id).toBeTypeOf('string');
-			expect(card.theme).toMatch(/^positive|negative$/);
+			expect(VALID_CATEGORIES).toContain(card.category);
 			expect(card.title).toBeTypeOf('string');
 			expect(card.description).toBeTypeOf('string');
 			expect(card.outcomes).toHaveLength(4);
@@ -22,17 +33,11 @@ describe('INCIDENT_CARDS', () => {
 				expect(outcome.label).toBeTypeOf('string');
 				expect(Array.isArray(outcome.effects)).toBe(true);
 				for (const effect of outcome.effects) {
-					expect(['bankBalance', 'morale', 'stat']).toContain(effect.type);
+					expect(VALID_EFFECT_TYPES).toContain(effect.type);
 					expect(effect.delta).toBeTypeOf('number');
 				}
 			}
 		}
-	});
-
-	it('has one positive and one negative card', () => {
-		const themes = INCIDENT_CARDS.map((c) => c.theme);
-		expect(themes.filter((t) => t === 'positive')).toHaveLength(1);
-		expect(themes.filter((t) => t === 'negative')).toHaveLength(1);
 	});
 
 	it('each card has at least one outcome with effects', () => {
@@ -41,14 +46,18 @@ describe('INCIDENT_CARDS', () => {
 			expect(outcomesWithEffects.length).toBeGreaterThanOrEqual(1);
 		}
 	});
+
+	it('no two cards share the same id', () => {
+		const ids = INCIDENT_CARDS.map((c) => c.id);
+		expect(new Set(ids).size).toBe(ids.length);
+	});
 });
 
 describe('incidentCardById', () => {
 	it('returns the correct card', () => {
-		const card = incidentCardById('positive-windfall');
+		const card = incidentCardById('late-night-tv');
 		expect(card).toBeDefined();
-		expect(card!.id).toBe('positive-windfall');
-		expect(card!.title).toBe('Windfall');
+		expect(card!.id).toBe('late-night-tv');
 	});
 
 	it('returns undefined for unknown id', () => {
@@ -58,19 +67,17 @@ describe('incidentCardById', () => {
 
 describe('pickRandomIncident', () => {
 	it('returns a card from the list', () => {
-		const rng = () => 0.5;
-		vi.spyOn(Math, 'random').mockImplementation(rng);
 		const card = pickRandomIncident();
-		expect(INCIDENT_CARDS).toContain(card);
+		expect(INCIDENT_CARDS.map((c) => c.id)).toContain(card.id);
 	});
 
-	it('returns first card when Math.random is 0', () => {
-		vi.spyOn(Math, 'random').mockReturnValue(0);
-		expect(pickRandomIncident().id).toBe(INCIDENT_CARDS[0].id);
-	});
-
-	it('returns last card when Math.random is near 1', () => {
-		vi.spyOn(Math, 'random').mockReturnValue(0.999);
-		expect(pickRandomIncident().id).toBe(INCIDENT_CARDS[INCIDENT_CARDS.length - 1].id);
+	it('returns valid cards over many picks', () => {
+		const seen = new Set<string>();
+		for (let i = 0; i < 100; i++) {
+			seen.add(pickRandomIncident().id);
+		}
+		for (const id of seen) {
+			expect(INCIDENT_CARDS.map((c) => c.id)).toContain(id);
+		}
 	});
 });

@@ -69,9 +69,33 @@ export interface InboxItem {
 	incidentCardId?: string;
 }
 
+export type IncidentCategory =
+	| 'career'
+	| 'training'
+	| 'purchases-sales'
+	| 'investments'
+	| 'family'
+	| 'media'
+	| 'gambling'
+	| 'dressing-room'
+	| 'travel'
+	| 'absurd';
+
+export type IncidentEffectType =
+	| 'bankBalance'
+	| 'morale'
+	| 'xp'
+	| 'deckAdd'
+	| 'deckRemove'
+	| 'appearanceSkip'
+	| 'wageMultiplier';
+
 export interface IncidentEffectDescriptor {
-	type: 'bankBalance' | 'morale' | 'xp';
+	type: IncidentEffectType;
+	/** Flat value, or multiplier when `scale` is set */
 	delta: number;
+	/** When set to 'wage', delta is multiplied by the player's weekly wage */
+	scale?: 'wage';
 }
 
 export interface IncidentOutcome {
@@ -81,7 +105,7 @@ export interface IncidentOutcome {
 
 export interface IncidentCard {
 	id: string;
-	theme: 'positive' | 'negative';
+	category: IncidentCategory;
 	title: string;
 	description: string;
 	outcomes: [IncidentOutcome, IncidentOutcome, IncidentOutcome, IncidentOutcome];

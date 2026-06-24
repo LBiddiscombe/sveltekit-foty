@@ -44,11 +44,13 @@
 
 **Type file** — `src/lib/types/game.ts` defines all TypeScript interfaces used by stores and components. Single source of truth, avoids circular imports.
 
-**Incident cards (hybrid)** — Two sources: (1) automatic ~20-30% of weeks, rolled at vidiprinter completion, and (2) purchasable incident cards in the shop for a pay-to-gamble option anytime. Both paths deliver the card to the inbox as an unactioned message.
+**Incident cards (hybrid)** — Two sources: (1) automatic ~20-30% of weeks, rolled at vidiprinter completion, and (2) purchasable incident cards in the shop for a pay-to-gamble option anytime. Both paths deliver the card to the inbox as an unactioned message. Cards are mixed-theme: a single story can produce positive, negative, or neutral outcomes across different levers. No fixed card-level theme.
 
-**Incident resolution** — An unactioned incident message in the inbox navigates to a dedicated route (`/hub/incident`) with a 4-option text ticker. Theme (positive/negative) is baked into each card. 3 themed outcomes at escalating strength + 1 neutral. The ticker cycles through the options rapidly; the player presses a button to decelerate it to a stop, revealing the result.
+**Incident resolution** — An unactioned incident message in the inbox navigates to a dedicated route (`/hub/incident`) with a 4-option text ticker. Cards are mixed-theme (no card-level theme). The ticker cycles through the options rapidly; the player presses a button to decelerate it to a stop, revealing the result.
 
-**Incident effect descriptor** — A declarative data structure specifying store mutations: `{ type: 'bankBalance' | 'morale' | 'xp', delta: number }`. The incident route processes these through a switch. Card definitions live as plain data arrays so they can be future-loaded from config without importing store modules.
+**Incident categories** — Thematic groupings with weighted draw probabilities: Career & Football (25%), Training & Fitness (15%), Purchases & Sales (10%), Investments & Side Businesses (10%), Family & Relationships (10%), Media & Public Image (10%), Gambling & Risk (8%), Dressing Room & Team (5%), Travel & Weather (3%), Absurd (Animals/Tech/Superstition) (4%). Cards within a category are equally likely.
+
+**Incident effect descriptor** — A declarative data structure specifying store mutations: `{ type, delta }`. The incident route processes these through a switch. Supported effect types: `bankBalance`, `morale`, `xp`, `deckAdd`, `deckRemove`, `appearanceSkip`, `wageMultiplier`. Card definitions live as plain data arrays so they can be future-loaded from config without importing store modules. Boundary rules: bankBalance floors at £0 (effects cap at current balance); deck can hit 0 (triggers empty-deck sim); appearanceSkip stacks across cards.
 
 **Inbox clearing** — Each message must be individually tapped to mark `actioned`. "Next Match" enables only when all inbox items are actioned. Incident cards auto-navigate to the incident spinner when opened from the inbox.
 
