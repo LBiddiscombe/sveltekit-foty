@@ -97,11 +97,17 @@
 
 **XP level** — 12 named tiers (Park Kicker → Footballer of the Year), 3 per division. Derived from careerXp. Caps: Div 4 = 100, Div 3 = 200, Div 2 = 350, Div 1 = 500. Interest thresholds for transfers align with division XP minimums. Displayed on Player Status page with progress bar. On relegation to a lower-division cap, XP is never reduced; earning is simply blocked until the player reaches a division whose cap exceeds their total.
 
+**Level-up message** — When `addXp` pushes `careerXp` into a new level tier, a news-type inbox message is auto-created with the level title and a punchy description of the wage boost. `LEVEL_UP_MESSAGES` in `levels.ts` defines one line per tier (levels 1–11; level 0 is starting). The message is non-actionable (no required read) so it doesn't block the Next Match button.
+
 **League standings** — Stored in the `standings` store. Only the player's division standings are tracked each week (real). Other divisions' standings are never materialised; promotion/relegation decisions for non-player divisions use static club strength as a proxy.
 
 **Promotion/relegation (full pyramid)** — At season end, each division boundary is processed top-down (Div 1↔2, then 2↔3, then 3↔4). For each boundary U/L: top 3 of L (by real standings if L = player's division, else by strongest club strength) swap with bottom 3 of U (by real standings if U = player's division, else by weakest club strength). Strength ties among non-player-division clubs are broken randomly. Division rosters are updated in-place to reflect the swaps, so a club relegated from Div 2 into Div 3 is available when processing the 3↔4 boundary. No promotion from Div 1, no relegation from Div 4.
 
 **Season transition** — After week 30, vidiprinter's Continue navigates to the season review route rather than the hub. The season review page processes promotion/relegation, division roster updates, new-season generation, and XP awards. A new-season inbox message is created for the player to see on hub arrival. No incident card on week 30.
+
+**Season deck cards** — 10 random goal cards are added to the player's deck at every season start (in season review, before navigating to hub). Cards are appended to any existing stockpile — not a reset.
+
+**Promotion signing bonus** — On promotion, the player receives a one-time cash bonus of 10× their current wage (XP-level-based), credited in season review alongside the +10 XP award.
 
 **Division schedule** — A shared double round-robin schedule for all clubs in the player's division, generated at season start via `generateDivisionSchedule`. Each week has 1 or 2 games per club. Div 1 = 38 games (8 double weeks), others = 46 (16 double weeks).
 

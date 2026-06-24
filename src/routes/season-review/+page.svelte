@@ -19,7 +19,12 @@
 	const result: EndSeasonResult = season.endSeason(player.club, oldDivision);
 
 	player.division = result.newDivision;
-	if (result.playerInPromoted) player.addXp(XP_CONFIG.promotion);
+	player.addSeasonCards();
+	if (result.playerInPromoted) {
+		player.addXp(XP_CONFIG.promotion);
+		const promotionBonus = player.wage * 10;
+		player.adjustBalance(promotionBonus);
+	}
 
 	const seasonStats = season.getSeasonStats(player.goals, player.appearances, player.careerXp);
 
@@ -69,6 +74,7 @@
 			<p>XP Earned: <span class="text-primary">+{seasonStats.xpEarned}</span></p>
 			{#if result.playerInPromoted}
 				<p>Promotion Bonus: <span class="text-success">+{XP_CONFIG.promotion} XP</span></p>
+				<p>Signing Bonus: <span class="text-success">+£{player.wage * 10}</span></p>
 			{/if}
 		</div>
 	</Card>
@@ -96,7 +102,7 @@
 				<span class="w-6 text-center">P</span>
 				<span class="w-8 text-center">Pts</span>
 			</div>
-			{#each result.finalStandings as entry, i}
+			{#each result.finalStandings as entry, i (entry.club)}
 				<div
 					class="flex items-center gap-2 font-pixel text-[10px] {entry.club === player.club
 						? 'text-primary bg-dark rounded px-0 py-0.5'

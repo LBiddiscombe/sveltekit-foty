@@ -54,3 +54,17 @@ export function getNextLevelXp(xp: number): number | null {
 	if (idx >= LEVELS.length - 1) return null;
 	return LEVELS[idx + 1].minXp;
 }
+
+export const LEVEL_UP_MESSAGES: Record<number, string> = {
+	1: 'You\'re now a Sunday Leaguer. Your wage is now £{wage} a week.',
+	2: 'Trialist status unlocked. Wage bumped to £{wage}.',
+	3: 'Prospect — Division 3 awaits. Your wage rises to £{wage}.',
+	4: 'Reserve grade. The club rates you at £{wage} a week now.',
+	5: 'Fringe Player. First team getting closer — wage up to £{wage}.',
+	6: 'Squad Player in Division 2. Your wage is now £{wage}.',
+	7: 'First Team Regular. Consistent starts, £{wage} a week to match.',
+	8: 'Star Player. Top-tier performances, £{wage} a week.',
+	9: 'International calibre. Your wage is now £{wage}.',
+	10: 'World Class. Only one level left — earning £{wage}.',
+	11: 'Footballer of the Year. The pinnacle. £{wage} a week.'
+};

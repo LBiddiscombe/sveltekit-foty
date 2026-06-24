@@ -3,6 +3,7 @@
 	import { season } from '$lib/stores/season.svelte';
 	import { player } from '$lib/stores/player.svelte';
 	import { match } from '$lib/stores/match.svelte';
+	import { standings } from '$lib/stores/standings.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import DeckCard from '$lib/components/DeckCard.svelte';
 	import Button from '$lib/components/Button.svelte';
@@ -12,6 +13,12 @@
 		season.phase = 'pre-match';
 		match.reset();
 	});
+
+	function ordinal(n: number): string {
+		const s = ['th', 'st', 'nd', 'rd'];
+		const v = n % 100;
+		return n + (s[(v - 20) % 10] ?? s[v] ?? s[0]);
+	}
 
 	const unplayedFixtures = $derived(
 		season.fixtures.filter((f) => f.weekNumber === season.weekNumber && !f.result)
@@ -73,7 +80,10 @@
 			<div class="flex flex-col items-center gap-1 py-2 text-center">
 				<span class="font-pixel text-xs text-subtle">{currentFixture.isHome ? 'HOME' : 'AWAY'}</span
 				>
-				<span class="font-pixel text-lg text-primary">{currentFixture.opponent}</span>
+					<span class="font-pixel text-lg text-primary">
+					{currentFixture.opponent}
+					<span class="text-subtle">({ordinal(standings.getPosition(currentFixture.opponent))})</span>
+				</span>
 			</div>
 		</Card>
 
