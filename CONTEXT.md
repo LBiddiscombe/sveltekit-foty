@@ -46,7 +46,7 @@
 
 **Incident cards (hybrid)** — Two sources: (1) automatic ~20-30% of weeks, rolled at vidiprinter completion, and (2) purchasable incident cards in the shop for a pay-to-gamble option anytime. Both paths deliver the card to the inbox as an unactioned message. Cards are mixed-theme: a single story can produce positive, negative, or neutral outcomes across different levers. No fixed card-level theme.
 
-**Incident resolution** — An unactioned incident message in the inbox navigates to a dedicated route (`/hub/incident`) with a 4-option text ticker. Cards are mixed-theme (no card-level theme). The ticker cycles through the options rapidly; the player presses a button to decelerate it to a stop, revealing the result.
+**Incident resolution** — An unactioned incident message in the inbox navigates to a dedicated route (`/hub/incident`) with a 4-option text ticker. Cards are mixed-theme (no card-level theme). The ticker cycles through the options rapidly; the player presses a button to decelerate it to a stop, revealing the result. After resolution, the player is returned to the inbox, not the hub, so they can continue actioning remaining messages.
 
 **Incident categories** — Thematic groupings with weighted draw probabilities: Career & Football (25%), Training & Fitness (15%), Purchases & Sales (10%), Investments & Side Businesses (10%), Family & Relationships (10%), Media & Public Image (10%), Gambling & Risk (8%), Dressing Room & Team (5%), Travel & Weather (3%), Absurd (Animals/Tech/Superstition) (4%). Cards within a category are equally likely.
 
@@ -95,7 +95,9 @@
 
 **Repeated shop buys** — Shop purchase buttons remain visible and usable after each purchase (no `bought` guard). The player can tap repeatedly to buy multiple items in one visit. A brief "Card added!" flash confirms each purchase.
 
-**Career XP** — Single progression metric replacing the removed stat system. Tracked per event via `XP_CONFIG`: played (+1), goal (+1), saved (0), miss (-1), skipped (0), win (1), draw (0), loss (0), promotion (+10, conditional on actual promotion). Designed so ~100-125 XP is earnable per season of perfect play (every game played, all chances scored, all wins). Realistic play (~50% match rate, ~0.5 goals/match) yields ~30-35 XP/season. Capped per division. Unaffected by above-cap matches (can still lose XP at cap for misses).
+**Zero baseline result bonus** — Match XP result component computed as `points(actual score) − points(score minus player goals)`. Reflects the league-table points the player personally added via their goals. Misses do not affect the counterfactual score (they are penalised separately via per-outcome XP). Always ≥ 0. Replaces the flat win/draw/loss XP constant.
+
+**Career XP** — Single progression metric replacing the removed stat system. Tracked per event via `XP_CONFIG`: played (+1), goal (+1), saved (0), miss (-1), skipped (0), win (1), draw (0), loss (0), promotion (+10, conditional on actual promotion). Designed so ~100-125 XP is earnable per season of perfect play (every game played, all chances scored, all wins). Realistic play (~50% match rate, ~0.5 goals/match) yields ~30-35 XP/season. Capped per division. XP is frozen at the cap — no XP is earned or lost from any match once the player is at cap.
 
 **XP level** — 12 named tiers (Park Kicker → Footballer of the Year), 3 per division. Derived from careerXp. Caps: Div 4 = 100, Div 3 = 200, Div 2 = 350, Div 1 = 500. Interest thresholds for transfers align with division XP minimums. Displayed on Player Status page with progress bar. On relegation to a lower-division cap, XP is never reduced; earning is simply blocked until the player reaches a division whose cap exceeds their total.
 
@@ -115,4 +117,12 @@
 
 **Transfers (hybrid)** — Two paths to move clubs: (1) XP-threshold manager interest triggers naturally when careerXp meets the target division's interest minimum, and (2) purchasable transfer cards in the shop give a chance of early scouting evaluation. Both lead to negotiation + contract screen (Cycle 7).
 
-**Match XP computation** — XP earned per match = played(5) + sum per-outcome + result bonus. Tracked in matchXpHistory (last 5 matches) for form display. Capped at division XP cap — no XP earned if player is at cap (but can still lose XP from misses).
+**Match XP computation** — XP earned per match = played(1) + sum per-outcome + zero-baseline result bonus. Tracked in matchXpHistory (last 5 matches) for form display. Capped at division XP cap — XP is frozen at cap (no XP earned or lost).
+
+**Appearance rule** — Only matches where the player chooses Play count as appearances. Both voluntary skips and forced skips (from appearanceSkip incidents) record zero appearances.
+
+**Voluntary skip (card economy)** — Player draws a deck card, sees the chance count, and chooses Skip. Card is pushed to bottom of deck (recycled). No appearance recorded, zero XP earned. Team sims result as normal.
+
+**Forced skip (injury/suspension)** — When `appearanceSkips > 0`, pre-match shows "You are unavailable — forced to miss this match (N remaining)" and auto-resolves. No deck card consumed (stays on top). No appearance recorded, zero XP earned. Resolution bypasses `/match` and goes directly to next game or vidiprinter.
+
+**Goal card rewards** — Incident cards in career and training categories can reward goal cards via `deckAdd` effect. Tiered: best outcome 2-3 cards, good outcome 1 card, bad/neutral unchanged. Thematically placed where the narrative supports earning extra chances.

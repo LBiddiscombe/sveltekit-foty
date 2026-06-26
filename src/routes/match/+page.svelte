@@ -38,32 +38,41 @@
 		}
 	}
 
-	function calcMatchXp(outcomes: Outcome[], result: 'win' | 'draw' | 'loss'): number {
+	function points(us: number, them: number): number {
+		return us > them ? 3 : us === them ? 1 : 0;
+	}
+
+	function calcMatchXp(outcomes: Outcome[], score: [number, number]): number {
 		const cap = DIVISION_XP_CAPS[player.division as keyof typeof DIVISION_XP_CAPS] ?? 500;
 		if (player.careerXp >= cap) return 0;
 
-		let total = 0;
+		const playerGoals = outcomes.filter((o) => o === 'goal').length;
+		const teamBase = score[0] - playerGoals;
+		const resultBonus = points(score[0], score[1]) - points(teamBase, score[1]);
+
+		let total = XP_CONFIG.played;
 		for (const o of outcomes) {
 			total += XP_CONFIG[o as keyof typeof XP_CONFIG] ?? 0;
 		}
-		total += XP_CONFIG.played;
-		total += XP_CONFIG[result];
+		total += resultBonus;
 
 		return total;
 	}
 
 	function finishCurrentGame() {
 		const res = match.result!;
+		const game = match.pendingGames[match.currentGameIndex];
 		const playerGoals = res.outcomes.filter((o) => o === 'goal').length;
 		const [us, them] = res.score;
-		const resultLabel = us > them ? 'win' : us === them ? 'draw' : 'loss';
 		season.adjustMorale(getMoraleDelta(res.score, playerGoals));
 
-		const matchXp = calcMatchXp(res.outcomes, resultLabel);
-		player.addXp(matchXp);
-		player.recordMatchXp(matchXp);
+		if (!game.skipped) {
+			const matchXp = calcMatchXp(res.outcomes, res.score);
+			player.addXp(matchXp);
+			player.recordMatchXp(matchXp);
+			recordPlayerMatch(playerGoals);
+		}
 
-		recordPlayerMatch(playerGoals);
 		match.saveFixtureResult();
 		match.advance();
 

@@ -116,12 +116,12 @@
 		applyEffects(result);
 		saveGame();
 		inbox.markRead(item.id);
-		goto('/hub');
+		goto('/hub/inbox');
 	}
 
 	$effect(() => {
 		if (!card || !item) {
-			goto('/hub');
+			goto('/hub/inbox');
 			return;
 		}
 

@@ -67,7 +67,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 		title: 'Player of the Month',
 		description: 'You\'ve been nominated for Player of the Month.',
 		outcomes: [
-			{ label: 'You win! Trophy on the mantelpiece!', effects: [{ type: 'morale', delta: 3 }, { type: 'bankBalance', delta: 2, scale: 'wage' }] },
+			{ label: 'You win! Trophy on the mantelpiece!', effects: [{ type: 'morale', delta: 3 }, { type: 'bankBalance', delta: 2, scale: 'wage' }, { type: 'deckAdd', delta: 2 }] },
 			{ label: 'Shortlisted. Recognition feels good.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Media snub affects your confidence.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'You weren\'t even nominated.', effects: [] }
@@ -178,7 +178,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 			{ label: 'Hard work pays off! Sharp as a tack!', effects: [{ type: 'xp', delta: 3 }] },
 			{ label: 'Productive session. Feel improvement.', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Overdid it. Picked up a knock.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
-			{ label: 'Gaffer notices your dedication.', effects: [{ type: 'morale', delta: 1 }] }
+			{ label: 'Gaffer notices your dedication.', effects: [{ type: 'deckAdd', delta: 1 }] }
 		]
 	},
 	{
@@ -199,7 +199,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 		title: 'Reserve Team',
 		description: 'The manager wants you to play a reserve match.',
 		outcomes: [
-			{ label: 'Score a hat-trick! Statement made!', effects: [{ type: 'morale', delta: 2 }, { type: 'xp', delta: 2 }] },
+			{ label: 'Score a hat-trick! Statement made!', effects: [{ type: 'deckAdd', delta: 2 }, { type: 'xp', delta: 2 }] },
 			{ label: 'Solid performance. Job done.', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Pick up a knock on a heavy pitch.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
 			{ label: 'Refuse. Too good for reserve football.', effects: [{ type: 'morale', delta: -2 }] }
@@ -379,7 +379,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 		title: 'Set Piece Specialist',
 		description: 'The coach wants you to take free kicks and corners.',
 		outcomes: [
-			{ label: 'Score a beauty from a free kick!', effects: [{ type: 'morale', delta: 2 }, { type: 'xp', delta: 2 }] },
+			{ label: 'Score a beauty from a free kick!', effects: [{ type: 'morale', delta: 2 }, { type: 'xp', delta: 2 }, { type: 'deckAdd', delta: 1 }] },
 			{ label: 'Delivery improving. Assists piling up.', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Set pieces have been poor lately.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Stick to open play. Let others take them.', effects: [] }
@@ -415,7 +415,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 		title: 'Charity Match',
 		description: 'You\'ve been invited to play in a charity match.',
 		outcomes: [
-			{ label: 'Score a screamer! Crowd goes wild!', effects: [{ type: 'morale', delta: 2 }] },
+			{ label: 'Score a screamer! Crowd goes wild!', effects: [{ type: 'deckAdd', delta: 1 }] },
 			{ label: 'Fun day out for a good cause.', effects: [] },
 			{ label: 'Pick up a silly injury in a charity game.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
 			{ label: 'Donate but skip the game.', effects: [{ type: 'bankBalance', delta: -1, scale: 'wage' }] }
@@ -428,7 +428,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 		description: 'The club heads to a warm-weather training camp.',
 		outcomes: [
 			{ label: 'Intense camp. Come back flying!', effects: [{ type: 'xp', delta: 3 }] },
-			{ label: 'Good bonding with the squad.', effects: [{ type: 'morale', delta: 1 }] },
+			{ label: 'Good bonding with the squad.', effects: [{ type: 'deckAdd', delta: 1 }] },
 			{ label: 'Pick up a bug from the hotel food.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
 			{ label: 'Enjoy the sun more than the training.', effects: [] }
 		]
@@ -571,8 +571,8 @@ export const CAREER_CARDS: IncidentCard[] = [
 		title: 'Sponsorship Deal',
 		description: 'A sportswear brand wants to sponsor you personally.',
 		outcomes: [
-			{ label: 'Lucrative multi-year deal! Big money!', effects: [{ type: 'bankBalance', delta: 8, scale: 'wage' }] },
-			{ label: 'Modest sponsorship agreed.', effects: [{ type: 'bankBalance', delta: 3, scale: 'wage' }] },
+			{ label: 'Lucrative multi-year deal! Big money!', effects: [{ type: 'bankBalance', delta: 8, scale: 'wage' }, { type: 'deckAdd', delta: 2 }] },
+			{ label: 'Modest sponsorship agreed.', effects: [{ type: 'bankBalance', delta: 3, scale: 'wage' }, { type: 'deckAdd', delta: 1 }] },
 			{ label: 'Deal falls through at the last minute.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Decline. Loyal to your current brand.', effects: [] }
 		]
@@ -619,7 +619,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 		title: 'Training Drill',
 		description: 'The coach introduces a new training drill.',
 		outcomes: [
-			{ label: 'Excel at it! Coach uses you as the example!', effects: [{ type: 'xp', delta: 2 }, { type: 'morale', delta: 1 }] },
+			{ label: 'Excel at it! Coach uses you as the example!', effects: [{ type: 'xp', delta: 2 }, { type: 'deckAdd', delta: 1 }] },
 			{ label: 'Pick it up quickly.', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Struggle with the new system.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Same old drills. Nothing new.', effects: [] }

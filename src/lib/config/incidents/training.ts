@@ -211,7 +211,7 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'New Boots',
 		description: 'Your new boots are giving you blisters.',
 		outcomes: [
-			{ label: 'Break them in perfectly. Feel great!', effects: [] },
+			{ label: 'Break them in perfectly. Feel great!', effects: [{ type: 'deckAdd', delta: 1 }] },
 			{ label: 'Blisters but manageable. Plasters on.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Bloody blisters. Can\'t train properly.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
 			{ label: 'Switch back to old boots.', effects: [] }
@@ -259,7 +259,7 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Speed Work',
 		description: 'The sprint coach wants to work on your pace.',
 		outcomes: [
-			{ label: 'New PB over 40 metres! Rapid!', effects: [{ type: 'xp', delta: 3 }] },
+			{ label: 'New PB over 40 metres! Rapid!', effects: [{ type: 'xp', delta: 2 }, { type: 'deckAdd', delta: 1 }] },
 			{ label: 'Improvement noted. Getting quicker.', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Push too hard. Pull up sore.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
 			{ label: 'Fast enough already. Skip the session.', effects: [] }
@@ -355,7 +355,7 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Stadium Run',
 		description: 'Training involves running the stadium steps.',
 		outcomes: [
-			{ label: 'Conquer the steps! Legendary stamina!', effects: [{ type: 'xp', delta: 2 }] },
+			{ label: 'Conquer the steps! Legendary stamina!', effects: [{ type: 'xp', delta: 2 }, { type: 'deckAdd', delta: 1 }] },
 			{ label: 'Tough session. Get through it.', effects: [] },
 			{ label: 'Tripped on the steps. Twisted knee.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
 			{ label: 'Feign illness. Avoid the stairs.', effects: [{ type: 'morale', delta: -1 }] }

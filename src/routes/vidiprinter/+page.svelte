@@ -128,13 +128,15 @@
 
 			for (const entry of standings.entries.slice(0, 3)) addLine(entry);
 
-			if (inTop3 || inBottom3) {
+			if (inTop3) {
+				l.push('   ...');
+			} else if (inBottom3) {
 				l.push('   ...');
 			} else {
-				l.push('   ...');
+				if (playerPos > 4) l.push('   ...');
 				const playerEntry = standings.getByClub(PLAYER_CLUB);
 				if (playerEntry) addLine(playerEntry);
-				l.push('   ...');
+				if (playerPos < total - 3) l.push('   ...');
 			}
 
 			for (const entry of standings.entries.slice(-3)) addLine(entry);

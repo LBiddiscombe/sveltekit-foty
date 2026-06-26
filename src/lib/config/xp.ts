@@ -4,9 +4,6 @@ export const XP_CONFIG = {
 	saved: 0,
 	miss: -1,
 	skipped: 0,
-	win: 1,
-	draw: 0,
-	loss: 0,
 	promotion: 10
 } as const;
 

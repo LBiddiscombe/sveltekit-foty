@@ -5,7 +5,6 @@ import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
 import { generateDivisionSchedule } from '$lib/config/schedule';
 import { generatePlayerFixtures } from '$lib/config/fixtures';
 import { standings } from './standings.svelte';
-import { XP_CONFIG } from '$lib/config/xp';
 
 export type BoundaryResult = {
 	upper: number;
