@@ -5,7 +5,7 @@ import { match } from '$lib/stores/match.svelte';
 import { standings } from '$lib/stores/standings.svelte';
 import { wageForLevel } from '$lib/config/economy';
 import { getLevelIndex } from '$lib/config/levels';
-import type { DivisionSchedule, Fixture, InboxItem, MatchResult, Standing } from '$lib/types/game';
+import type { DivisionSchedule, Fixture, InboxItem, MatchResult, Standing, StatsArchiveEntry } from '$lib/types/game';
 
 const SAVE_KEY = 'foty-save';
 const SAVE_BACKUP_KEY = 'foty-save-backup';
@@ -70,6 +70,10 @@ interface SaveState {
 		deck: number[];
 		careerXp: number;
 		matchXpHistory: number[];
+		chances: number;
+		saves: number;
+		misses: number;
+		statsArchive: StatsArchiveEntry[];
 	};
 	season: {
 		weekNumber: number;
@@ -81,9 +85,12 @@ interface SaveState {
 		morale: number;
 		lastWageWeek: number;
 		divisionRosters: Record<string, string[]>;
-		seasonXpAtStart: number;
-		seasonGoalsAtStart: number;
-		seasonAppsAtStart: number;
+		statsXpAtStart: number;
+		statsGoalsAtStart: number;
+		statsAppsAtStart: number;
+		statsChancesAtStart: number;
+		statsSavesAtStart: number;
+		statsMissesAtStart: number;
 		appearanceSkips: number;
 	};
 	inboxItems: InboxItem[];
@@ -110,7 +117,11 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 			division: player.division,
 			deck: [...player.deck],
 			careerXp: player.careerXp,
-			matchXpHistory: [...player.matchXpHistory]
+			matchXpHistory: [...player.matchXpHistory],
+			chances: player.chances,
+			saves: player.saves,
+			misses: player.misses,
+			statsArchive: JSON.parse(JSON.stringify(player.statsArchive))
 		},
 		season: {
 			weekNumber: season.weekNumber,
@@ -122,9 +133,12 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 			morale: season.morale,
 			lastWageWeek: season.lastWageWeek,
 			divisionRosters: JSON.parse(JSON.stringify(season.divisionRosters)),
-			seasonXpAtStart: season.seasonXpAtStart,
-			seasonGoalsAtStart: season.seasonGoalsAtStart,
-			seasonAppsAtStart: season.seasonAppsAtStart,
+			statsXpAtStart: season.statsXpAtStart,
+			statsGoalsAtStart: season.statsGoalsAtStart,
+			statsAppsAtStart: season.statsAppsAtStart,
+			statsChancesAtStart: season.statsChancesAtStart,
+			statsSavesAtStart: season.statsSavesAtStart,
+			statsMissesAtStart: season.statsMissesAtStart,
 			appearanceSkips: season.appearanceSkips
 		},
 		inboxItems: JSON.parse(JSON.stringify(inbox.items)),
@@ -175,6 +189,10 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		player.careerXp = state.player.careerXp ?? 0;
 		player.wage = wageForLevel(getLevelIndex(player.careerXp));
 		player.matchXpHistory = state.player.matchXpHistory ?? [];
+		player.chances = state.player.chances ?? 0;
+		player.saves = state.player.saves ?? 0;
+		player.misses = state.player.misses ?? 0;
+		player.statsArchive = state.player.statsArchive ?? [];
 
 		season.weekNumber = Math.max(1, state.season.weekNumber);
 		season.seasonNumber = state.season.seasonNumber;
@@ -187,9 +205,12 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		if (state.season.divisionRosters) {
 			season.divisionRosters = state.season.divisionRosters;
 		}
-		season.seasonXpAtStart = state.season.seasonXpAtStart ?? 0;
-		season.seasonGoalsAtStart = state.season.seasonGoalsAtStart ?? 0;
-		season.seasonAppsAtStart = state.season.seasonAppsAtStart ?? 0;
+		season.statsXpAtStart = state.season.statsXpAtStart ?? 0;
+		season.statsGoalsAtStart = state.season.statsGoalsAtStart ?? 0;
+		season.statsAppsAtStart = state.season.statsAppsAtStart ?? 0;
+		season.statsChancesAtStart = state.season.statsChancesAtStart ?? 0;
+		season.statsSavesAtStart = state.season.statsSavesAtStart ?? 0;
+		season.statsMissesAtStart = state.season.statsMissesAtStart ?? 0;
 		season.appearanceSkips = state.season.appearanceSkips ?? 0;
 
 		inbox.items = state.inboxItems;

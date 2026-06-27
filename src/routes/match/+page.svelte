@@ -69,6 +69,7 @@
 			const matchXp = calcMatchXp(res.outcomes, res.score);
 			player.addXp(matchXp);
 			player.recordMatchXp(matchXp);
+			player.recordMatchOutcomes(res.outcomes);
 			recordPlayerMatch(playerGoals);
 		}
 

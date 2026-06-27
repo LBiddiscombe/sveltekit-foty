@@ -120,6 +120,19 @@ export interface Standing {
 	lastFive: string[];
 }
 
+export interface StatsArchiveEntry {
+	seasonNumber: number;
+	club: string;
+	division: number;
+	chances: number;
+	saves: number;
+	misses: number;
+	goals: number;
+	appearances: number;
+	xpEarned: number;
+	finalPosition: number | null;
+}
+
 export interface Level {
 	title: string;
 	minXp: number;

@@ -119,6 +119,12 @@
 
 **Transfers (hybrid)** — Two paths to move clubs: (1) XP-threshold manager interest triggers naturally when careerXp meets the target division's interest minimum, and (2) purchasable transfer cards in the shop give a chance of early scouting evaluation. Both lead to negotiation + contract screen (Cycle 7).
 
+**Stats snapshot** — Baseline values (goals, appearances, XP, chances, saves, misses) recorded at career start via `recordStatsSnapshot()`. On season end (or future club change), `getStatsSinceSnapshot()` computes the delta and `archiveCurrentStats()` pushes the entry to the archive and resets the snapshot for the next period.
+
+**Stats archive** — `StatsArchiveEntry[]` on the player store. Each entry records `{ seasonNumber, club, division, chances, saves, misses, goals, appearances, xpEarned, finalPosition }`. Supports multiple entries per season (one per club after a mid-season transfer). Displayed on the Player Status page as a per-season list with career totals. Archive + current-season snapshot delta form the `careerTotal` derived values.
+
+**Outcome tracking** — Each played match records per-outcome counts via `player.recordMatchOutcomes(outcomes)`. `'goal'` increments only the global `chances` counter (goals tracked separately via `addGoals`); `'saved'` increments `saves` and `chances`; `'miss'` increments `misses` and `chances`. These feed the snapshot system and archive to show conversion percentages on the Player Status page.
+
 **Match XP computation** — XP earned per match = played(1) + sum per-outcome + zero-baseline result bonus. Tracked in matchXpHistory (last 5 matches) for form display. Capped at division XP cap — XP is frozen at cap (no XP earned or lost).
 
 **Appearance rule** — Only matches where the player chooses Play count as appearances. Both voluntary skips and forced skips (from appearanceSkip incidents) record zero appearances.

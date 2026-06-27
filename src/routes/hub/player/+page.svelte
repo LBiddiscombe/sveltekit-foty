@@ -1,7 +1,40 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { player } from '$lib/stores/player.svelte';
+	import { season } from '$lib/stores/season.svelte';
 	import { LEVELS, getLevel, getLevelIndex, getNextLevelXp } from '$lib/config/levels';
+
+	const currentSeason = $derived({
+		chances: player.chances - season.statsChancesAtStart,
+		saves: player.saves - season.statsSavesAtStart,
+		misses: player.misses - season.statsMissesAtStart,
+		goals: player.goals - season.statsGoalsAtStart,
+		appearances: player.appearances - season.statsAppsAtStart,
+		xp: player.careerXp - season.statsXpAtStart
+	});
+
+	const archiveTotal = $derived(
+		player.statsArchive.reduce(
+			(acc, e) => ({
+				chances: acc.chances + e.chances,
+				saves: acc.saves + e.saves,
+				misses: acc.misses + e.misses,
+				goals: acc.goals + e.goals,
+				appearances: acc.appearances + e.appearances,
+				xp: acc.xp + e.xpEarned
+			}),
+			{ chances: 0, saves: 0, misses: 0, goals: 0, appearances: 0, xp: 0 }
+		)
+	);
+
+	const careerTotal = $derived({
+		chances: archiveTotal.chances + currentSeason.chances,
+		saves: archiveTotal.saves + currentSeason.saves,
+		misses: archiveTotal.misses + currentSeason.misses,
+		goals: archiveTotal.goals + currentSeason.goals,
+		appearances: archiveTotal.appearances + currentSeason.appearances,
+		xp: archiveTotal.xp + currentSeason.xp
+	});
 
 	const level = $derived(getLevel(player.careerXp));
 	const nextXp = $derived(getNextLevelXp(player.careerXp));
@@ -103,4 +136,94 @@
 			</div>
 		</div>
 	{/if}
+
+	<div class="mt-5 rounded bg-card p-4">
+		<h2 class="mb-4 text-[10px] text-subtle">CAREER STATS</h2>
+
+		<h3 class="mb-2 text-[9px] text-subtle">
+			{player.club} · Season {season.seasonNumber} (in progress)
+		</h3>
+		<div class="mb-4 grid grid-cols-6 gap-1 text-center text-[9px]">
+			<span class="text-subtle">CHN</span>
+			<span class="text-subtle">GLS</span>
+			<span class="text-subtle">SVD</span>
+			<span class="text-subtle">MSS</span>
+			<span class="text-subtle">APP</span>
+			<span class="text-subtle">XP</span>
+			<span class="text-primary">{currentSeason.chances}</span>
+			<span class="text-success">{currentSeason.goals}</span>
+			<span class="text-warning">{currentSeason.saves}</span>
+			<span class="text-danger">{currentSeason.misses}</span>
+			<span class="text-primary">{currentSeason.appearances}</span>
+			<span class="text-warning">+{currentSeason.xp}</span>
+			<span></span>
+			<span class="text-success">{currentSeason.chances > 0 ? Math.round(currentSeason.goals / currentSeason.chances * 100) + '%' : ''}</span>
+			<span class="text-warning">{currentSeason.chances > 0 ? Math.round(currentSeason.saves / currentSeason.chances * 100) + '%' : ''}</span>
+			<span class="text-danger">{currentSeason.chances > 0 ? Math.round(currentSeason.misses / currentSeason.chances * 100) + '%' : ''}</span>
+			<span></span>
+			<span></span>
+		</div>
+
+		{#if player.statsArchive.length > 0}
+			<h3 class="mb-2 text-[9px] text-subtle">SEASON HISTORY</h3>
+			<div class="mb-4 flex flex-col gap-2">
+				{#each [...player.statsArchive].reverse() as entry, i (i)}
+					<div class="rounded bg-dark p-2 text-[9px]">
+						<div class="mb-1 flex items-center gap-2">
+							<span class="text-subtle">S{entry.seasonNumber}</span>
+							<span class="text-primary">{entry.club}</span>
+							<span class="text-subtle">Div {entry.division}</span>
+							{#if entry.finalPosition !== null}
+								<span class="ml-auto text-subtle">{entry.finalPosition}{entry.finalPosition === 1 ? 'st' : entry.finalPosition === 2 ? 'nd' : entry.finalPosition === 3 ? 'rd' : 'th'}</span>
+							{:else}
+								<span class="ml-auto text-subtle">-</span>
+							{/if}
+						</div>
+						<div class="grid grid-cols-6 gap-1 text-center">
+							<span class="text-subtle">CHN</span>
+							<span class="text-subtle">GLS</span>
+							<span class="text-subtle">SVD</span>
+							<span class="text-subtle">MSS</span>
+							<span class="text-subtle">APP</span>
+							<span class="text-subtle">XP</span>
+							<span class="text-primary">{entry.chances}</span>
+							<span class="text-success">{entry.goals}</span>
+							<span class="text-warning">{entry.saves}</span>
+							<span class="text-danger">{entry.misses}</span>
+							<span class="text-primary">{entry.appearances}</span>
+							<span class="text-warning">+{entry.xpEarned}</span>
+							<span></span>
+							<span class="text-success">{entry.chances > 0 ? Math.round(entry.goals / entry.chances * 100) + '%' : ''}</span>
+							<span class="text-warning">{entry.chances > 0 ? Math.round(entry.saves / entry.chances * 100) + '%' : ''}</span>
+							<span class="text-danger">{entry.chances > 0 ? Math.round(entry.misses / entry.chances * 100) + '%' : ''}</span>
+							<span></span>
+							<span></span>
+						</div>
+					</div>
+				{/each}
+			</div>
+		{/if}
+
+		<h3 class="mb-2 text-[9px] text-subtle">CAREER TOTALS</h3>
+		<div class="grid grid-cols-6 gap-1 text-center text-[9px]">
+			<span class="text-subtle">CHN</span>
+			<span class="text-subtle">GLS</span>
+			<span class="text-subtle">SVD</span>
+			<span class="text-subtle">MSS</span>
+			<span class="text-subtle">APP</span>
+			<span class="text-subtle">XP</span>
+			<span class="text-primary">{careerTotal.chances}</span>
+			<span class="text-success">{careerTotal.goals}</span>
+			<span class="text-warning">{careerTotal.saves}</span>
+			<span class="text-danger">{careerTotal.misses}</span>
+			<span class="text-primary">{careerTotal.appearances}</span>
+			<span class="text-warning">+{careerTotal.xp}</span>
+			<span></span>
+			<span class="text-success">{careerTotal.chances > 0 ? Math.round(careerTotal.goals / careerTotal.chances * 100) + '%' : ''}</span>
+			<span class="text-warning">{careerTotal.chances > 0 ? Math.round(careerTotal.saves / careerTotal.chances * 100) + '%' : ''}</span>
+			<span class="text-danger">{careerTotal.chances > 0 ? Math.round(careerTotal.misses / careerTotal.chances * 100) + '%' : ''}</span>
+			<span></span>
+			<span></span>
+		</div>
+	</div>
 </div>

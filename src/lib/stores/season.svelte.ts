@@ -14,6 +14,9 @@ export type BoundaryResult = {
 };
 
 export type SeasonStats = {
+	chances: number;
+	saves: number;
+	misses: number;
 	goals: number;
 	appearances: number;
 	xpEarned: number;
@@ -41,9 +44,12 @@ function createSeason() {
 	let lastWageWeek = $state(0);
 	let divisionRosters = $state<Record<number, string[]>>({});
 	let appearanceSkips = $state(0);
-	let seasonXpAtStart = $state(0);
-	let seasonGoalsAtStart = $state(0);
-	let seasonAppsAtStart = $state(0);
+	let statsXpAtStart = $state(0);
+	let statsGoalsAtStart = $state(0);
+	let statsAppsAtStart = $state(0);
+	let statsChancesAtStart = $state(0);
+	let statsSavesAtStart = $state(0);
+	let statsMissesAtStart = $state(0);
 
 	function initDivisionRosters() {
 		for (let d = 1; d <= 4; d++) {
@@ -168,6 +174,9 @@ function createSeason() {
 		standings.init(newDivClubs);
 
 		const seasonStats: SeasonStats = {
+			chances: 0,
+			saves: 0,
+			misses: 0,
 			goals: 0,
 			appearances: 0,
 			xpEarned: 0
@@ -192,21 +201,37 @@ function createSeason() {
 		};
 	}
 
-	function recordSeasonSnapshot(playerGoals: number, playerApps: number, playerXp: number) {
-		seasonGoalsAtStart = playerGoals;
-		seasonAppsAtStart = playerApps;
-		seasonXpAtStart = playerXp;
+	function recordStatsSnapshot(
+		playerGoals: number,
+		playerApps: number,
+		playerXp: number,
+		playerChances: number = 0,
+		playerSaves: number = 0,
+		playerMisses: number = 0
+	) {
+		statsGoalsAtStart = playerGoals;
+		statsAppsAtStart = playerApps;
+		statsXpAtStart = playerXp;
+		statsChancesAtStart = playerChances;
+		statsSavesAtStart = playerSaves;
+		statsMissesAtStart = playerMisses;
 	}
 
-	function getSeasonStats(
+	function getStatsSinceSnapshot(
 		currentGoals: number,
 		currentApps: number,
-		currentXp: number
+		currentXp: number,
+		currentChances: number = 0,
+		currentSaves: number = 0,
+		currentMisses: number = 0
 	): SeasonStats {
 		return {
-			goals: currentGoals - seasonGoalsAtStart,
-			appearances: currentApps - seasonAppsAtStart,
-			xpEarned: currentXp - seasonXpAtStart
+			chances: currentChances - statsChancesAtStart,
+			saves: currentSaves - statsSavesAtStart,
+			misses: currentMisses - statsMissesAtStart,
+			goals: currentGoals - statsGoalsAtStart,
+			appearances: currentApps - statsAppsAtStart,
+			xpEarned: currentXp - statsXpAtStart
 		};
 	}
 
@@ -265,23 +290,41 @@ function createSeason() {
 		set divisionRosters(v: Record<number, string[]>) {
 			divisionRosters = v;
 		},
-		get seasonXpAtStart() {
-			return seasonXpAtStart;
+		get statsXpAtStart() {
+			return statsXpAtStart;
 		},
-		set seasonXpAtStart(v: number) {
-			seasonXpAtStart = v;
+		set statsXpAtStart(v: number) {
+			statsXpAtStart = v;
 		},
-		get seasonGoalsAtStart() {
-			return seasonGoalsAtStart;
+		get statsGoalsAtStart() {
+			return statsGoalsAtStart;
 		},
-		set seasonGoalsAtStart(v: number) {
-			seasonGoalsAtStart = v;
+		set statsGoalsAtStart(v: number) {
+			statsGoalsAtStart = v;
 		},
-		get seasonAppsAtStart() {
-			return seasonAppsAtStart;
+		get statsAppsAtStart() {
+			return statsAppsAtStart;
 		},
-		set seasonAppsAtStart(v: number) {
-			seasonAppsAtStart = v;
+		set statsAppsAtStart(v: number) {
+			statsAppsAtStart = v;
+		},
+		get statsChancesAtStart() {
+			return statsChancesAtStart;
+		},
+		set statsChancesAtStart(v: number) {
+			statsChancesAtStart = v;
+		},
+		get statsSavesAtStart() {
+			return statsSavesAtStart;
+		},
+		set statsSavesAtStart(v: number) {
+			statsSavesAtStart = v;
+		},
+		get statsMissesAtStart() {
+			return statsMissesAtStart;
+		},
+		set statsMissesAtStart(v: number) {
+			statsMissesAtStart = v;
 		},
 		get appearanceSkips() {
 			return appearanceSkips;
@@ -295,8 +338,8 @@ function createSeason() {
 		addAppearanceSkips,
 		consumeAppearanceSkip,
 		endSeason,
-		recordSeasonSnapshot,
-		getSeasonStats,
+		recordStatsSnapshot,
+		getStatsSinceSnapshot,
 		initDivisionRosters
 	};
 }

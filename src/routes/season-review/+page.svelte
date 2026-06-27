@@ -16,6 +16,7 @@
 	});
 
 	const oldDivision = player.division;
+	const oldSeasonNumber = season.seasonNumber;
 	const result: EndSeasonResult = season.endSeason(player.club, oldDivision);
 
 	player.division = result.newDivision;
@@ -26,7 +27,9 @@
 		player.adjustBalance(promotionBonus);
 	}
 
-	const seasonStats = season.getSeasonStats(player.goals, player.appearances, player.careerXp);
+	const seasonStats = season.getStatsSinceSnapshot(player.goals, player.appearances, player.careerXp);
+	const playerPosition = result.finalStandings.findIndex((s) => s.club === player.club) + 1;
+	player.archiveCurrentStats(oldSeasonNumber, oldDivision, playerPosition);
 
 	function statusText(): string {
 		if (result.playerInPromoted) return 'PROMOTED!';

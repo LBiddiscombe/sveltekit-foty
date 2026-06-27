@@ -1,6 +1,8 @@
+import type { Outcome, StatsArchiveEntry } from '$lib/types/game';
 import { wageForLevel } from '$lib/config/economy';
 import { getLevel, getLevelIndex, LEVEL_UP_MESSAGES } from '$lib/config/levels';
 import { inbox } from './inbox.svelte';
+import { season } from './season.svelte';
 
 function randomDeck(size: number): number[] {
 	return Array.from({ length: size }, () => Math.floor(Math.random() * 3) + 1);
@@ -18,6 +20,10 @@ function createPlayer() {
 	let deck = $state<number[]>(randomDeck(10));
 	let careerXp = $state(0);
 	let matchXpHistory = $state<number[]>([]);
+	let statsArchive = $state<StatsArchiveEntry[]>([]);
+	let chances = $state(0);
+	let saves = $state(0);
+	let misses = $state(0);
 
 	function adjustBalance(delta: number) {
 		bankBalance = Math.max(0, bankBalance + delta);
@@ -88,6 +94,34 @@ function createPlayer() {
 		matchXpHistory = [...matchXpHistory.slice(-4), xp];
 	}
 
+	function recordMatchOutcomes(outcomes: Outcome[]) {
+		for (const o of outcomes) {
+			if (o === 'saved') saves++;
+			else if (o === 'miss') misses++;
+			chances++;
+		}
+	}
+
+	function archiveCurrentStats(seasonNumber: number, division: number, finalPosition: number | null) {
+		const period = season.getStatsSinceSnapshot(goals, appearances, careerXp, chances, saves, misses);
+		statsArchive = [
+			...statsArchive,
+			{
+				seasonNumber,
+				club,
+				division,
+				chances: period.chances,
+				saves: period.saves,
+				misses: period.misses,
+				goals: period.goals,
+				appearances: period.appearances,
+				xpEarned: period.xpEarned,
+				finalPosition
+			}
+		];
+		season.recordStatsSnapshot(goals, appearances, careerXp, chances, saves, misses);
+	}
+
 	return {
 		get name() {
 			return name;
@@ -155,6 +189,30 @@ function createPlayer() {
 		set matchXpHistory(v: number[]) {
 			matchXpHistory = v;
 		},
+		get statsArchive() {
+			return statsArchive;
+		},
+		set statsArchive(v: StatsArchiveEntry[]) {
+			statsArchive = v;
+		},
+		get chances() {
+			return chances;
+		},
+		set chances(v: number) {
+			chances = v;
+		},
+		get saves() {
+			return saves;
+		},
+		set saves(v: number) {
+			saves = v;
+		},
+		get misses() {
+			return misses;
+		},
+		set misses(v: number) {
+			misses = v;
+		},
 		adjustBalance,
 		addToDeck,
 		addDeckCards,
@@ -167,7 +225,9 @@ function createPlayer() {
 		recordAppearance,
 		addXp,
 		addSeasonCards,
-		recordMatchXp
+		recordMatchXp,
+		recordMatchOutcomes,
+		archiveCurrentStats
 	};
 }
 

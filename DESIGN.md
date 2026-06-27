@@ -18,17 +18,9 @@
 
 - Enter name; always a striker
 - Generated pixel art face from name seed
-- 4 stats: Power, Accuracy, Technique, Athleticism
-- Athleticism opens future training mini-games (track & field style button masher)
-
-### Stat → Mechanic Mapping
-
-| Stat            | Volley effect                           | Penalty effect                             |
-| --------------- | --------------------------------------- | ------------------------------------------ |
-| **Power**       | Ball speed → harder for keeper to reach | Ball speed → keeper has less reaction time |
-| **Accuracy**    | Wider timing tolerance on release       | Wider acceptable straightness of swipe     |
-| **Technique**   | Tighter ball placement vs aim           | Cleaner quadrant mapping on swipe          |
-| **Athleticism** | Match sim: recovery, injury resistance  | Future: training mini-game difficulty      |
+- Single progression metric: **Career XP** — earned per match outcome, goal, appearance, promotion
+- 12 XP levels (Park Kicker → Footballer of the Year) with division-based caps
+- Level determines wage; XP determines division interest thresholds for transfers
 
 ## 2a. Season Calendar (30 weeks)
 
@@ -85,11 +77,12 @@ Double-game weeks are randomly allocated across the season. Not visible in advan
 
 ## 6. Progression
 
-- XP-based stat growth per successful mini-game execution
-- Team success (promotion, cup wins) gives flat XP bonus
-- **Stat caps per club**: a club's league position determines max stats achievable there
-- Overlap between divisions: League 2 caps can overlap League 1 minimums for transfer thresholds
-- One-club career or transfer-focused are both viable paths
+- Single **Career XP** metric — no individual stats (Power, Accuracy, Technique, Athleticism removed in Cycle 6)
+- XP earned per match: played (+1), goal (+1), miss (-1), result bonus (league points contributed), promotion (+10)
+- **Division XP caps**: Div 4=100, Div 3=200, Div 2=350, Div 1=500 — XP frozen at cap
+- 12 named tiers (3 per division) with wage tied to level
+- Level-up triggers auto-generated inbox messages with wage boost announcement
+- One-club career or transfer-focused both viable — XP improves wage even without promotion
 
 ## 7. Transfers
 
@@ -157,9 +150,9 @@ Double-game weeks are randomly allocated across the season. Not visible in advan
 | 3 — Vidiprinter + Incident Cards | ✅ Complete                                           |
 | 4 — Volley Mini-Game             | ✅ Complete                                           |
 | 5 — Penalty Mini-Game            | ✅ Complete                                           |
-| 6 — League Table + Progression   | ⬜ Not started                                        |
+| 6 — League Table + Progression   | ✅ Complete                                           |
 | 7 — Transfers                    | ⬜ Not started                                        |
-| 8 — Season Loop + Save System    | 🔄 Partial (auto-save done, manual save/load pending) |
+| 8 — Season Loop + Save + Archive | ✅ Complete (single auto-save slot, season stats archive) |
 | 9+ — Stretch Goals               | ⬜ Not started                                        |
 
 ### Cycle 1: Clickthrough Mock
@@ -308,9 +301,17 @@ AWAY
 
 **Goal:** Second real P5.js mini-game — swipe-based penalty mechanic.
 
-### Cycle 6: League Table + Stats & Progression
+### Cycle 6: League Table + Stats & Progression ✅
 
-**Goal:** Standings table, XP tracking, stat growth, club stat caps.
+**Goal:** Standings table, XP tracking, progression system with division caps.
+
+**What shipped:**
+- League standings store (`standings.svelte.ts`) — full table with points, GD, W/D/L, last-five form
+- XP config (`xp.ts`) — per-event XP: played +1, goal +1, miss -1, promotion +10
+- Level system (`levels.ts`) — 12 tiers, division caps (100/200/350/500), wage derivation
+- Player store integration — `careerXp`, `addXp()`, level-up detection, inbox messages
+- Standings rendered in hub/affairs, vidiprinter, season-review, and pre-match opponent position
+- The original 4-stat system (Power/Accuracy/Technique/Athleticism) replaced by single Career XP
 
 Team names to use;
 
@@ -422,9 +423,17 @@ Division 4
 
 **Goal:** Manager interest system, contract negotiation, move clubs.
 
-### Cycle 8: Season Loop + Save System
+### Cycle 8: Season Loop + Save + Archive ✅
 
-**Goal:** Full season progression, retirement, save/load across 3 slots.
+**Goal:** Full season progression, single auto-save slot, season stats archive.
+
+**What shipped:**
+- Full season loop: 30-week calendar, double/single-game weeks, promotion/relegation across 4 divisions
+- Season review page with final standings, promotion bonus, new-season generation
+- Auto-save on hub arrival, beforeunload, and all key transitions
+- `StatsArchiveEntry[]` — per-period stats snapshot archiving on season end, persisted in save
+- Archive display on Player Status page: season-by-season list + career totals
+- 3-slot manual save/load dropped (single auto-slot sufficient)
 
 ### Cycle 9+: Stretch Goals
 
