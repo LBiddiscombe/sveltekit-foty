@@ -40,7 +40,7 @@
 
 	function handleForcedSkipChoice() {
 		if (!currentFixture) return;
-		const result = skipGame(0, season.morale);
+		const result = skipGame(0, season.morale, player.club, currentFixture.opponent);
 		currentFixture.result = {
 			goalsFor: result.score[0],
 			goalsAgainst: result.score[1],

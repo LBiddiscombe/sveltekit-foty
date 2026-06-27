@@ -8,7 +8,7 @@
 	import { createPenaltySketch } from '$lib/components/minigames/PenaltySketch';
 	import { createFirstTimeFinishSketch } from '$lib/components/minigames/FirstTimeFinishSketch';
 	import type { Outcome } from '$lib/types/game';
-	import { playGame, skipGame, getMoraleDelta, consumeDeck, START_MORALE } from '$lib/match/engine';
+	import { playGame, skipGame, getMoraleDelta, consumeDeck } from '$lib/match/engine';
 	import { XP_CONFIG } from '$lib/config/xp';
 	import { DIVISION_XP_CAPS } from '$lib/config/levels';
 	import { saveGame } from '$lib/save';
@@ -96,7 +96,7 @@
 
 		if (game.skipped) {
 			consumeDeck(player.deck, true);
-			match.setResult(skipGame(chances, START_MORALE));
+			match.setResult(skipGame(chances, season.morale, player.club, currentGame.fixture.opponent));
 			finishCurrentGame();
 		} else {
 			match.start(chances);
@@ -130,7 +130,9 @@
 				const chances = match.totalChances;
 				const outcomes = match.pendingOutcomes;
 				consumeDeck(player.deck, false);
-				match.setResult(playGame(chances, START_MORALE, outcomes));
+				match.setResult(
+					playGame(chances, season.morale, outcomes, player.club, currentGame.fixture.opponent)
+				);
 				finishCurrentGame();
 			}
 		}, 1500);

@@ -1,4 +1,5 @@
 import { MORALE_CONFIG } from '$lib/config/morale';
+import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
 import type { AiMatchResult, MatchResult, Outcome } from '$lib/types/game';
 
 export const START_MORALE = MORALE_CONFIG.scale.start;
@@ -14,10 +15,30 @@ function poisson(lambda: number): number {
 	return k - 1;
 }
 
-export function playGame(chances: number, morale: number, outcomes: Outcome[]): MatchResult {
+const DEFAULT_STRENGTH = 3;
+
+function calcTeamGoals(strength: number, morale: number): number {
+	return poisson(0.3 + strength * 0.1 + morale * 0.05);
+}
+
+function calcOpponentGoals(strength: number, morale: number): number {
+	return poisson(0.3 + strength * 0.1 - morale * 0.05);
+}
+
+function strength(club: string): number {
+	return CLUB_STRENGTHS[club] ?? DEFAULT_STRENGTH;
+}
+
+export function playGame(
+	chances: number,
+	morale: number,
+	outcomes: Outcome[],
+	playerClub: string,
+	opponentClub: string
+): MatchResult {
 	const playerGoals = outcomes.filter((o) => o === 'goal').length;
-	const teamBase = MORALE_CONFIG.teamSimGoals(morale);
-	const opponent = MORALE_CONFIG.opponentGoals(morale);
+	const teamBase = calcTeamGoals(strength(playerClub), morale);
+	const opponent = calcOpponentGoals(strength(opponentClub), morale);
 	return {
 		played: true,
 		chances,
@@ -27,13 +48,18 @@ export function playGame(chances: number, morale: number, outcomes: Outcome[]): 
 	};
 }
 
-export function skipGame(chances: number, morale: number): MatchResult {
+export function skipGame(
+	chances: number,
+	morale: number,
+	playerClub: string,
+	opponentClub: string
+): MatchResult {
 	const outcomes: Outcome[] = Array.from({ length: chances }, () => 'miss');
 	return {
 		played: false,
 		chances,
 		outcomes,
-		score: [MORALE_CONFIG.teamSimGoals(morale), MORALE_CONFIG.opponentGoals(morale)],
+		score: [calcTeamGoals(strength(playerClub), morale), calcOpponentGoals(strength(opponentClub), morale)],
 		rating: 4
 	};
 }
