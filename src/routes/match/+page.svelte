@@ -6,14 +6,14 @@
 	import { match } from '$lib/stores/match.svelte';
 	import Minigame from '$lib/components/minigames/Minigame.svelte';
 	import { createPenaltySketch } from '$lib/components/minigames/PenaltySketch';
-	import { createVolleySketch } from '$lib/components/minigames/VolleySketch';
+	import { createFirstTimeFinishSketch } from '$lib/components/minigames/FirstTimeFinishSketch';
 	import type { Outcome } from '$lib/types/game';
 	import { playGame, skipGame, getMoraleDelta, consumeDeck, START_MORALE } from '$lib/match/engine';
 	import { XP_CONFIG } from '$lib/config/xp';
 	import { DIVISION_XP_CAPS } from '$lib/config/levels';
 	import { saveGame } from '$lib/save';
 
-	type GameType = 'penalty' | 'volley';
+	type GameType = 'penalty' | 'first-time-finish';
 
 	$effect(() => {
 		season.phase = 'match';
@@ -28,7 +28,7 @@
 	const currentGame = $derived(match.pendingGames[match.currentGameIndex]);
 
 	function pickGameType(): GameType {
-		return Math.random() < 0.3 ? 'penalty' : 'volley';
+		return Math.random() < 0.3 ? 'penalty' : 'first-time-finish';
 	}
 
 	function recordPlayerMatch(goals: number) {
@@ -160,8 +160,9 @@
 			{#key `${match.currentGameIndex}-${currentChance}`}
 				<Minigame
 					oncomplete={handleComplete}
-					createSketch={gameType === 'penalty' ? createPenaltySketch : createVolleySketch}
+					createSketch={gameType === 'penalty' ? createPenaltySketch : createFirstTimeFinishSketch}
 					outcomeText={currentOutcomeText}
+					gameName={gameType === 'penalty' ? 'Penalty!' : 'First-Time Finish!'}
 				/>
 			{/key}
 		</div>

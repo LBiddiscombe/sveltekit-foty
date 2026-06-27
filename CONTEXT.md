@@ -16,7 +16,7 @@
 
 **KICK_RADIUS** — Dual-purpose constant: (1) hit-test threshold — taps outside this distance from the ball are ignored; (2) sensitivity curve range — the distance at which max kick velocity is reached. A larger radius gives finer control (lower sensitivity).
 
-**Per-minigame max velocities** — Each sketch defines its own max-vx and max-vy constants (Volley: `KICK_VX_MAX=10` / `KICK_VY_MAX=14`; Penalty: `MAX_VX=16` / `MAX_VY=18`) so each game can feel distinct while sharing the same distance-dependent formula.
+**Per-minigame max velocities** — Each sketch defines its own max-vx and max-vy constants (First-Time Finish: `KICK_VX_MAX=16` / `KICK_VY_MAX=18`; Penalty: `MAX_VX=16` / `MAX_VY=18`) so each game can feel distinct while sharing the same distance-dependent formula.
 
 **computeKickAim** — Shared helper in `footy.js` that takes the ball's screen position, mouse position, `KICK_RADIUS`, and per-minigame `maxVx`/`maxVy`. Returns `{ vx, vy }` using the direction-unit-vector + distance-mapped magnitude formula. Covers only aim (horizontal + launch angle); `vz` is handled per-minigame.
 

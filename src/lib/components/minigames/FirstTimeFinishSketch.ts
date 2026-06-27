@@ -2,7 +2,7 @@ import type { Outcome } from '$lib/types/game';
 import { createFooty } from './footy';
 import type p5 from 'p5';
 
-interface VolleySketchOptions {
+interface FirstTimeFinishSketchOptions {
 	onComplete: (outcome: Outcome) => void;
 }
 
@@ -32,8 +32,11 @@ interface Ball {
 	kicked: boolean;
 }
 
-export function createVolleySketch({ onComplete }: VolleySketchOptions) {
-	return function sketch(p: p5, width: number, height: number) {
+export function createFirstTimeFinishSketch({ onComplete }: FirstTimeFinishSketchOptions) {
+	let resolveStart: (() => void) | null = null;
+	let startRequested = false;
+
+	const sketch = function (p: p5, width: number, height: number) {
 		const ft = createFooty(p);
 		const s = p as unknown as Record<string, unknown>;
 		ft.camera.z = -4;
@@ -45,6 +48,15 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 		let outcomeTime = 0;
 		let completed = false;
 		let trail: { x: number; y: number; z: number }[] = [];
+		let paused = true;
+		let firstFrame = true;
+
+		resolveStart = () => {
+			paused = false;
+		};
+		if (startRequested) {
+			resolveStart();
+		}
 
 		s.setup = async () => {
 			await ft.preload();
@@ -60,6 +72,17 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 			ft.drawPitch();
 			ft.drawGoal();
 
+			if (paused && !firstFrame) return;
+
+			firstFrame = false;
+
+			if (paused) {
+				ft.updateGoalie();
+				ft.drawGoalie();
+				ft.drawBall(ball);
+				return;
+			}
+
 			ft.updateGoalie();
 			updateBall();
 
@@ -67,16 +90,16 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 			drawTrail();
 			drawGhostBall();
 			ft.drawBall(ball);
-			//ft.drawKickRadius(ball, KICK_RADIUS);
 		};
 
 		p.mousePressed = (): boolean => {
+			if (paused) return false;
 			if (ball.kicked) return false;
 			const ballScreen = ft.project(ball.x, ball.y, ball.z);
 			const d = Math.hypot(p.mouseX - ballScreen.x, p.mouseY - ballScreen.y);
 			if (d > KICK_RADIUS) return false;
 
-			volleyBall();
+			kickBall();
 			return false;
 		};
 
@@ -104,7 +127,7 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 			ft.reset();
 		}
 
-		function volleyBall() {
+		function kickBall() {
 			ball.kicked = true;
 
 			const ballScreen = ft.project(ball.x, ball.y, ball.z);
@@ -256,6 +279,17 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 			p.stroke(255, 100);
 			p.strokeWeight(1.5);
 			p.ellipse(ghost.x, ghost.y, dia, dia);
+		}
+	};
+
+	return {
+		sketch,
+		start: () => {
+			if (resolveStart) {
+				resolveStart();
+			} else {
+				startRequested = true;
+			}
 		}
 	};
 }

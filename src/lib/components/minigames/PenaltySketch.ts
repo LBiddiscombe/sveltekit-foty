@@ -24,7 +24,10 @@ interface Ball {
 }
 
 export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
-	return function sketch(p: p5, width: number, height: number) {
+	let resolveStart: (() => void) | null = null;
+	let startRequested = false;
+
+	const sketch = function (p: p5, width: number, height: number) {
 		const ft = createFooty(p);
 		const s = p as unknown as Record<string, unknown>;
 
@@ -35,6 +38,15 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 		let charging = false;
 		let chargeStartTime = 0;
 		let completed = false;
+		let paused = true;
+		let firstFrame = true;
+
+		resolveStart = () => {
+			paused = false;
+		};
+		if (startRequested) {
+			resolveStart();
+		}
 
 		s.setup = async () => {
 			await ft.preload();
@@ -50,17 +62,27 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 			ft.drawPitch();
 			ft.drawGoal();
 
+			if (paused && !firstFrame) return;
+
+			firstFrame = false;
+
+			if (paused) {
+				ft.drawGoalie();
+				ft.drawBall(ball);
+				return;
+			}
+
 			ft.updateGoalie();
 			updateBall();
 
 			ft.drawGoalie();
 			ft.drawBall(ball);
-			//ft.drawKickRadius(ball, KICK_RADIUS);
 
 			drawPowerBar();
 		};
 
 		p.mousePressed = (): boolean => {
+			if (paused) return false;
 			if (charging) return false;
 			if (ball.z > 5) return false;
 
@@ -209,6 +231,17 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 			p.strokeWeight(1);
 			p.rect(barX, barY - barH, barW, barH);
 			p.pop();
+		}
+	};
+
+	return {
+		sketch,
+		start: () => {
+			if (resolveStart) {
+				resolveStart();
+			} else {
+				startRequested = true;
+			}
 		}
 	};
 }
