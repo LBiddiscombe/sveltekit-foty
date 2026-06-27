@@ -21,6 +21,7 @@ export interface FixtureResult {
 	goalsFor: number;
 	goalsAgainst: number;
 	playerGoals: number;
+	outcomes: Outcome[];
 }
 
 export interface Fixture {

@@ -81,7 +81,7 @@ describe('full career flow persistence', () => {
 		// play week 1 matches
 		const weekFixtures = season.fixtures.filter((f) => f.weekNumber === 1);
 		for (const f of weekFixtures) {
-			f.result = { goalsFor: 2, goalsAgainst: 1, playerGoals: 1 };
+			f.result = { goalsFor: 2, goalsAgainst: 1, playerGoals: 1, outcomes: [] };
 		}
 
 		// vidiprinter

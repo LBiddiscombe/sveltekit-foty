@@ -44,7 +44,8 @@
 		next.result = {
 			goalsFor: result.score[0],
 			goalsAgainst: result.score[1],
-			playerGoals: 0
+			playerGoals: 0,
+			outcomes: []
 		};
 		season.adjustMorale(getMoraleDelta(result.score, 0));
 		season.consumeAppearanceSkip();

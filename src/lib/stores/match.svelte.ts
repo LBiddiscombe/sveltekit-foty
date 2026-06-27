@@ -50,7 +50,8 @@ function createMatch() {
 			game.fixture.result = {
 				goalsFor: result.score[0],
 				goalsAgainst: result.score[1],
-				playerGoals
+				playerGoals,
+				outcomes: [...result.outcomes]
 			};
 		}
 	}
