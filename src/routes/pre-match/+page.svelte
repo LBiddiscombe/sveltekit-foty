@@ -5,6 +5,7 @@
 	import { match } from '$lib/stores/match.svelte';
 	import { standings } from '$lib/stores/standings.svelte';
 	import { skipGame, getMoraleDelta } from '$lib/match/engine';
+	import { saveGame } from '$lib/save';
 	import Card from '$lib/components/Card.svelte';
 	import DeckCard from '$lib/components/DeckCard.svelte';
 	import Button from '$lib/components/Button.svelte';
@@ -35,13 +36,10 @@
 	const nextChances = $derived(player.deck[currentIndex] ?? 1);
 	const allChosen = $derived(intents.length === unplayedFixtures.length);
 
-	function handleForcedSkip() {
-		const next = season.fixtures.find(
-			(f) => f.weekNumber === season.weekNumber && !f.result
-		);
-		if (!next) return;
+	function handleForcedSkipChoice() {
+		if (!currentFixture) return;
 		const result = skipGame(0, season.morale);
-		next.result = {
+		currentFixture.result = {
 			goalsFor: result.score[0],
 			goalsAgainst: result.score[1],
 			playerGoals: 0,
@@ -66,6 +64,7 @@
 	}
 
 	async function handleAllResolved() {
+		saveGame();
 		await goto('/vidiprinter');
 	}
 </script>
@@ -73,19 +72,7 @@
 <div class="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-8 px-4">
 	<h2 class="font-pixel text-sm text-primary">Pre-Match</h2>
 
-	{#if hasForcedSkip}
-		<Card>
-			<div class="flex flex-col items-center gap-2 py-4 text-center">
-				<span class="font-pixel text-sm text-primary">
-					You are unavailable — forced to miss this match
-					({season.appearanceSkips} remaining)
-				</span>
-				<span class="font-pixel text-xs text-subtle">The team will play without you.</span>
-			</div>
-		</Card>
-
-		<Button onclick={handleForcedSkip}>Continue</Button>
-	{:else if allDone}
+	{#if allDone}
 		<Card>
 			<div class="flex flex-col items-center gap-2 py-4 text-center">
 				<span class="font-pixel text-sm text-primary">All Matches Resolved</span>
@@ -130,14 +117,28 @@
 			</div>
 		</Card>
 
-		<Card>
-			<DeckCard chances={nextChances} />
-		</Card>
+		{#if hasForcedSkip}
+			<Card>
+				<div class="flex flex-col items-center gap-2 py-4 text-center">
+					<span class="font-pixel text-sm text-primary">
+						You are unavailable &mdash; forced to miss this match
+						({season.appearanceSkips} remaining)
+					</span>
+					<span class="font-pixel text-xs text-subtle">The team will play without you.</span>
+				</div>
+			</Card>
 
-		<div class="flex w-full flex-col gap-3">
-			<Button onclick={() => handleChoice(false)}>Play</Button>
-			<Button variant="secondary" onclick={() => handleChoice(true)}>Skip</Button>
-		</div>
+			<Button onclick={handleForcedSkipChoice}>Skip Match</Button>
+		{:else}
+			<Card>
+				<DeckCard chances={nextChances} />
+			</Card>
+
+			<div class="flex w-full flex-col gap-3">
+				<Button onclick={() => handleChoice(false)}>Play</Button>
+				<Button variant="secondary" onclick={() => handleChoice(true)}>Skip</Button>
+			</div>
+		{/if}
 	{:else if allChosen}
 		<Card>
 			<div class="flex flex-col items-center gap-2 py-4 text-center">

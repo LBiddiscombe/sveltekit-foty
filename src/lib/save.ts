@@ -84,6 +84,7 @@ interface SaveState {
 		seasonXpAtStart: number;
 		seasonGoalsAtStart: number;
 		seasonAppsAtStart: number;
+		appearanceSkips: number;
 	};
 	inboxItems: InboxItem[];
 	matchResult: MatchResult | null;
@@ -127,7 +128,8 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 			divisionRosters: JSON.parse(JSON.stringify(season.divisionRosters)),
 			seasonXpAtStart: season.seasonXpAtStart,
 			seasonGoalsAtStart: season.seasonGoalsAtStart,
-			seasonAppsAtStart: season.seasonAppsAtStart
+			seasonAppsAtStart: season.seasonAppsAtStart,
+			appearanceSkips: season.appearanceSkips
 		},
 		inboxItems: JSON.parse(JSON.stringify(inbox.items)),
 		matchResult: match.result ? JSON.parse(JSON.stringify(match.result)) : null,
@@ -192,6 +194,7 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		season.seasonXpAtStart = state.season.seasonXpAtStart ?? 0;
 		season.seasonGoalsAtStart = state.season.seasonGoalsAtStart ?? 0;
 		season.seasonAppsAtStart = state.season.seasonAppsAtStart ?? 0;
+		season.appearanceSkips = state.season.appearanceSkips ?? 0;
 
 		inbox.items = state.inboxItems;
 
