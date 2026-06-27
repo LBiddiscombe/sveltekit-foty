@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { player } from '$lib/stores/player.svelte';
-	import { getLevel, getNextLevelXp } from '$lib/config/levels';
-	import Card from '$lib/components/Card.svelte';
+	import { LEVELS, getLevel, getLevelIndex, getNextLevelXp } from '$lib/config/levels';
 
 	const level = $derived(getLevel(player.careerXp));
 	const nextXp = $derived(getNextLevelXp(player.careerXp));
 	const currentLevelXp = $derived(level.minXp);
-
+	const currentLevelIndex = $derived(getLevelIndex(player.careerXp));
+	const nextLevel = $derived(LEVELS[currentLevelIndex + 1] ?? null);
 	const xpProgress = $derived(
 		nextXp !== null && nextXp > currentLevelXp
 			? ((player.careerXp - currentLevelXp) / (nextXp - currentLevelXp)) * 100
@@ -15,85 +15,92 @@
 	);
 </script>
 
-<div class="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
-	<div class="flex items-center gap-4">
+<div class="mx-auto min-h-dvh max-w-md bg-dark px-4 py-6 font-pixel text-primary">
+	<div class="mb-6 flex items-center justify-between">
 		<button
 			onclick={async () => await goto('/hub')}
-			class="font-pixel text-xs text-subtle hover:text-primary"
+			class="flex items-center gap-1 text-[10px] text-subtle hover:text-primary"
 		>
-			← Hub
+			<span class="text-xs leading-none">&lt;</span> Hub
 		</button>
-		<h2 class="font-pixel text-sm text-primary">Player Status</h2>
+		<span class="text-[10px] font-bold uppercase tracking-wider text-success">Player Status</span>
 	</div>
 
-	<Card>
-		<div class="flex flex-col items-center gap-2 text-center">
-			<div
-				class="flex h-16 w-16 items-center justify-center rounded-full border-2 border-subtle bg-dark"
-			>
-				<span class="font-pixel text-lg text-primary">
-					{player.name.charAt(0).toUpperCase()}
-				</span>
-			</div>
-			<h3 class="font-pixel text-sm text-primary">{player.name}</h3>
-			<p class="font-pixel text-xs text-subtle">
-				{player.club} — Div {player.division}
-			</p>
-			<p class="font-pixel text-xs text-subtle">Age {player.age}</p>
+	<div class="mb-5 flex items-center gap-4">
+		<div
+			class="flex h-14 w-14 items-center justify-center rounded-full border-2 border-subtle bg-card text-lg text-primary"
+		>
+			{player.name.charAt(0).toUpperCase()}
 		</div>
-	</Card>
+		<div>
+			<h1 class="text-sm text-primary">{player.name}</h1>
+			<p class="mt-0.5 text-[10px] text-subtle">
+				{player.club} · Div {player.division} · Age {player.age}
+			</p>
+		</div>
+	</div>
 
-	<Card>
-		<h4 class="mb-3 font-pixel text-xs text-primary">Level</h4>
-		<p class="font-pixel text-sm text-success">{level.title}</p>
-		<div class="mt-2 h-3 overflow-hidden rounded-full bg-dark">
+	<div class="mb-5 grid grid-cols-3 gap-3">
+		<div class="rounded  bg-card p-3 text-center">
+			<p class="text-base text-primary">{player.goals}</p>
+			<p class="mt-0.5 text-[9px] text-subtle">GOALS</p>
+		</div>
+		<div class="rounded  bg-card p-3 text-center">
+			<p class="text-base text-primary">{player.appearances}</p>
+			<p class="mt-0.5 text-[9px] text-subtle">APPS</p>
+		</div>
+		<div class="rounded  bg-card p-3 text-center">
+			<p class="text-base text-success">£{player.wage}</p>
+			<p class="mt-0.5 text-[9px] text-subtle">WAGE</p>
+		</div>
+	</div>
+
+	<div class="mb-5 rounded  bg-card p-4">
+		<div class="flex items-baseline justify-between">
+			<span class="text-[10px] text-subtle">{level.title}</span>
+			{#if nextLevel !== null}
+				<span class="text-[9px] text-subtle">Next: {nextLevel.title}</span>
+			{:else}
+				<span class="text-[9px] text-success">MAX LEVEL</span>
+			{/if}
+		</div>
+		<div class="mb-1 mt-2 h-2 overflow-hidden rounded-full bg-dark">
 			<div
 				class="h-full rounded-full bg-success transition-all"
 				style="width: {Math.min(xpProgress, 100)}%"
 			></div>
 		</div>
-		<div class="mt-1 flex justify-between font-pixel text-[10px] text-subtle">
-			<span>XP: {player.careerXp}</span>
-			{#if nextXp !== null}
-				<span>Next: {nextXp}</span>
-			{:else}
-				<span>MAX</span>
-			{/if}
+		<div class="flex justify-between text-[9px] text-subtle">
+			<span>{player.careerXp} XP</span>
+			<span>{nextXp !== null ? `${nextXp} XP` : 'MAX'}</span>
 		</div>
-	</Card>
+	</div>
 
-	<Card>
-		<div class="grid grid-cols-2 gap-4 text-center">
-			<div>
-				<p class="font-pixel text-lg text-primary">{player.goals}</p>
-				<p class="font-pixel text-xs text-subtle">Goals</p>
-			</div>
-			<div>
-				<p class="font-pixel text-lg text-primary">{player.appearances}</p>
-				<p class="font-pixel text-xs text-subtle">Apps</p>
-			</div>
+	<div class="mb-5 rounded  bg-card p-4">
+		<div class="flex items-center justify-between">
+			<span class="text-[10px] text-subtle">Bank Balance</span>
+			<span class="text-sm text-success">£{player.bankBalance.toLocaleString()}</span>
 		</div>
-		<div class="mt-3 text-center">
-			<p class="font-pixel text-xs text-subtle">Weekly wage: £{player.wage}</p>
-		</div>
-	</Card>
+	</div>
 
 	{#if player.matchXpHistory.length > 0}
-		<Card>
-			<h4 class="mb-2 font-pixel text-xs text-primary">Recent Form (XP)</h4>
-			<div class="flex gap-2 font-pixel text-xs">
-				{#each player.matchXpHistory as xp, i}
-					<div
-						class="flex h-8 w-8 items-center justify-center rounded {xp >= 10
-							? 'bg-success text-dark'
-							: xp >= 5
-								? 'bg-warning text-dark'
-								: 'bg-danger text-dark'}"
-					>
-						{xp}
+		<div class="rounded  bg-card p-4">
+			<h2 class="mb-3 text-[10px] text-subtle">RECENT FORM</h2>
+			<div class="flex items-end gap-2" style="height: 48px">
+				{#each player.matchXpHistory as xp, i (i)}
+					<div class="flex flex-1 flex-col items-center justify-end">
+						<div
+							class="w-full rounded-sm {xp >= 10
+								? 'bg-success'
+								: xp >= 5
+									? 'bg-warning'
+									: 'bg-danger'}"
+							style="height: {Math.max(xp * 3, 6)}px"
+						></div>
+						<span class="mt-1 text-[9px] text-subtle">{xp}</span>
 					</div>
 				{/each}
 			</div>
-		</Card>
+		</div>
 	{/if}
 </div>

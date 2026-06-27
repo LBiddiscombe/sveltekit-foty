@@ -2,6 +2,6 @@
 	let { children }: { children?: import('svelte').Snippet } = $props();
 </script>
 
-<div class="rounded border border-subtle bg-card p-4">
+<div class="rounded bg-card p-4">
 	{@render children?.()}
 </div>

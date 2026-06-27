@@ -30,7 +30,9 @@
 
 **Domain slice** — One of the store modules: `player`, `season`, `inbox`, `match`, `standings`. Components import only the slices they need.
 
-**State of Affairs** — Hub sub-page (`/hub/affairs`) showing team-level data: league position, team morale, XP level, fixture results. Now also displays the full league table for the player's division (condensed on mobile). Informationally equivalent to the original's Globe screen.
+**State of Affairs** — Hub sub-page (`/hub/affairs`) showing team-level data: league position, team morale, fixture results, and the full league table for the player's division. Informationally equivalent to the original's Globe screen.
+
+**Team Status card** — A single merged card on the affairs page combining club info (name, division, week) with the morale bar. Replaces separate club-info and morale cards.
 
 **Player Status** — Hub sub-page (`/hub/player`) showing the player's avatar, XP level with progress bar, goals, appearances, club, division, weekly earnings, and recent match XP history. Stat bars removed in Cycle 6.
 
