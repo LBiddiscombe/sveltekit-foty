@@ -14,8 +14,8 @@
 	const INTRO_DELAY = 1500;
 
 	let showIntro = $state(true);
-let sketch = $state<ReturnType<MinigameSketchFactory>['sketch']>();
-let start = $state<ReturnType<MinigameSketchFactory>['start']>();
+	let sketch = $state<ReturnType<MinigameSketchFactory>['sketch']>();
+	let start = $state<ReturnType<MinigameSketchFactory>['start']>();
 
 	$effect(() => {
 		const result = createSketch({

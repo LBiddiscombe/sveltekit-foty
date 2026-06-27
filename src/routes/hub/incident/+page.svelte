@@ -66,8 +66,17 @@
 		tickerState = 'decelerating';
 		const delays = [150, 250, 400, 700, 1200];
 		const c = card;
+		const randomSkips = Math.floor(Math.random() * 4);
+		let skipCount = 0;
 
 		function decelerate(step: number) {
+			if (skipCount < randomSkips) {
+				advance();
+				skipCount++;
+				setTimeout(() => decelerate(step), 20);
+				return;
+			}
+
 			if (step >= delays.length) {
 				result = c.outcomes[currentIndex];
 				tickerState = 'stopped';
