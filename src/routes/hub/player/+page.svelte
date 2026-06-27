@@ -40,21 +40,6 @@
 		</div>
 	</div>
 
-	<div class="mb-5 grid grid-cols-3 gap-3">
-		<div class="rounded  bg-card p-3 text-center">
-			<p class="text-base text-primary">{player.goals}</p>
-			<p class="mt-0.5 text-[9px] text-subtle">GOALS</p>
-		</div>
-		<div class="rounded  bg-card p-3 text-center">
-			<p class="text-base text-primary">{player.appearances}</p>
-			<p class="mt-0.5 text-[9px] text-subtle">APPS</p>
-		</div>
-		<div class="rounded  bg-card p-3 text-center">
-			<p class="text-base text-success">£{player.wage}</p>
-			<p class="mt-0.5 text-[9px] text-subtle">WAGE</p>
-		</div>
-	</div>
-
 	<div class="mb-5 rounded  bg-card p-4">
 		<div class="flex items-baseline justify-between">
 			<span class="text-[10px] text-subtle">{level.title}</span>
@@ -76,10 +61,25 @@
 		</div>
 	</div>
 
-	<div class="mb-5 rounded  bg-card p-4">
-		<div class="flex items-center justify-between">
-			<span class="text-[10px] text-subtle">Bank Balance</span>
-			<span class="text-sm text-success">£{player.bankBalance.toLocaleString()}</span>
+	<div class="mb-5 grid grid-cols-2 gap-3">
+		<div class="rounded bg-card p-3 text-center">
+			<p class="text-base text-primary">{player.appearances}</p>
+			<p class="mt-0.5 text-[9px] text-subtle">APPS</p>
+		</div>
+		<div class="rounded bg-card p-3 text-center">
+			<p class="text-base text-primary">{player.goals}</p>
+			<p class="mt-0.5 text-[9px] text-subtle">GOALS</p>
+		</div>
+	</div>
+
+	<div class="mb-5 grid grid-cols-2 gap-3">
+		<div class="rounded bg-card p-3 text-center">
+			<p class="text-sm text-success">£{player.bankBalance.toLocaleString()}</p>
+			<p class="mt-0.5 text-[9px] text-subtle">BALANCE</p>
+		</div>
+		<div class="rounded bg-card p-3 text-center">
+			<p class="text-sm text-success">£{player.wage}</p>
+			<p class="mt-0.5 text-[9px] text-subtle">WAGE</p>
 		</div>
 	</div>
 
@@ -90,12 +90,12 @@
 				{#each player.matchXpHistory as xp, i (i)}
 					<div class="flex flex-1 flex-col items-center justify-end">
 						<div
-							class="w-full rounded-sm {xp >= 10
+							class="w-full rounded-sm {xp >= 4
 								? 'bg-success'
-								: xp >= 5
+								: xp >= 2
 									? 'bg-warning'
 									: 'bg-danger'}"
-							style="height: {Math.max(xp * 3, 6)}px"
+							style="height: {(xp + 1) * 3}px"
 						></div>
 						<span class="mt-1 text-[9px] text-subtle">{xp}</span>
 					</div>
