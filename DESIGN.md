@@ -197,15 +197,15 @@ Split by domain in `src/lib/stores/*.svelte.ts`, each exporting `$state` runes:
 
 - **Font:** Press Start 2P (Google Fonts)
 - **Colour palette:**
-  | Role | Hex |
-  |------|-----|
-  | Background (near-black) | `#0a0a0a` |
-  | Surface / card | `#1a1a2e` |
-  | Primary text | `#e0e0e0` |
-  | Accent (goals, positives) | `#4ade80` |
-  | Danger (misses, red cards) | `#ef4444` |
+  | Role                         | Hex       |
+  | ---------------------------- | --------- |
+  | Background (near-black)      | `#0a0a0a` |
+  | Surface / card               | `#1a1a2e` |
+  | Primary text                 | `#e0e0e0` |
+  | Accent (goals, positives)    | `#4ade80` |
+  | Danger (misses, red cards)   | `#ef4444` |
   | Secondary accent (cards, UI) | `#f59e0b` |
-  | Muted / border | `#333333` |
+  | Muted / border               | `#333333` |
 - **Styling:** Tailwind CSS utility classes
 - **All data:** `$state` runes in `.svelte.ts` modules, hardcoded mock values
 

@@ -83,13 +83,7 @@ export type IncidentCategory =
 	| 'absurd';
 
 export type IncidentEffectType =
-	| 'bankBalance'
-	| 'morale'
-	| 'xp'
-	| 'deckAdd'
-	| 'deckRemove'
-	| 'appearanceSkip'
-	| 'wageMultiplier';
+	'bankBalance' | 'morale' | 'xp' | 'deckAdd' | 'deckRemove' | 'appearanceSkip' | 'wageMultiplier';
 
 export interface IncidentEffectDescriptor {
 	type: IncidentEffectType;
