@@ -171,7 +171,7 @@ Double-game weeks are randomly allocated across the season. Not visible in advan
 | 4 — Volley Mini-Game             | ✅ Complete                                           |
 | 5 — Penalty Mini-Game            | ✅ Complete                                           |
 | 6 — League Table + Progression   | ✅ Complete                                           |
-| 7 — Transfers                    | ⬜ Not started                                        |
+| 7 — Transfers                    | ✅ Complete                                          |
 | 8 — Season Loop + Save + Archive | ✅ Complete (single auto-save slot, season stats archive) |
 | 9+ — Stretch Goals               | ⬜ Not started                                        |
 
@@ -439,9 +439,22 @@ Division 4
 - Walsawl
 - York
 
-### Cycle 7: Transfers & Clubs
+### Cycle 7: Transfers & Clubs ✅
 
-**Goal:** Manager interest system, contract negotiation, move clubs.
+**Goal:** Two-path transfer system with scouting, forced moves, same-division and division-up transfers.
+
+**What shipped:**
+- Two transfer windows per season (weeks 1-4, 16-19); first window of Season 1 blocked
+- Two paths: passive scouting (25% weekly roll) and purchasable transfer cards (shop, £2.5k-£10k)
+- Scout evaluation: random club from same division or division above (50/50), XP band-based qualification
+- No negotiation — forced move on success. Signing fee: 5× wage (same div), 10× wage (one up). 10 goal cards added as fresh-start bonus.
+- Same-division transfer: fixtures regenerated from division schedule (past results preserved)
+- Division-up transfer: fresh schedule generated, all past weeks simmed, standings + fixtures rebuilt
+- Scout report route (`/scout-report`) with personalised success/failure messages
+- Player fixtures now derived from division schedule (round-robin) — single source of truth, balanced H/A alternation
+- Player match results written to division schedule — enables correct past-result display after transfers
+- New persisted state: `queuedTransferCard`, `lastTransferWindow`
+- Transfer cards blocked after successful move within same window
 
 ### Cycle 8: Season Loop + Save + Archive ✅
 

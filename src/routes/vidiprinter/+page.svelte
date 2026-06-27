@@ -87,8 +87,8 @@
 		l.push('INCOMING RESULTS');
 		l.push('----------------');
 		l.push('');
-		l.push(` DIVISION ${player.division}`);
-		l.push('------------');
+		l.push(` DIVISION ${player.division} - WEEK ${season.weekNumber}`);
+		l.push('-----------------------');
 		l.push('');
 
 		for (const f of weekFixtures) {
@@ -103,7 +103,10 @@
 
 			scoreLines.set(l.length, { home, away, homeScore, awayScore });
 			l.push(`  ${home.padEnd(14)} ${homeScore} - ${awayScore}    ${away}`);
-			l.push(`  RESULT - ${result} : YOU SCORED ${playerGoals}`);
+			const playerLine = f.result && playerGoals === 0 && f.result.outcomes.length === 0
+				? `RESULT - ${result} : YOU DIDN'T PLAY`
+				: `RESULT - ${result} : YOU SCORED ${playerGoals}`;
+			l.push(`  ${playerLine}`);
 			l.push('');
 		}
 
