@@ -73,17 +73,10 @@
 
 	const lines = (() => {
 		const l: string[] = [];
-		const divisionNames: Record<number, string> = {
-			1: 'PREMIER DIVISION',
-			2: 'CHAMPIONSHIP',
-			3: 'LEAGUE ONE',
-			4: 'LEAGUE TWO'
-		};
-
 		l.push('INCOMING RESULTS');
 		l.push('----------------');
 		l.push('');
-		l.push(` ${divisionNames[player.division] ?? 'DIVISION ' + player.division}`);
+		l.push(` DIVISION ${player.division}`);
 		l.push('------------');
 		l.push('');
 
@@ -117,13 +110,17 @@
 			for (const entry of standings.entries) {
 				const pos = standings.getPosition(entry.club);
 				const marker = entry.club === PLAYER_CLUB ? '>' : ' ';
-				l.push(`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`);
+				l.push(
+					`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`
+				);
 			}
 		} else {
 			function addLine(entry: (typeof standings.entries)[number]) {
 				const pos = standings.getPosition(entry.club);
 				const marker = entry.club === PLAYER_CLUB ? '>' : ' ';
-				l.push(`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`);
+				l.push(
+					`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`
+				);
 			}
 
 			for (const entry of standings.entries.slice(0, 3)) addLine(entry);
@@ -187,8 +184,10 @@
 	onpointerleave={() => (tty.speed = 25)}
 />
 
-<div class="mx-auto flex min-h-dvh max-w-md flex-col px-4 py-8">
-	<h2 class="mb-4 font-pixel text-sm text-primary">Vidiprinter</h2>
+<div class="mx-auto flex min-h-dvh max-w-md flex-col bg-dark px-4 py-6 font-pixel text-primary">
+	<div class="mb-6 flex items-center justify-end">
+		<span class="text-[10px] font-bold uppercase tracking-wider text-success">Vidiprinter</span>
+	</div>
 
 	<div class="flex min-h-0 flex-1 flex-col justify-end overflow-hidden">
 		<div class="flex flex-col gap-0.5 font-pixel text-[10px] leading-relaxed">

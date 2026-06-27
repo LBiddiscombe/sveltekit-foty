@@ -41,8 +41,7 @@
 	}
 
 	function divisionName(d: number): string {
-		const names: Record<number, string> = { 1: 'Premier', 2: 'Championship', 3: 'League One', 4: 'League Two' };
-		return names[d] ?? `Division ${d}`;
+		return `Division ${d}`;
 	}
 
 	function onContinue() {

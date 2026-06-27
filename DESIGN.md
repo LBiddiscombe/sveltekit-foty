@@ -8,7 +8,7 @@
 
 ## 2. Season & League Structure
 
-- English pyramid of 4 divisions (obvious parody names, e.g. Premiership → Pro League → Challenge League → Regional League — TBD)
+- English pyramid of 4 divisions (Div 1 = top, Div 4 = bottom)
 - **30-week calendar** — some weeks have 1 game (weekend), some have 2 (midweek + weekend)
 - Two domestic cups post-MVP; European competitions as stretch goal
 - Summer + winter transfer windows (English league format)
@@ -32,12 +32,12 @@
 
 ## 2a. Season Calendar (30 weeks)
 
-| League                 | Total games | Double-game weeks | Single-game weeks |
-| ---------------------- | ----------- | ----------------- | ----------------- |
-| Premier Div (38 games) | 38          | 8                 | 22                |
-| Champions Div (46)     | 46          | 16                | 14                |
-| Division 1 (46)        | 46          | 16                | 14                |
-| Division 2 (46)        | 46          | 16                | 14                |
+| League           | Total games | Double-game weeks | Single-game weeks |
+| ---------------- | ----------- | ----------------- | ----------------- |
+| Div 1 (38 games) | 38          | 8                 | 22                |
+| Div 2 (46)       | 46          | 16                | 14                |
+| Div 3 (46)       | 46          | 16                | 14                |
+| Div 4 (46)       | 46          | 16                | 14                |
 
 Double-game weeks are randomly allocated across the season. Not visible in advance.
 
@@ -314,7 +314,7 @@ AWAY
 
 Team names to use;
 
-Premier League
+Division 1
 
 - Arsenul
 - Viller
@@ -334,10 +334,10 @@ Premier League
 - Man Untied
 - Newcassel
 - Forrist
-- Sunderlund
+- Sunderlun
 - Spurs
 
-Championship
+Division 2
 
 - Birmingum
 - Blackbirn
@@ -364,7 +364,7 @@ Championship
 - Woolvz
 - Rexham
 
-League One
+Division 3
 
 - Wimbledon
 - Barnslee
@@ -391,7 +391,7 @@ League One
 - Wiggun
 - Wickham
 
-League Two
+Division 4
 
 - Ackrington
 - Barnett
