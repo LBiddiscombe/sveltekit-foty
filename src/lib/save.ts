@@ -5,7 +5,7 @@ import { match } from '$lib/stores/match.svelte';
 import { standings } from '$lib/stores/standings.svelte';
 import { wageForLevel } from '$lib/config/economy';
 import { getLevelIndex } from '$lib/config/levels';
-import type { DivisionSchedule, Fixture, InboxItem, MatchResult, Standing, StatsArchiveEntry } from '$lib/types/game';
+import type { DivisionSchedule, Fixture, InboxItem, MatchResult, Standing, StatsArchiveEntry, TransferWindowState } from '$lib/types/game';
 
 const SAVE_KEY = 'foty-save';
 const SAVE_BACKUP_KEY = 'foty-save-backup';
@@ -74,6 +74,8 @@ interface SaveState {
 		saves: number;
 		misses: number;
 		statsArchive: StatsArchiveEntry[];
+		queuedTransferCard: boolean;
+		lastTransferWindow: TransferWindowState | null;
 	};
 	season: {
 		weekNumber: number;
@@ -121,7 +123,11 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 			chances: player.chances,
 			saves: player.saves,
 			misses: player.misses,
-			statsArchive: JSON.parse(JSON.stringify(player.statsArchive))
+			statsArchive: JSON.parse(JSON.stringify(player.statsArchive)),
+			queuedTransferCard: player.queuedTransferCard,
+			lastTransferWindow: player.lastTransferWindow
+				? { season: player.lastTransferWindow.season, window: player.lastTransferWindow.window }
+				: null
 		},
 		season: {
 			weekNumber: season.weekNumber,
@@ -193,6 +199,8 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		player.saves = state.player.saves ?? 0;
 		player.misses = state.player.misses ?? 0;
 		player.statsArchive = state.player.statsArchive ?? [];
+		player.queuedTransferCard = state.player.queuedTransferCard ?? false;
+		player.lastTransferWindow = state.player.lastTransferWindow ?? null;
 
 		season.weekNumber = Math.max(1, state.season.weekNumber);
 		season.seasonNumber = state.season.seasonNumber;

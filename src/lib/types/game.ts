@@ -161,3 +161,21 @@ export interface AiMatchResult {
 	homeGoals: number;
 	awayGoals: number;
 }
+
+export type TransferWindow = 1 | 2;
+
+export interface TransferWindowState {
+	season: number;
+	window: TransferWindow;
+}
+
+export interface ScoutReport {
+	scoutClub: string;
+	scoutDivision: number;
+	targetBandName: string;
+	targetBandMinXp: number;
+	success: boolean;
+	playerLevelName: string;
+	playerXp: number;
+	signingFee?: number;
+}

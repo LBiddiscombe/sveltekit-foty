@@ -66,9 +66,9 @@ describe('skipGame', () => {
 		expect(result.played).toBe(false);
 	});
 
-	it('fills all outcomes as miss', () => {
+	it('returns empty outcomes (no chances taken)', () => {
 		const result = skipGame(4, 5, 'Gillingham', 'Gillingham');
-		expect(result.outcomes).toEqual(['miss', 'miss', 'miss', 'miss']);
+		expect(result.outcomes).toEqual([]);
 	});
 
 	it('has rating 4', () => {

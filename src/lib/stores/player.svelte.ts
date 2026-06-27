@@ -1,4 +1,4 @@
-import type { Outcome, StatsArchiveEntry } from '$lib/types/game';
+import type { Outcome, StatsArchiveEntry, TransferWindowState } from '$lib/types/game';
 import { wageForLevel } from '$lib/config/economy';
 import { getLevel, getLevelIndex, LEVEL_UP_MESSAGES } from '$lib/config/levels';
 import { inbox } from './inbox.svelte';
@@ -24,6 +24,8 @@ function createPlayer() {
 	let chances = $state(0);
 	let saves = $state(0);
 	let misses = $state(0);
+	let queuedTransferCard = $state(false);
+	let lastTransferWindow = $state<TransferWindowState | null>(null);
 
 	function adjustBalance(delta: number) {
 		bankBalance = Math.max(0, bankBalance + delta);
@@ -212,6 +214,18 @@ function createPlayer() {
 		},
 		set misses(v: number) {
 			misses = v;
+		},
+		get queuedTransferCard() {
+			return queuedTransferCard;
+		},
+		set queuedTransferCard(v: boolean) {
+			queuedTransferCard = v;
+		},
+		get lastTransferWindow() {
+			return lastTransferWindow;
+		},
+		set lastTransferWindow(v: TransferWindowState | null) {
+			lastTransferWindow = v;
 		},
 		adjustBalance,
 		addToDeck,

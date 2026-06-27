@@ -55,7 +55,7 @@
 			<span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-subtle">&gt;</span>
 		</button>
 		<button
-			onclick={async () => await goto('/hub/player')}
+			onclick={async () => await goto('/hub/shop')}
 			class="relative rounded border border-transparent bg-card p-3 text-center hover:border-primary"
 		>
 			<p class="text-sm text-success">£{player.bankBalance.toLocaleString()}</p>

@@ -54,11 +54,10 @@ export function skipGame(
 	playerClub: string,
 	opponentClub: string
 ): MatchResult {
-	const outcomes: Outcome[] = Array.from({ length: chances }, () => 'miss');
 	return {
 		played: false,
 		chances,
-		outcomes,
+		outcomes: [],
 		score: [calcTeamGoals(strength(playerClub), morale), calcOpponentGoals(strength(opponentClub), morale)],
 		rating: 4
 	};

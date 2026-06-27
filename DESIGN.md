@@ -86,10 +86,30 @@ Double-game weeks are randomly allocated across the season. Not visible in advan
 
 ## 7. Transfers
 
-- Manager interest system: clubs approach when your stats meet their threshold
-- Club-specific thresholds within each league (top clubs require higher stats)
-- Simple negotiation screen: accept offer, counter (gamble), or reject
-- Contract: wage + length offered, you accept/counter/reject
+- Two transfer windows per season: weeks 1-4 and weeks 16-19
+- First window of Season 1 blocked (just joined the club)
+- Two paths, same scout evaluation:
+
+  **Transfer card** — Purchasable from the shop (£2,500/£4,000/£7,500/£10,000 per division).
+  In-window: immediate evaluation. Out-of-window: queued for next window's week 1.
+
+  **Passive scouting** — 25% weekly roll after vidiprinter during windows (Season 2+).
+  Queued transfer cards replace the passive roll for week 1 of the next window.
+
+- Once-per-window outcome limit (max 1 transfer per window)
+
+- Scout evaluation: random club (excluding current) from same division or division above
+  (50/50; Div 1 same-only). Picks a random target band from:
+  - Same division: top 2 XP bands
+  - Division above: bottom 2 XP bands
+  Player qualifies if careerXp >= band's minXp
+
+- No negotiation — forced move. Signing fee: 5× wage (same division) or 10× wage (one up).
+  10 goal cards added to deck as fresh-start bonus.
+
+- Same division move: archive stats, swap club, existing standings preserved.
+  Division-up move: archive stats, create new fixtures, sim past results from week 1,
+  init new standings table.
 
 ## 8. Match Flow
 
@@ -125,10 +145,10 @@ Double-game weeks are randomly allocated across the season. Not visible in advan
 
 ## 13. Save System
 
-- 3 career slots
-- Auto-save to current slot after every week
+- Single auto-save slot (3 slots dropped — unnecessary with auto-save)
+- Auto-save on hub arrival, beforeunload, and all key transitions
 - Resume where you left off on open
-- Manual save/load available
+- No manual save/load (auto-save covers all use cases)
 
 ## 14. Career End
 
@@ -425,14 +445,17 @@ Division 4
 
 ### Cycle 8: Season Loop + Save + Archive ✅
 
-**Goal:** Full season progression, single auto-save slot, season stats archive.
+**Goal:** Full season progression, single auto-save slot, season stats archive, outcome tracking.
 
 **What shipped:**
 - Full season loop: 30-week calendar, double/single-game weeks, promotion/relegation across 4 divisions
 - Season review page with final standings, promotion bonus, new-season generation
 - Auto-save on hub arrival, beforeunload, and all key transitions
 - `StatsArchiveEntry[]` — per-period stats snapshot archiving on season end, persisted in save
+- Per-match outcome tracking: chances, goals, saves, misses tracked at career + season level
+- Current season display on Player Status page (live from snapshot delta) with conversion percentages
 - Archive display on Player Status page: season-by-season list + career totals
+- All stats presented in a single CAREER STATS card with compact table format (CHN/GLS/SVD/MSS/APP/XP)
 - 3-slot manual save/load dropped (single auto-slot sufficient)
 
 ### Cycle 9+: Stretch Goals

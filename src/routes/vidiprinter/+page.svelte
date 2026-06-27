@@ -9,6 +9,16 @@
 	import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
 	import { simAiMatch } from '$lib/match/engine';
 	import { saveGame } from '$lib/save';
+	import { getTransferWindow } from '$lib/config/economy';
+	import {
+		evaluateScout,
+		processSameDivisionTransfer,
+		processDivisionUpTransfer,
+		hasMovedThisWindow,
+		isPassiveScoutingBlocked,
+		rollPassiveScout
+	} from '$lib/transfer/evaluate';
+	import { setScoutReport } from '$lib/stores/scout-report.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { createTeletype, type TeletypeConfig } from './teletype.svelte';
@@ -164,6 +174,45 @@
 		saveGame();
 
 		inbox.clearActioned();
+
+		const transferWindow = getTransferWindow(season.weekNumber);
+		const shouldScout =
+			transferWindow !== null &&
+			!hasMovedThisWindow(player.lastTransferWindow, season.seasonNumber, transferWindow) &&
+			!isPassiveScoutingBlocked(season.seasonNumber, transferWindow) &&
+			(player.queuedTransferCard || rollPassiveScout());
+
+		if (shouldScout) {
+			player.queuedTransferCard = false;
+			const report = evaluateScout(player.club, player.division, player.careerXp, season.divisionRosters);
+			if (report) {
+				setScoutReport(report);
+				if (report.success && report.signingFee) {
+					const scoutDiv = report.scoutDivision;
+					if (scoutDiv === player.division) {
+						processSameDivisionTransfer(player, season, report.scoutClub, report.signingFee);
+					} else {
+						processDivisionUpTransfer(player, season, standings, report.scoutClub, scoutDiv, report.signingFee);
+					}
+					player.lastTransferWindow = { season: season.seasonNumber, window: transferWindow! };
+					const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
+					inbox.items = [
+						...inbox.items,
+						{
+							id: nextId,
+							type: 'news',
+							subject: 'New Club',
+							body: `You have joined ${report.scoutClub} in Division ${report.scoutDivision}. Report for training.`,
+							actionRequired: true,
+							actioned: false
+						}
+					];
+				}
+				goto(resolve('/scout-report'));
+				return;
+			}
+		}
+
 		const hasIncident = Math.random() < 0.25;
 		if (hasIncident) {
 			const card = pickRandomIncident();

@@ -52,6 +52,17 @@ export function wageForLevel(levelIndex: number): number {
 	return LEVEL_WAGES[levelIndex] ?? 75;
 }
 
+export const TRANSFER_CARD_PRICES: Record<number, number> = {
+	4: 2500,
+	3: 4000,
+	2: 7500,
+	1: 10000
+} as const;
+
+export function transferCardPrice(division: number): number {
+	return TRANSFER_CARD_PRICES[division as Division] ?? TRANSFER_CARD_PRICES[4];
+}
+
 export const TRANSFER_SIGNING_MULTIPLIERS = {
 	sameDivision: 5,
 	oneUp: 10
@@ -67,4 +78,10 @@ export function transferSigningFee(
 			? TRANSFER_SIGNING_MULTIPLIERS.oneUp
 			: TRANSFER_SIGNING_MULTIPLIERS.sameDivision;
 	return currentWage * multiplier;
+}
+
+export function getTransferWindow(weekNumber: number): 1 | 2 | null {
+	if (weekNumber >= 1 && weekNumber <= 4) return 1;
+	if (weekNumber >= 16 && weekNumber <= 19) return 2;
+	return null;
 }

@@ -117,6 +117,36 @@
 
 **Division schedule** — A shared double round-robin schedule for all clubs in the player's division, generated at season start via `generateDivisionSchedule`. Each week has 1 or 2 games per club. Div 1 = 38 games (8 double weeks), others = 46 (16 double weeks).
 
+**Transfer windows** — Two 4-week periods per 30-week season: weeks 1–4 (early season) and weeks 16–19 (mid-season). Transfer activity (both voluntary and involuntary) only occurs during these windows.
+
+**XP caps (revised)** — Div 4: 110, Div 3: 220, Div 2: 380, Div 1: 500. ~10% overlap between consecutive divisions so players can reach the lower XP bands of the division above while still capped in their current division.
+
+**Season 1 first-window exclusion** — The first transfer window (weeks 1–4) of Season 1 is blocked. The player has just joined their club and lacks XP. The winter window (weeks 16–19) of Season 1 is active as normal.
+
+**Transfer card** — Purchasable shop item. In-window: played immediately on purchase with confirmation; scout evaluation fires right then (displays scout report page, then returns to hub). Out-of-window: locked; queues a scout for the first week of the next transfer window (replaces the passive 25% roll for that week; next season if no remaining window this season). After a successful transfer, transfer cards are blocked for the remainder of the window with message "Recently moved clubs — transfer cards unavailable." Same block applies in Season 1.
+
+**Once-per-window outcome** — The outcome limit (max 1 transfer per window) gates the result, not the attempt. Multiple failed evaluations can occur in one window.
+
+**Scout evaluation** — When a scout evaluates (passive roll, in-window card, or queued card): pick a random band from the scout's division's target range. If player's careerXp >= that band's minXp, transfer succeeds. Otherwise, the scout report shows what was sought vs what the player has.
+
+**Same-division scout target** — Top 2 bands of the player's division (e.g., Div 4 = Sunday Leaguer or Trialist). NEVER the bottom band (Park Kicker).
+
+**Division-above scout target** — Bottom 2 bands (+1 and +2) of the division above (e.g., Div 3 = Prospect or Reserve). The +2 band is typically unreachable from below — only the +1 band (Prospect) is achievable from Div 4 at the revised cap of 110 XP.
+
+**Scout division selection** — 50/50 random between same division and division above for players in Div 2-4. Div 1 players always get same-division scouts (no division above).
+
+**Transfer card prices** — Div 4: £2,500, Div 3: £4,000, Div 2: £7,500, Div 1: £10,000.
+
+**Signing fee** — One-time payment on transfer: 5× current wage for same-division moves, 10× for moves up one division.
+
+**Fresh-start deck bonus** — On successful transfer, 10 goal cards added to the player's deck.
+
+**Transfer state** — Two new fields in the player store (persisted in saves): `queuedTransferCard: boolean` (locked card awaiting next window) and `lastTransferWindow: { season: number, window: 1 | 2 } | null` (blocks further transfers for the remainder of that window).
+
+**Scout report page** — Route shown between weeks after vidiprinter (during transfer windows, or when a queued card fires on week 1 of the next window). Shows evaluation outcome. On success: routes to a "transferred" confirmation, archives current stats, pays signing fee, adds welcome message to inbox. On failure: shows what the scout sought vs the player's current level.
+
+**Passive scouting** — During transfer windows, each week has a 25% chance of a scout evaluating the player. Same evaluation logic as the transfer card path, no cost to the player, but no control over timing either. The first window (weeks 1–4) of Season 1 is excluded; the winter window (weeks 16–19) of Season 1 is active.
+
 **Transfers (hybrid)** — Two paths to move clubs: (1) XP-threshold manager interest triggers naturally when careerXp meets the target division's interest minimum, and (2) purchasable transfer cards in the shop give a chance of early scouting evaluation. Both lead to negotiation + contract screen (Cycle 7).
 
 **Stats snapshot** — Baseline values (goals, appearances, XP, chances, saves, misses) recorded at career start via `recordStatsSnapshot()`. On season end (or future club change), `getStatsSinceSnapshot()` computes the delta and `archiveCurrentStats()` pushes the entry to the archive and resets the snapshot for the next period.

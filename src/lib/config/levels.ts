@@ -16,17 +16,17 @@ export const LEVELS: Level[] = [
 ] as const;
 
 export const DIVISION_XP_CAPS = {
-	4: 100,
-	3: 200,
-	2: 350,
+	4: 110,
+	3: 220,
+	2: 380,
 	1: 500
 } as const;
 
 export const DIVISION_INTEREST_THRESHOLDS = {
-	4: 30,
-	3: 80,
-	2: 170,
-	1: 300
+	4: 34,
+	3: 100,
+	2: 200,
+	1: 350
 } as const;
 
 export function getLevel(xp: number): Level {
@@ -53,6 +53,35 @@ export function getNextLevelXp(xp: number): number | null {
 	const idx = getLevelIndex(xp);
 	if (idx >= LEVELS.length - 1) return null;
 	return LEVELS[idx + 1].minXp;
+}
+
+export function getLevelsInDivision(division: number): Level[] {
+	return LEVELS.filter((l) => l.division === division);
+}
+
+export function getLevelBand(division: number, xp: number): { level: Level; band: 1 | 2 | 3 } | null {
+	const divLevels = getLevelsInDivision(division);
+	if (divLevels.length === 0) return null;
+	let current = divLevels[0];
+	let bandIndex = 0;
+	for (let i = 0; i < divLevels.length; i++) {
+		if (xp >= divLevels[i].minXp) {
+			current = divLevels[i];
+			bandIndex = i;
+		}
+	}
+	return { level: current, band: (bandIndex + 1) as 1 | 2 | 3 };
+}
+
+export function getTargetBandsForScout(
+	scoutDivision: number,
+	playerDivision: number
+): Level[] {
+	const divLevels = getLevelsInDivision(scoutDivision);
+	if (scoutDivision === playerDivision) {
+		return divLevels.slice(-2);
+	}
+	return divLevels.slice(0, 2);
 }
 
 export const LEVEL_UP_MESSAGES: Record<number, string> = {
