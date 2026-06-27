@@ -76,7 +76,9 @@
 		<Card>
 			<div class="flex flex-col items-center gap-2 py-4 text-center">
 				<span class="font-pixel text-sm text-primary">All Matches Resolved</span>
-				<span class="font-pixel text-xs text-subtle">All matches for this week have been resolved.</span>
+				<span class="font-pixel text-xs text-subtle"
+					>All matches for this week have been resolved.</span
+				>
 			</div>
 		</Card>
 
@@ -110,9 +112,11 @@
 			<div class="flex flex-col items-center gap-1 py-2 text-center">
 				<span class="font-pixel text-xs text-subtle">{currentFixture.isHome ? 'HOME' : 'AWAY'}</span
 				>
-					<span class="font-pixel text-lg text-primary">
+				<span class="font-pixel text-lg text-primary">
 					{currentFixture.opponent}
-					<span class="text-subtle">({ordinal(standings.getPosition(currentFixture.opponent))})</span>
+					<span class="text-subtle"
+						>({ordinal(standings.getPosition(currentFixture.opponent))})</span
+					>
 				</span>
 			</div>
 		</Card>
@@ -121,8 +125,7 @@
 			<Card>
 				<div class="flex flex-col items-center gap-2 py-4 text-center">
 					<span class="font-pixel text-sm text-primary">
-						You are unavailable &mdash; forced to miss this match
-						({season.appearanceSkips} remaining)
+						You are unavailable &mdash; forced to miss this match ({season.appearanceSkips} remaining)
 					</span>
 					<span class="font-pixel text-xs text-subtle">The team will play without you.</span>
 				</div>

@@ -57,7 +57,11 @@ export const TRANSFER_SIGNING_MULTIPLIERS = {
 	oneUp: 10
 } as const;
 
-export function transferSigningFee(currentWage: number, targetDivision: number, currentDivision: number): number {
+export function transferSigningFee(
+	currentWage: number,
+	targetDivision: number,
+	currentDivision: number
+): number {
 	const multiplier =
 		targetDivision < currentDivision
 			? TRANSFER_SIGNING_MULTIPLIERS.oneUp

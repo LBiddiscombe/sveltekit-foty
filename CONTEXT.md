@@ -83,11 +83,11 @@
 **Economy config** — `src/lib/config/economy.ts` defines division-based card prices and XP-level-based wages. Goal card prices rise steeply with division; incident cards cost ~¼ of goal cards. Wages are tied to XP level, not division, so one-club careers see wage growth as XP improves even before promotion.
 
 | Div | Goal card | Incident card | Wage range (3 levels per div) | Weeks per goal card |
-|-----|-----------|---------------|-------------------------------|---------------------|
-| 4   | £400      | £100          | £75 → £100 → £150             | 5.3 → 4.0 → 2.7    |
-| 3   | £800      | £200          | £200 → £275 → £375            | 4.0 → 2.9 → 2.1    |
-| 2   | £1,500    | £375          | £450 → £600 → £800            | 3.3 → 2.5 → 1.9    |
-| 1   | £2,000    | £500          | £900 → £1,050 → £1,200        | 2.2 → 1.9 → 1.7    |
+| --- | --------- | ------------- | ----------------------------- | ------------------- |
+| 4   | £400      | £100          | £75 → £100 → £150             | 5.3 → 4.0 → 2.7     |
+| 3   | £800      | £200          | £200 → £275 → £375            | 4.0 → 2.9 → 2.1     |
+| 2   | £1,500    | £375          | £450 → £600 → £800            | 3.3 → 2.5 → 1.9     |
+| 1   | £2,000    | £500          | £900 → £1,050 → £1,200        | 2.2 → 1.9 → 1.7     |
 
 **Wage progression** — `player.addXp()` recalculates `player.wage` from `wageForLevel(getLevelIndex(careerXp))`. Wage is no longer persisted independently; it is derived from careerXp on save load. Promotion and XP gains automatically increase wage.
 

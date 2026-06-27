@@ -130,7 +130,12 @@ function createSeason() {
 				.filter((c) => !promotedFromLower.includes(c))
 				.concat(relegatedFromUpper);
 
-			boundaryResults.push({ upper, lower, promoted: promotedFromLower, relegated: relegatedFromUpper });
+			boundaryResults.push({
+				upper,
+				lower,
+				promoted: promotedFromLower,
+				relegated: relegatedFromUpper
+			});
 		}
 
 		let newDivision = playerDivision;
@@ -193,7 +198,11 @@ function createSeason() {
 		seasonXpAtStart = playerXp;
 	}
 
-	function getSeasonStats(currentGoals: number, currentApps: number, currentXp: number): SeasonStats {
+	function getSeasonStats(
+		currentGoals: number,
+		currentApps: number,
+		currentXp: number
+	): SeasonStats {
 		return {
 			goals: currentGoals - seasonGoalsAtStart,
 			appearances: currentApps - seasonAppsAtStart,

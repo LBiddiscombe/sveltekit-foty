@@ -41,14 +41,11 @@ function makeRoundRobinPairs(teams: string[]): [string, string][][] {
 }
 
 export function generateDivisionSchedule(division: number, clubs: string[]): DivisionSchedule {
-	const n = clubs.length;
 	const isDiv1 = division === 1;
 	const doubleGameWeeks = getDoubleGameWeeks(30, isDiv1 ? 8 : 16);
 
 	const firstLeg = makeRoundRobinPairs(clubs);
-	const secondLeg = firstLeg.map((round) =>
-		round.map(([h, a]) => [a, h] as [string, string])
-	);
+	const secondLeg = firstLeg.map((round) => round.map(([h, a]) => [a, h] as [string, string]));
 
 	const allRounds = [...firstLeg, ...secondLeg];
 

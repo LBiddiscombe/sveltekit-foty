@@ -210,8 +210,28 @@ describe('loadGame resilience', () => {
 
 	it('backs up save with empty fixtures and returns false', () => {
 		const state = {
-			player: { club: 'Exetur', name: 'T', age: 17, bankBalance: 5000, goals: 0, appearances: 0, division: 4, deck: [], careerXp: 0, matchXpHistory: [] },
-			season: { weekNumber: 1, seasonNumber: 1, fixtures: [], divisionSchedule: { weeks: [] }, gamesPlayed: 0, phase: 'hub', morale: 5, lastWageWeek: 0 },
+			player: {
+				club: 'Exetur',
+				name: 'T',
+				age: 17,
+				bankBalance: 5000,
+				goals: 0,
+				appearances: 0,
+				division: 4,
+				deck: [],
+				careerXp: 0,
+				matchXpHistory: []
+			},
+			season: {
+				weekNumber: 1,
+				seasonNumber: 1,
+				fixtures: [],
+				divisionSchedule: { weeks: [] },
+				gamesPlayed: 0,
+				phase: 'hub',
+				morale: 5,
+				lastWageWeek: 0
+			},
 			inboxItems: [],
 			matchResult: null,
 			standings: [],

@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { playGame, skipGame, getMoraleDelta, consumeDeck, START_MORALE } from './engine';
-import type { MatchResult, Outcome } from '$lib/types/game';
+import type { Outcome } from '$lib/types/game';
 
 describe('playGame', () => {
 	it('returns a MatchResult with played=true', () => {

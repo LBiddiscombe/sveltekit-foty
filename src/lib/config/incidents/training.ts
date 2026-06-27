@@ -8,8 +8,11 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		description: 'You feel a sharp pull during sprint drills.',
 		outcomes: [
 			{ label: 'Physio works magic. Come back stronger!', effects: [{ type: 'xp', delta: 2 }] },
-			{ label: 'Few days rest. You\'ll be right.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
-			{ label: 'Grade two strain. Weeks on the sidelines.', effects: [{ type: 'appearanceSkip', delta: 2 }] },
+			{ label: "Few days rest. You'll be right.", effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Grade two strain. Weeks on the sidelines.',
+				effects: [{ type: 'appearanceSkip', delta: 2 }]
+			},
 			{ label: 'Just a cramp. Shake it off.', effects: [] }
 		]
 	},
@@ -20,8 +23,11 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		description: 'You rolled your ankle during a tackle in training.',
 		outcomes: [
 			{ label: 'Minor sprain. Strapped up and ready.', effects: [] },
-			{ label: 'Week of physio. You\'ll be back.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
-			{ label: 'Ligament damage. Out for a while.', effects: [{ type: 'appearanceSkip', delta: 3 }] },
+			{ label: "Week of physio. You'll be back.", effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Ligament damage. Out for a while.',
+				effects: [{ type: 'appearanceSkip', delta: 3 }]
+			},
 			{ label: 'Walk it off. Tough as nails.', effects: [] }
 		]
 	},
@@ -31,10 +37,16 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Broken Toe',
 		description: 'You stubbed your toe badly against a door frame.',
 		outcomes: [
-			{ label: 'Hairline fracture. Play through the pain.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Hairline fracture. Play through the pain.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
 			{ label: 'Clean break. Month in a boot.', effects: [{ type: 'appearanceSkip', delta: 4 }] },
-			{ label: 'Just bruising. You\'re fine.', effects: [] },
-			{ label: 'Needs surgery. Season could be over.', effects: [{ type: 'appearanceSkip', delta: 6 }] }
+			{ label: "Just bruising. You're fine.", effects: [] },
+			{
+				label: 'Needs surgery. Season could be over.',
+				effects: [{ type: 'appearanceSkip', delta: 6 }]
+			}
 		]
 	},
 	{
@@ -45,7 +57,10 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'Cleared after assessment. Good to go.', effects: [] },
 			{ label: 'Protocol says a week off. Safe.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
-			{ label: 'Symptoms persist. Extended rest.', effects: [{ type: 'appearanceSkip', delta: 2 }] },
+			{
+				label: 'Symptoms persist. Extended rest.',
+				effects: [{ type: 'appearanceSkip', delta: 2 }]
+			},
 			{ label: 'Just dizzy. Fine after a minute.', effects: [] }
 		]
 	},
@@ -53,10 +68,13 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		id: 'food-poisoning',
 		category: 'training',
 		title: 'Food Poisoning',
-		description: 'You\'ve come down with food poisoning.',
+		description: "You've come down with food poisoning.",
 		outcomes: [
 			{ label: 'Recover quickly. Back in training.', effects: [] },
-			{ label: 'Few days in bed. Weak as a kitten.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Few days in bed. Weak as a kitten.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
 			{ label: 'Hospital visit. Dehydrated.', effects: [{ type: 'appearanceSkip', delta: 2 }] },
 			{ label: 'Blame the team buffet.', effects: [{ type: 'morale', delta: -1 }] }
 		]
@@ -101,23 +119,32 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		id: 'personal-trainer',
 		category: 'training',
 		title: 'Personal Trainer',
-		description: 'You\'ve hired a personal trainer.',
+		description: "You've hired a personal trainer.",
 		outcomes: [
 			{ label: 'Transformational! Never been fitter!', effects: [{ type: 'xp', delta: 4 }] },
 			{ label: 'Good sessions. Improvement noted.', effects: [{ type: 'xp', delta: 2 }] },
-			{ label: 'Pushes too hard. Pick up a knock.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
-			{ label: 'Cancel after one session. Expensive.', effects: [{ type: 'bankBalance', delta: -0.5, scale: 'wage' }] }
+			{
+				label: 'Pushes too hard. Pick up a knock.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
+			{
+				label: 'Cancel after one session. Expensive.',
+				effects: [{ type: 'bankBalance', delta: -0.5, scale: 'wage' }]
+			}
 		]
 	},
 	{
 		id: 'yoga-classes',
 		category: 'training',
 		title: 'Yoga Classes',
-		description: 'You\'ve started yoga to improve flexibility.',
+		description: "You've started yoga to improve flexibility.",
 		outcomes: [
 			{ label: 'Flexibility improves. Fewer injuries!', effects: [{ type: 'xp', delta: 2 }] },
 			{ label: 'Feeling looser. Good addition.', effects: [{ type: 'xp', delta: 1 }] },
-			{ label: 'Pull something in first class. Ironic.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Pull something in first class. Ironic.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
 			{ label: 'Not for you. Stick to the gym.', effects: [] }
 		]
 	},
@@ -141,7 +168,7 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'Incredible recovery! Feel brand new!', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Painful but effective.', effects: [] },
-			{ label: 'Can\'t handle the cold. Bailed early.', effects: [{ type: 'morale', delta: -1 }] },
+			{ label: "Can't handle the cold. Bailed early.", effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Skip it. Warm shower instead.', effects: [] }
 		]
 	},
@@ -152,7 +179,10 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		description: 'A mishap in the gym.',
 		outcomes: [
 			{ label: 'No serious damage. Walk it off.', effects: [] },
-			{ label: 'Drop a weight on your foot. Bruised.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Drop a weight on your foot. Bruised.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
 			{ label: 'Pull your back. Weeks of rehab.', effects: [{ type: 'appearanceSkip', delta: 3 }] },
 			{ label: 'Spotter saves you. Close call.', effects: [] }
 		]
@@ -163,7 +193,7 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Weight Gain',
 		description: 'The scales are not looking kind.',
 		outcomes: [
-			{ label: 'It\'s muscle. Looking jacked!', effects: [{ type: 'morale', delta: 1 }] },
+			{ label: "It's muscle. Looking jacked!", effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Winter weight. Nothing major.', effects: [] },
 			{ label: 'Manager notices. Extra running.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Blame the club catering.', effects: [] }
@@ -175,7 +205,10 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Nutrition Plan',
 		description: 'The club nutritionist designed a meal plan.',
 		outcomes: [
-			{ label: 'Clean eating pays off! Energy through the roof!', effects: [{ type: 'xp', delta: 2 }] },
+			{
+				label: 'Clean eating pays off! Energy through the roof!',
+				effects: [{ type: 'xp', delta: 2 }]
+			},
 			{ label: 'Healthier diet. Feeling good.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Miss your favourite foods. Grumpy.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Ignore the plan. Pizza is life.', effects: [] }
@@ -189,7 +222,7 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'Optimal sleep routine! Recovery improves!', effects: [{ type: 'xp', delta: 2 }] },
 			{ label: 'Good insights into sleep patterns.', effects: [] },
-			{ label: 'Monitor uncomfortable. Can\'t sleep.', effects: [{ type: 'morale', delta: -1 }] },
+			{ label: "Monitor uncomfortable. Can't sleep.", effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Decline. You sleep fine.', effects: [] }
 		]
 	},
@@ -201,7 +234,7 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'Mental game transforms! Confidence soaring!', effects: [{ type: 'xp', delta: 3 }] },
 			{ label: 'Helpful techniques for matchday.', effects: [{ type: 'morale', delta: 1 }] },
-			{ label: 'Don\'t buy into it. Waste of time.', effects: [] },
+			{ label: "Don't buy into it. Waste of time.", effects: [] },
 			{ label: 'Refuse. Nothing wrong with your head.', effects: [{ type: 'morale', delta: -1 }] }
 		]
 	},
@@ -213,7 +246,10 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'Break them in perfectly. Feel great!', effects: [{ type: 'deckAdd', delta: 1 }] },
 			{ label: 'Blisters but manageable. Plasters on.', effects: [{ type: 'morale', delta: -1 }] },
-			{ label: 'Bloody blisters. Can\'t train properly.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: "Bloody blisters. Can't train properly.",
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
 			{ label: 'Switch back to old boots.', effects: [] }
 		]
 	},
@@ -225,7 +261,10 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'Cutting-edge treatment works miracles!', effects: [{ type: 'xp', delta: 3 }] },
 			{ label: 'Promising results. Feel better.', effects: [] },
-			{ label: 'Side effects from experimental treatment.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Side effects from experimental treatment.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
 			{ label: 'Stick with traditional methods.', effects: [] }
 		]
 	},
@@ -233,7 +272,7 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		id: 'massage-therapy',
 		category: 'training',
 		title: 'Massage Therapy',
-		description: 'You\'ve booked a sports massage.',
+		description: "You've booked a sports massage.",
 		outcomes: [
 			{ label: 'Deep tissue works wonders! Loose and ready!', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Tense muscles released. Feel great.', effects: [] },
@@ -259,7 +298,13 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Speed Work',
 		description: 'The sprint coach wants to work on your pace.',
 		outcomes: [
-			{ label: 'New PB over 40 metres! Rapid!', effects: [{ type: 'xp', delta: 2 }, { type: 'deckAdd', delta: 1 }] },
+			{
+				label: 'New PB over 40 metres! Rapid!',
+				effects: [
+					{ type: 'xp', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Improvement noted. Getting quicker.', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Push too hard. Pull up sore.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
 			{ label: 'Fast enough already. Skip the session.', effects: [] }
@@ -273,7 +318,10 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'New PB on every lift! Absolute unit!', effects: [{ type: 'xp', delta: 2 }] },
 			{ label: 'Steady gains. Getting stronger.', effects: [{ type: 'xp', delta: 1 }] },
-			{ label: 'Ego-lift and hurt your shoulder.', effects: [{ type: 'appearanceSkip', delta: 2 }] },
+			{
+				label: 'Ego-lift and hurt your shoulder.',
+				effects: [{ type: 'appearanceSkip', delta: 2 }]
+			},
 			{ label: 'Stick to existing routine.', effects: [] }
 		]
 	},
@@ -321,7 +369,10 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'Perfect results!!! Peak condition!', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'All normal. Standard results.', effects: [] },
-			{ label: 'Low iron. Supplements prescribed.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Low iron. Supplements prescribed.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
 			{ label: 'Hate needles. Avoid it.', effects: [] }
 		]
 	},
@@ -341,10 +392,10 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		id: 'diet-cheat',
 		category: 'training',
 		title: 'Diet Cheat Day',
-		description: 'You couldn\'t resist a cheat meal.',
+		description: "You couldn't resist a cheat meal.",
 		outcomes: [
 			{ label: 'Needed that! Back on track tomorrow!', effects: [{ type: 'morale', delta: 1 }] },
-			{ label: 'Worth it. One meal won\'t hurt.', effects: [] },
+			{ label: "Worth it. One meal won't hurt.", effects: [] },
 			{ label: 'Spiral into junk food. Weight up.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Stick to the diet. Discipline.', effects: [] }
 		]
@@ -355,9 +406,18 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Stadium Run',
 		description: 'Training involves running the stadium steps.',
 		outcomes: [
-			{ label: 'Conquer the steps! Legendary stamina!', effects: [{ type: 'xp', delta: 2 }, { type: 'deckAdd', delta: 1 }] },
+			{
+				label: 'Conquer the steps! Legendary stamina!',
+				effects: [
+					{ type: 'xp', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Tough session. Get through it.', effects: [] },
-			{ label: 'Tripped on the steps. Twisted knee.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Tripped on the steps. Twisted knee.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
 			{ label: 'Feign illness. Avoid the stairs.', effects: [{ type: 'morale', delta: -1 }] }
 		]
 	},
@@ -365,7 +425,7 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		id: 'rehabilitation',
 		category: 'training',
 		title: 'Rehabilitation',
-		description: 'You\'ve been making progress in rehab.',
+		description: "You've been making progress in rehab.",
 		outcomes: [
 			{ label: 'Ahead of schedule! Almost back!', effects: [{ type: 'xp', delta: 3 }] },
 			{ label: 'Steady progress. On track.', effects: [{ type: 'morale', delta: 1 }] },

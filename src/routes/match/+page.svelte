@@ -63,7 +63,6 @@
 		const res = match.result!;
 		const game = match.pendingGames[match.currentGameIndex];
 		const playerGoals = res.outcomes.filter((o) => o === 'goal').length;
-		const [us, them] = res.score;
 		season.adjustMorale(getMoraleDelta(res.score, playerGoals));
 
 		if (!game.skipped) {

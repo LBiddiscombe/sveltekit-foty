@@ -50,7 +50,10 @@ function createStandings() {
 		}
 	}
 
-	function processWeekResults(matches: { home: string; away: string; result: AiMatchResult }[], weekNumber: number) {
+	function processWeekResults(
+		matches: { home: string; away: string; result: AiMatchResult }[],
+		weekNumber: number
+	) {
 		for (const m of matches) {
 			recordResult(m.home, m.result, true);
 			recordResult(m.away, m.result, false);
@@ -59,7 +62,7 @@ function createStandings() {
 		lastProcessedWeek = weekNumber;
 	}
 
-	function headToHead(a: string, b: string): number {
+	function headToHead(_a: string, _b: string): number {
 		return 0;
 	}
 

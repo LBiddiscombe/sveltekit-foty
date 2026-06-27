@@ -5,23 +5,32 @@ export const TRAVEL_CARDS: IncidentCard[] = [
 		id: 'missed-flight',
 		category: 'travel',
 		title: 'Missed Flight',
-		description: 'You\'re stuck in traffic on the way to the airport.',
+		description: "You're stuck in traffic on the way to the airport.",
 		outcomes: [
 			{ label: 'You make it with minutes to spare. Lucky!', effects: [] },
 			{ label: 'The airline puts you on the next flight.', effects: [] },
-			{ label: 'You miss the flight. Expensive new ticket.', effects: [{ type: 'bankBalance', delta: -1.5, scale: 'wage' }] },
-			{ label: 'The delay means you miss training.', effects: [{ type: 'appearanceSkip', delta: 1 }] }
+			{
+				label: 'You miss the flight. Expensive new ticket.',
+				effects: [{ type: 'bankBalance', delta: -1.5, scale: 'wage' }]
+			},
+			{
+				label: 'The delay means you miss training.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			}
 		]
 	},
 	{
 		id: 'flight-upgrade',
 		category: 'travel',
 		title: 'Flight Upgrade',
-		description: 'There\'s an upgrade available on your flight.',
+		description: "There's an upgrade available on your flight.",
 		outcomes: [
 			{ label: 'First class! Champagne and legroom!', effects: [{ type: 'morale', delta: 2 }] },
 			{ label: 'Business class. Comfortable journey.', effects: [{ type: 'morale', delta: 1 }] },
-			{ label: 'You pay for the upgrade. Worth it.', effects: [{ type: 'bankBalance', delta: -0.3, scale: 'wage' }] },
+			{
+				label: 'You pay for the upgrade. Worth it.',
+				effects: [{ type: 'bankBalance', delta: -0.3, scale: 'wage' }]
+			},
 			{ label: 'You stay in economy. Same destination.', effects: [] }
 		]
 	},
@@ -29,11 +38,17 @@ export const TRAVEL_CARDS: IncidentCard[] = [
 		id: 'lost-passport',
 		category: 'travel',
 		title: 'Lost Passport',
-		description: 'You can\'t find your passport before a trip abroad.',
+		description: "You can't find your passport before a trip abroad.",
 		outcomes: [
 			{ label: 'Found it! Crisis averted!', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Emergency passport issued. Stressful.', effects: [{ type: 'morale', delta: -1 }] },
-			{ label: 'You miss the trip. Club is furious.', effects: [{ type: 'appearanceSkip', delta: 1 }, { type: 'morale', delta: -2 }] },
+			{
+				label: 'You miss the trip. Club is furious.',
+				effects: [
+					{ type: 'appearanceSkip', delta: 1 },
+					{ type: 'morale', delta: -2 }
+				]
+			},
 			{ label: 'It was in your other jacket all along.', effects: [] }
 		]
 	},
@@ -41,23 +56,38 @@ export const TRAVEL_CARDS: IncidentCard[] = [
 		id: 'lost-luggage',
 		category: 'travel',
 		title: 'Lost Luggage',
-		description: 'Your bags didn\'t make it onto the flight.',
+		description: "Your bags didn't make it onto the flight.",
 		outcomes: [
 			{ label: 'Delivered to your hotel. All sorted.', effects: [] },
-			{ label: 'You buy emergency kit. Annoying but fine.', effects: [{ type: 'bankBalance', delta: -0.3, scale: 'wage' }] },
-			{ label: 'Your boots are gone. Replacement cost.', effects: [{ type: 'bankBalance', delta: -1, scale: 'wage' }] },
-			{ label: 'Compensation from the airline. Profit!', effects: [{ type: 'bankBalance', delta: 1, scale: 'wage' }] }
+			{
+				label: 'You buy emergency kit. Annoying but fine.',
+				effects: [{ type: 'bankBalance', delta: -0.3, scale: 'wage' }]
+			},
+			{
+				label: 'Your boots are gone. Replacement cost.',
+				effects: [{ type: 'bankBalance', delta: -1, scale: 'wage' }]
+			},
+			{
+				label: 'Compensation from the airline. Profit!',
+				effects: [{ type: 'bankBalance', delta: 1, scale: 'wage' }]
+			}
 		]
 	},
 	{
 		id: 'traffic-jam',
 		category: 'travel',
 		title: 'Traffic Jam',
-		description: 'You\'re stuck in a terrible traffic jam on matchday.',
+		description: "You're stuck in a terrible traffic jam on matchday.",
 		outcomes: [
 			{ label: 'You arrive just in time. Rush to get changed!', effects: [] },
-			{ label: 'Stuck for hours. Miss the pre-match meal.', effects: [{ type: 'morale', delta: -1 }] },
-			{ label: 'You arrive late. Manager drops you.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Stuck for hours. Miss the pre-match meal.',
+				effects: [{ type: 'morale', delta: -1 }]
+			},
+			{
+				label: 'You arrive late. Manager drops you.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
 			{ label: 'You took the back roads. Smooth sailing.', effects: [] }
 		]
 	},
@@ -93,7 +123,10 @@ export const TRAVEL_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'You thrive in the heat. Toughen up!', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Uncomfortable but manageable.', effects: [] },
-			{ label: 'You overheat. Medical room visit.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'You overheat. Medical room visit.',
+				effects: [{ type: 'appearanceSkip', delta: 1 }]
+			},
 			{ label: 'Training moves indoors. Air conditioning!', effects: [] }
 		]
 	}

@@ -32,7 +32,6 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 		let scored = false;
 		let saved = false;
 		let outcome: string | null = null;
-		let outcomeTime = 0;
 		let charging = false;
 		let chargeStartTime = 0;
 		let completed = false;
@@ -149,7 +148,6 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 					ball.vy *= 0.8;
 					saved = true;
 					outcome = 'Saved!';
-					outcomeTime = p.millis();
 					emitResult('saved');
 				} else if (inFrame) {
 					scored = true;
@@ -158,7 +156,6 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 					ft.netRipple.impactY = ball.y;
 					ft.netRipple.startTime = p.millis();
 					outcome = 'Goal!';
-					outcomeTime = p.millis();
 					emitResult('goal');
 				}
 			}
@@ -171,13 +168,11 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 
 			if (ball.z > ft.goal.z + 3 && !outcome) {
 				outcome = 'Missed!';
-				outcomeTime = p.millis();
 				emitResult('miss');
 			}
 
 			if (!outcome && ball.z > 30) {
 				outcome = 'Missed!';
-				outcomeTime = p.millis();
 				emitResult('miss');
 			}
 		}

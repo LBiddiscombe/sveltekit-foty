@@ -40,7 +40,7 @@
 		</div>
 	</div>
 
-	<div class="mb-5 rounded  bg-card p-4">
+	<div class="mb-5 rounded bg-card p-4">
 		<div class="flex items-baseline justify-between">
 			<span class="text-[10px] text-subtle">{level.title}</span>
 			{#if nextLevel !== null}
@@ -84,7 +84,7 @@
 	</div>
 
 	{#if player.matchXpHistory.length > 0}
-		<div class="rounded  bg-card p-4">
+		<div class="rounded bg-card p-4">
 			<h2 class="mb-3 text-[10px] text-subtle">RECENT FORM</h2>
 			<div class="flex items-end gap-2" style="height: 48px">
 				{#each player.matchXpHistory as xp, i (i)}

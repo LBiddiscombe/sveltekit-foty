@@ -67,9 +67,7 @@
 
 	<div class="flex flex-col gap-3">
 		<Card>
-			<h4 class="mb-2 text-[10px] font-bold uppercase tracking-wider text-primary">
-				Goal Cards
-			</h4>
+			<h4 class="mb-2 text-[10px] font-bold uppercase tracking-wider text-primary">Goal Cards</h4>
 			<p class="text-[10px] text-subtle">
 				£{cardPrice} each — adds a random 1-3 chance card to your deck
 			</p>
@@ -96,10 +94,7 @@
 					Buy Incident Card
 				</Button>
 				{#if showInboxHint}
-					<a
-						href="/hub/inbox"
-						class="mt-3 inline-block text-[10px] text-warning underline"
-					>
+					<a href="/hub/inbox" class="mt-3 inline-block text-[10px] text-warning underline">
 						Open your inbox to play it
 					</a>
 				{/if}

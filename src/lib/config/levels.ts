@@ -56,7 +56,7 @@ export function getNextLevelXp(xp: number): number | null {
 }
 
 export const LEVEL_UP_MESSAGES: Record<number, string> = {
-	1: 'You\'re now a Sunday Leaguer. Your wage is now £{wage} a week.',
+	1: "You're now a Sunday Leaguer. Your wage is now £{wage} a week.",
 	2: 'Trialist status unlocked. Wage bumped to £{wage}.',
 	3: 'Prospect — Division 3 awaits. Your wage rises to £{wage}.',
 	4: 'Reserve grade. The club rates you at £{wage} a week now.',

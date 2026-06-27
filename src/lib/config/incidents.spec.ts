@@ -1,15 +1,28 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { INCIDENT_CARDS, pickRandomIncident, incidentCardById } from './incidents';
 import type { IncidentCategory, IncidentEffectType } from '$lib/types/game';
 
 const VALID_CATEGORIES: IncidentCategory[] = [
-	'career', 'training', 'purchases-sales', 'investments', 'family',
-	'media', 'gambling', 'dressing-room', 'travel', 'absurd'
+	'career',
+	'training',
+	'purchases-sales',
+	'investments',
+	'family',
+	'media',
+	'gambling',
+	'dressing-room',
+	'travel',
+	'absurd'
 ];
 
 const VALID_EFFECT_TYPES: IncidentEffectType[] = [
-	'bankBalance', 'morale', 'xp', 'deckAdd', 'deckRemove',
-	'appearanceSkip', 'wageMultiplier'
+	'bankBalance',
+	'morale',
+	'xp',
+	'deckAdd',
+	'deckRemove',
+	'appearanceSkip',
+	'wageMultiplier'
 ];
 
 describe('INCIDENT_CARDS', () => {

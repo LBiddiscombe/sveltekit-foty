@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-import { saveGame } from '$lib/save';
-import { player } from '$lib/stores/player.svelte';
-import { season } from '$lib/stores/season.svelte';
-import './layout.css';
+	import { saveGame } from '$lib/save';
+	import { player } from '$lib/stores/player.svelte';
+	import { season } from '$lib/stores/season.svelte';
+	import './layout.css';
 
 	let { children } = $props();
 

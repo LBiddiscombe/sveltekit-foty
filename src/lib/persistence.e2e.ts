@@ -12,33 +12,66 @@ test.describe('Game persistence', () => {
 		await page.evaluate(() => {
 			const save = {
 				player: {
-					name: 'TestPlayer', age: 17, bankBalance: 5075,
-					goals: 1, appearances: 1, club: 'Ackrington', division: 4,
+					name: 'TestPlayer',
+					age: 17,
+					bankBalance: 5075,
+					goals: 1,
+					appearances: 1,
+					club: 'Ackrington',
+					division: 4,
 					deck: [3, 1, 2, 1, 3, 2, 1, 3, 2, 1],
-					careerXp: 50, matchXpHistory: [50]
+					careerXp: 50,
+					matchXpHistory: [50]
 				},
 				season: {
-					weekNumber: 2, seasonNumber: 1,
+					weekNumber: 2,
+					seasonNumber: 1,
 					fixtures: [
-						{ opponent: 'Barnett', isHome: true, weekNumber: 1, result: { goalsFor: 2, goalsAgainst: 1, playerGoals: 1 } },
-						{ opponent: 'Croo', isHome: false, weekNumber: 1, result: { goalsFor: 1, goalsAgainst: 1, playerGoals: 0 } }
+						{
+							opponent: 'Barnett',
+							isHome: true,
+							weekNumber: 1,
+							result: { goalsFor: 2, goalsAgainst: 1, playerGoals: 1 }
+						},
+						{
+							opponent: 'Croo',
+							isHome: false,
+							weekNumber: 1,
+							result: { goalsFor: 1, goalsAgainst: 1, playerGoals: 0 }
+						}
 					],
 					divisionSchedule: { weeks: [] },
-					gamesPlayed: 2, phase: 'hub', morale: 6, lastWageWeek: 2
+					gamesPlayed: 2,
+					phase: 'hub',
+					morale: 6,
+					lastWageWeek: 2
 				},
 				inboxItems: [],
 				matchResult: null,
 				standings: Array.from({ length: 24 }, (_, i) => ({
 					club: `Club${i + 1}`,
-					played: 1, won: 0, drawn: 0, lost: 0,
-					goalsFor: 0, goalsAgainst: 0, goalDifference: 0,
-					points: 0, 					lastFive: [] as string[]
+					played: 1,
+					won: 0,
+					drawn: 0,
+					lost: 0,
+					goalsFor: 0,
+					goalsAgainst: 0,
+					goalDifference: 0,
+					points: 0,
+					lastFive: [] as string[]
 				})),
 				lastProcessedWeek: 1
 			};
 			save.standings[0] = {
-				club: 'Ackrington', played: 2, won: 1, drawn: 1, lost: 0,
-				goalsFor: 3, goalsAgainst: 2, goalDifference: 1, points: 4,
+				club: 'Ackrington',
+				played: 2,
+				won: 1,
+				drawn: 1,
+				lost: 0,
+				goalsFor: 3,
+				goalsAgainst: 2,
+				goalDifference: 1,
+				points: 4,
 				lastFive: ['W', 'D']
 			};
 			localStorage.setItem('foty-save', JSON.stringify(save));

@@ -10,7 +10,10 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 			{ label: 'You nail it! The lads go wild!', effects: [{ type: 'morale', delta: 2 }] },
 			{ label: 'Solid effort. You pass the initiation.', effects: [] },
 			{ label: 'You freeze. The hazing gets worse.', effects: [{ type: 'morale', delta: -1 }] },
-			{ label: 'The senior pro bails you out. You owe him one.', effects: [{ type: 'deckRemove', delta: 1 }] }
+			{
+				label: 'The senior pro bails you out. You owe him one.',
+				effects: [{ type: 'deckRemove', delta: 1 }]
+			}
 		]
 	},
 	{
@@ -19,9 +22,15 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		title: 'Practical Joke',
 		description: 'The lads have a practical joke planned for someone.',
 		outcomes: [
-			{ label: 'Perfect prank. Legendary status in the squad.', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'Perfect prank. Legendary status in the squad.',
+				effects: [{ type: 'morale', delta: 2 }]
+			},
 			{ label: 'Good laugh. Everyone enjoys it.', effects: [{ type: 'morale', delta: 1 }] },
-			{ label: 'The joke backfires. You\'re the target now.', effects: [{ type: 'morale', delta: -1 }] },
+			{
+				label: "The joke backfires. You're the target now.",
+				effects: [{ type: 'morale', delta: -1 }]
+			},
 			{ label: 'You stay out of it. Not your style.', effects: [] }
 		]
 	},
@@ -29,10 +38,19 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		id: 'birthday-fine',
 		category: 'dressing-room',
 		title: 'Birthday Fine',
-		description: 'It\'s your birthday — time for the traditional club fine.',
+		description: "It's your birthday — time for the traditional club fine.",
 		outcomes: [
-			{ label: 'You pay up with a smile. Everyone celebrates.', effects: [{ type: 'morale', delta: 2 }, { type: 'bankBalance', delta: -0.5, scale: 'wage' }] },
-			{ label: 'You bring cakes. Good lad.', effects: [{ type: 'bankBalance', delta: -0.2, scale: 'wage' }] },
+			{
+				label: 'You pay up with a smile. Everyone celebrates.',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'bankBalance', delta: -0.5, scale: 'wage' }
+				]
+			},
+			{
+				label: 'You bring cakes. Good lad.',
+				effects: [{ type: 'bankBalance', delta: -0.2, scale: 'wage' }]
+			},
 			{ label: 'You refuse to pay. Bad form.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'You forget your own birthday. They let you off.', effects: [] }
 		]
@@ -46,7 +64,7 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 			{ label: 'You help out. Best kit all season.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Small favour. No big deal.', effects: [] },
 			{ label: 'You forget. Kit man is upset.', effects: [{ type: 'morale', delta: -1 }] },
-			{ label: 'You\'re too busy. He understands.', effects: [] }
+			{ label: "You're too busy. He understands.", effects: [] }
 		]
 	},
 	{
@@ -69,7 +87,10 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'Brilliant night. Bonding at its best.', effects: [{ type: 'morale', delta: 2 }] },
 			{ label: 'Good food, good company.', effects: [{ type: 'morale', delta: 1 }] },
-			{ label: 'You end up paying for everyone. Expensive.', effects: [{ type: 'bankBalance', delta: -1, scale: 'wage' }] },
+			{
+				label: 'You end up paying for everyone. Expensive.',
+				effects: [{ type: 'bankBalance', delta: -1, scale: 'wage' }]
+			},
 			{ label: 'You skip it. Rest for the match.', effects: [] }
 		]
 	},
@@ -79,10 +100,16 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		title: 'Pool Tournament',
 		description: 'The team room has a pool table. Tournament time.',
 		outcomes: [
-			{ label: 'You\'re the champion! Bragging rights forever!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: "You're the champion! Bragging rights forever!",
+				effects: [{ type: 'morale', delta: 2 }]
+			},
 			{ label: 'Semi-final exit. Respectable.', effects: [] },
-			{ label: 'You lose in the first round. Ribbed mercilessly.', effects: [{ type: 'morale', delta: -1 }] },
-			{ label: 'You don\'t play. Let the others have fun.', effects: [] }
+			{
+				label: 'You lose in the first round. Ribbed mercilessly.',
+				effects: [{ type: 'morale', delta: -1 }]
+			},
+			{ label: "You don't play. Let the others have fun.", effects: [] }
 		]
 	},
 	{
@@ -92,8 +119,14 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		description: 'A fierce table tennis rivalry has developed with a teammate.',
 		outcomes: [
 			{ label: 'You dominate. Table tennis legend!', effects: [{ type: 'morale', delta: 2 }] },
-			{ label: 'Close matches. Keeps the squad entertained.', effects: [{ type: 'morale', delta: 1 }] },
-			{ label: 'You break the table in frustration. Fined.', effects: [{ type: 'bankBalance', delta: -0.5, scale: 'wage' }] },
+			{
+				label: 'Close matches. Keeps the squad entertained.',
+				effects: [{ type: 'morale', delta: 1 }]
+			},
+			{
+				label: 'You break the table in frustration. Fined.',
+				effects: [{ type: 'bankBalance', delta: -0.5, scale: 'wage' }]
+			},
 			{ label: 'You retire undefeated. In your own mind.', effects: [] }
 		]
 	},
@@ -103,9 +136,18 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		title: 'Card School',
 		description: 'The senior players are running a card school.',
 		outcomes: [
-			{ label: 'You win big. Lucky streak continues.', effects: [{ type: 'bankBalance', delta: 2, scale: 'wage' }] },
-			{ label: 'Small wins. Fun way to pass the time.', effects: [{ type: 'bankBalance', delta: 0.3, scale: 'wage' }] },
-			{ label: 'You lose your shirt. Rookie mistake.', effects: [{ type: 'bankBalance', delta: -2, scale: 'wage' }] },
+			{
+				label: 'You win big. Lucky streak continues.',
+				effects: [{ type: 'bankBalance', delta: 2, scale: 'wage' }]
+			},
+			{
+				label: 'Small wins. Fun way to pass the time.',
+				effects: [{ type: 'bankBalance', delta: 0.3, scale: 'wage' }]
+			},
+			{
+				label: 'You lose your shirt. Rookie mistake.',
+				effects: [{ type: 'bankBalance', delta: -2, scale: 'wage' }]
+			},
 			{ label: 'You watch. Safer that way.', effects: [] }
 		]
 	},
@@ -113,7 +155,7 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		id: 'dressing-room-dj',
 		category: 'dressing-room',
 		title: 'Dressing Room DJ',
-		description: 'You\'re in charge of the dressing room music today.',
+		description: "You're in charge of the dressing room music today.",
 		outcomes: [
 			{ label: 'Bangers only! Everyone buzzing!', effects: [{ type: 'morale', delta: 2 }] },
 			{ label: 'Decent playlist. Nobody complains.', effects: [] },
@@ -128,9 +170,15 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		description: 'The squad is doing Secret Santa for Christmas.',
 		outcomes: [
 			{ label: 'You give the best gift. Club legend!', effects: [{ type: 'morale', delta: 2 }] },
-			{ label: 'Nice gift. Everyone happy.', effects: [{ type: 'bankBalance', delta: -0.2, scale: 'wage' }] },
-			{ label: 'You forgot. Last-minute panic gift is terrible.', effects: [{ type: 'morale', delta: -1 }] },
-			{ label: 'You don\'t participate.', effects: [] }
+			{
+				label: 'Nice gift. Everyone happy.',
+				effects: [{ type: 'bankBalance', delta: -0.2, scale: 'wage' }]
+			},
+			{
+				label: 'You forgot. Last-minute panic gift is terrible.',
+				effects: [{ type: 'morale', delta: -1 }]
+			},
+			{ label: "You don't participate.", effects: [] }
 		]
 	},
 	{
@@ -139,21 +187,27 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		title: 'Team Bonding Weekend',
 		description: 'The club has organised a team bonding weekend.',
 		outcomes: [
-			{ label: 'Best bonding ever! Squad feels like family!', effects: [{ type: 'morale', delta: 3 }] },
+			{
+				label: 'Best bonding ever! Squad feels like family!',
+				effects: [{ type: 'morale', delta: 3 }]
+			},
 			{ label: 'Solid weekend. Good team spirit.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Someone goes too far. Drama ensues.', effects: [{ type: 'morale', delta: -2 }] },
-			{ label: 'You stay home. Bonding isn\'t mandatory.', effects: [] }
+			{ label: "You stay home. Bonding isn't mandatory.", effects: [] }
 		]
 	},
 	{
 		id: 'shared-taxi',
 		category: 'dressing-room',
 		title: 'Shared Taxi',
-		description: 'You\'re sharing a taxi with teammates after a night out.',
+		description: "You're sharing a taxi with teammates after a night out.",
 		outcomes: [
 			{ label: 'Hilarious journey. Bonding moment.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Cheap fare split. Everyone happy.', effects: [] },
-			{ label: 'You get stuck with the bill. Every time.', effects: [{ type: 'bankBalance', delta: -0.3, scale: 'wage' }] },
+			{
+				label: 'You get stuck with the bill. Every time.',
+				effects: [{ type: 'bankBalance', delta: -0.3, scale: 'wage' }]
+			},
 			{ label: 'You get your own taxi. Peace and quiet.', effects: [] }
 		]
 	}

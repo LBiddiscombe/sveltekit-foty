@@ -93,11 +93,7 @@ interface SaveState {
 }
 
 function hasValidState(): boolean {
-	return (
-		player.club !== 'Free Agent' &&
-		player.club !== '' &&
-		season.fixtures.length > 0
-	);
+	return player.club !== 'Free Agent' && player.club !== '' && season.fixtures.length > 0;
 }
 
 export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {

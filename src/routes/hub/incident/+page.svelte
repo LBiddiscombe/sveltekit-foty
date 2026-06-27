@@ -84,7 +84,8 @@
 
 	function applyEffects(outcome: IncidentOutcome) {
 		for (const effect of outcome.effects) {
-			const delta = effect.scale === 'wage' ? Math.round((effect.delta * player.wage) / 10) * 10 : effect.delta;
+			const delta =
+				effect.scale === 'wage' ? Math.round((effect.delta * player.wage) / 10) * 10 : effect.delta;
 			switch (effect.type) {
 				case 'bankBalance':
 					player.adjustBalance(delta);
@@ -155,7 +156,9 @@
 			</Card>
 
 			<div class="w-full max-w-sm">
-				<div class="flex h-36 items-center justify-center rounded-lg border border-muted bg-card px-6">
+				<div
+					class="flex h-36 items-center justify-center rounded-lg border border-muted bg-card px-6"
+				>
 					<div class="flex flex-col items-center justify-center gap-3 text-center">
 						<p class="font-pixel text-sm leading-relaxed text-primary">
 							{card.outcomes[currentIndex].label}
@@ -168,10 +171,18 @@
 			</div>
 
 			<Button
-				onclick={tickerState === 'spinning' ? stop : tickerState === 'stopped' ? onContinue : undefined}
+				onclick={tickerState === 'spinning'
+					? stop
+					: tickerState === 'stopped'
+						? onContinue
+						: undefined}
 				disabled={tickerState === 'decelerating'}
 			>
-				{tickerState === 'spinning' ? 'Stop' : tickerState === 'decelerating' ? 'Spinning down\u2026' : 'Continue'}
+				{tickerState === 'spinning'
+					? 'Stop'
+					: tickerState === 'decelerating'
+						? 'Spinning down\u2026'
+						: 'Continue'}
 			</Button>
 		</div>
 	{/if}

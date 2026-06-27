@@ -19,9 +19,7 @@
 		return 'text-danger';
 	}
 
-	const sortedFixtures = $derived(
-		[...season.fixtures].sort((a, b) => a.weekNumber - b.weekNumber)
-	);
+	const sortedFixtures = $derived([...season.fixtures].sort((a, b) => a.weekNumber - b.weekNumber));
 </script>
 
 <div class="mx-auto min-h-dvh max-w-md bg-dark px-4 py-6 font-pixel text-primary">
@@ -62,16 +60,30 @@
 										</svg>
 									{:else if outcome === 'saved'}
 										<svg viewBox="0 0 8 8" width="8" height="8" class="text-warning">
-											<circle cx="4" cy="4" r="3" fill="none" stroke="currentColor" stroke-width="1.2" />
+											<circle
+												cx="4"
+												cy="4"
+												r="3"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="1.2"
+											/>
 										</svg>
 									{:else}
 										<svg viewBox="0 0 8 8" width="8" height="8" class="text-danger">
-											<path d="M1 1l6 6M7 1l-6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+											<path
+												d="M1 1l6 6M7 1l-6 6"
+												stroke="currentColor"
+												stroke-width="1.2"
+												stroke-linecap="round"
+											/>
 										</svg>
 									{/if}
 								{/each}
 							</span>
-							<span class="w-14 text-right tabular-nums {resultClass(fixture)}">{resultAbbr(fixture)}</span>
+							<span class="w-14 text-right tabular-nums {resultClass(fixture)}"
+								>{resultAbbr(fixture)}</span
+							>
 						</span>
 					{:else}
 						<span class="shrink-0"></span>

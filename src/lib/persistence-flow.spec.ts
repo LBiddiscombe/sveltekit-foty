@@ -1,19 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-	saveGame,
-	loadGame,
-	createInMemoryAdapter,
-	type SaveAdapter
-} from './save';
+import { saveGame, loadGame, createInMemoryAdapter, type SaveAdapter } from './save';
 import { player } from './stores/player.svelte';
 import { season } from './stores/season.svelte';
 import { inbox } from './stores/inbox.svelte';
 import { standings } from './stores/standings.svelte';
 import { match } from './stores/match.svelte';
-	import { getClubsByDivision } from './config/clubs';
-	import { ECONOMY } from './config/economy';
-	import { generatePlayerFixtures } from './config/fixtures';
-	import { generateDivisionSchedule } from './config/schedule';
+import { getClubsByDivision } from './config/clubs';
+import { ECONOMY } from './config/economy';
+import { generatePlayerFixtures } from './config/fixtures';
+import { generateDivisionSchedule } from './config/schedule';
 
 const CLUB = 'Ackrington';
 

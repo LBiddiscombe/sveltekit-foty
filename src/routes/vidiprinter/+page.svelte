@@ -10,6 +10,7 @@
 	import { simAiMatch } from '$lib/match/engine';
 	import { saveGame } from '$lib/save';
 	import Button from '$lib/components/Button.svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { createTeletype, type TeletypeConfig } from './teletype.svelte';
 	import VidiprinterLine from '$lib/components/VidiprinterLine.svelte';
 
@@ -26,7 +27,7 @@
 		awayScore: number;
 	};
 
-	const scoreLines = new Map<number, ScoreLine>();
+	const scoreLines = new SvelteMap<number, ScoreLine>();
 
 	const weekFixtures = season.fixtures.filter(
 		(f) => f.weekNumber === season.weekNumber && f.result

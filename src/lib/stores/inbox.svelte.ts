@@ -50,7 +50,13 @@ function createInbox() {
 		];
 	}
 
-	function addSeasonNews(seasonNumber: number, club: string, division: number, wasPromoted: boolean, wasRelegated: boolean) {
+	function addSeasonNews(
+		seasonNumber: number,
+		club: string,
+		division: number,
+		wasPromoted: boolean,
+		wasRelegated: boolean
+	) {
 		const nextId = Math.max(0, ...items.map((i) => i.id)) + 1;
 		const newItems: InboxItem[] = [
 			{

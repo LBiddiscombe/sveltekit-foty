@@ -9,10 +9,7 @@ function shuffle<T>(arr: T[]): T[] {
 	return a;
 }
 
-export function generatePlayerFixtures(
-	playerClub: string,
-	divisionClubs: string[]
-): Fixture[] {
+export function generatePlayerFixtures(playerClub: string, divisionClubs: string[]): Fixture[] {
 	const opponents = divisionClubs.filter((c) => c !== playerClub);
 	const shuffled = shuffle(opponents);
 
@@ -31,7 +28,6 @@ export function generatePlayerFixtures(
 	const n = divisionClubs.length;
 	const isDiv1 = n <= 20;
 	const doubleCount = isDiv1 ? 8 : 16;
-	const totalGames = allGames.length;
 
 	const doubleGameWeeks = shuffle(Array.from({ length: 30 }, (_, i) => i)).slice(0, doubleCount);
 

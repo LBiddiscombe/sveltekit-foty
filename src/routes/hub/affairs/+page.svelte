@@ -21,7 +21,8 @@
 		>
 			<span class="text-xs leading-none">&lt;</span> Hub
 		</button>
-		<span class="text-[10px] font-bold uppercase tracking-wider text-success">State of Affairs</span>
+		<span class="text-[10px] font-bold uppercase tracking-wider text-success">State of Affairs</span
+		>
 	</div>
 
 	<div class="mb-5 flex items-center gap-4">
@@ -85,11 +86,7 @@
 				<p class="mt-0.5 text-[9px] text-subtle">AGAINST</p>
 			</div>
 			<div class="rounded bg-card p-3 text-center">
-				<p
-					class="text-base {playerClubEntry.goalDifference >= 0
-						? 'text-success'
-						: 'text-danger'}"
-				>
+				<p class="text-base {playerClubEntry.goalDifference >= 0 ? 'text-success' : 'text-danger'}">
 					{playerClubEntry.goalDifference > 0 ? '+' : ''}{playerClubEntry.goalDifference}
 				</p>
 				<p class="mt-0.5 text-[9px] text-subtle">GD</p>
@@ -109,7 +106,8 @@
 				</div>
 				{#each standings.entries as entry, i (entry.club)}
 					<div
-						class="flex items-center gap-2 rounded px-0 py-0.5 text-[10px] {entry.club === player.club
+						class="flex items-center gap-2 rounded px-0 py-0.5 text-[10px] {entry.club ===
+						player.club
 							? 'bg-dark text-primary'
 							: 'text-subtle'}"
 					>

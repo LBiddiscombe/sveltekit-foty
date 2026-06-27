@@ -108,7 +108,14 @@ export function createVolleySketch({ onComplete }: VolleySketchOptions) {
 			ball.kicked = true;
 
 			const ballScreen = ft.project(ball.x, ball.y, ball.z);
-			const aim = ft.computeKickAim(ballScreen, p.mouseX, p.mouseY, KICK_RADIUS, KICK_VX_MAX, KICK_VY_MAX);
+			const aim = ft.computeKickAim(
+				ballScreen,
+				p.mouseX,
+				p.mouseY,
+				KICK_RADIUS,
+				KICK_VX_MAX,
+				KICK_VY_MAX
+			);
 			ball.vx = aim.vx;
 			ball.vy = aim.vy;
 			ball.vz = KICK_VZ;
