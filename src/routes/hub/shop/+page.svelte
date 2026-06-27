@@ -43,54 +43,71 @@
 	}
 </script>
 
-<div class="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
-	<div class="flex items-center gap-4">
+<div class="mx-auto min-h-dvh max-w-md bg-dark px-4 py-6 font-pixel text-primary">
+	<div class="mb-6 flex items-center justify-between">
 		<button
 			onclick={async () => await goto('/hub')}
-			class="font-pixel text-xs text-subtle hover:text-primary"
+			class="flex items-center gap-1 text-[10px] text-subtle hover:text-primary"
 		>
-			← Hub
+			<span class="text-xs leading-none">&lt;</span> Hub
 		</button>
-		<h2 class="font-pixel text-sm text-primary">Shop</h2>
+		<span class="text-[10px] font-bold uppercase tracking-wider text-success">Shop</span>
 	</div>
 
-	<p class="font-pixel text-xs text-primary">Balance: £{player.bankBalance}</p>
-	<p class="font-pixel text-xs text-subtle">Deck: {player.deck.length} cards</p>
-
-	<Card>
-		<h4 class="mb-2 font-pixel text-xs text-primary">Goal Cards</h4>
-		<p class="font-pixel text-xs text-subtle">
-			£{cardPrice} each — adds a random 1-3 chance card to your deck
-		</p>
-		<div class="mt-3">
-			<Button onclick={buyGoalCard} disabled={player.bankBalance < cardPrice}>
-				Buy Goal Card
-			</Button>
+	<div class="mb-5 grid grid-cols-2 gap-3">
+		<div class="rounded bg-card p-3 text-center">
+			<p class="text-sm text-success">£{player.bankBalance.toLocaleString()}</p>
+			<p class="mt-0.5 text-[9px] text-subtle">BALANCE</p>
 		</div>
-	</Card>
-
-	<Card>
-		<h4 class="mb-2 font-pixel text-xs text-primary">Incident Cards</h4>
-		<p class="font-pixel text-xs text-subtle">
-			£{incPrice} — a gamble that could pay off or backfire
-		</p>
-		<div class="mt-3">
-			<Button
-				onclick={buyIncidentCard}
-				disabled={player.bankBalance < incPrice}
-				variant="secondary"
-			>
-				Buy Incident Card
-			</Button>
-			{#if showInboxHint}
-				<a href="/hub/inbox" class="mt-2 inline-block font-pixel text-xs text-warning underline">
-					Open your inbox to play it
-				</a>
-			{/if}
+		<div class="rounded bg-card p-3 text-center">
+			<p class="text-sm text-primary">{player.deck.length}</p>
+			<p class="mt-0.5 text-[9px] text-subtle">DECK</p>
 		</div>
-	</Card>
+	</div>
+
+	<div class="flex flex-col gap-3">
+		<Card>
+			<h4 class="mb-2 text-[10px] font-bold uppercase tracking-wider text-primary">
+				Goal Cards
+			</h4>
+			<p class="text-[10px] text-subtle">
+				£{cardPrice} each — adds a random 1-3 chance card to your deck
+			</p>
+			<div class="mt-3">
+				<Button onclick={buyGoalCard} disabled={player.bankBalance < cardPrice}>
+					Buy Goal Card
+				</Button>
+			</div>
+		</Card>
+
+		<Card>
+			<h4 class="mb-2 text-[10px] font-bold uppercase tracking-wider text-primary">
+				Incident Cards
+			</h4>
+			<p class="text-[10px] text-subtle">
+				£{incPrice} — a gamble that could pay off or backfire
+			</p>
+			<div class="mt-3">
+				<Button
+					onclick={buyIncidentCard}
+					disabled={player.bankBalance < incPrice}
+					variant="secondary"
+				>
+					Buy Incident Card
+				</Button>
+				{#if showInboxHint}
+					<a
+						href="/hub/inbox"
+						class="mt-3 inline-block text-[10px] text-warning underline"
+					>
+						Open your inbox to play it
+					</a>
+				{/if}
+			</div>
+		</Card>
+	</div>
 
 	{#if flash}
-		<p class="font-pixel text-xs text-success">{flash}</p>
+		<div class="mt-3 rounded bg-card p-2 text-center text-[10px] text-success">{flash}</div>
 	{/if}
 </div>
