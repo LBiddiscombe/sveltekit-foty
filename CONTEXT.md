@@ -32,7 +32,7 @@
 
 **State of Affairs** — Hub sub-page (`/hub/affairs`) showing team-level data: league position, team morale, fixture results, and the full league table for the player's division. Informationally equivalent to the original's Globe screen.
 
-**Team Status card** — A single merged card on the affairs page combining club info (name, division, week) with the morale bar. Replaces separate club-info and morale cards.
+**Team Status** — The header section on the affairs page showing the club avatar, name, division, and current week. Sits directly on a `bg-card` background with no wrapper component.
 
 **Player Status** — Hub sub-page (`/hub/player`) showing the player's avatar, XP level with progress bar, goals, appearances, club, division, weekly earnings, and recent match XP history. Stat bars removed in Cycle 6.
 
