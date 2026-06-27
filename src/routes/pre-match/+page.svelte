@@ -33,8 +33,10 @@
 	let intents = $state<{ fixture: Fixture; skipped: boolean }[]>([]);
 
 	const currentFixture = $derived(unplayedFixtures[currentIndex]);
-	const nextChances = $derived(player.deck[currentIndex] ?? 1);
+	const nextChances = $derived(player.deck[currentIndex]);
 	const allChosen = $derived(intents.length === unplayedFixtures.length);
+	const playedCount = $derived(intents.filter((i) => !i.skipped).length);
+	const remainingCards = $derived(player.deck.length - playedCount);
 
 	function handleForcedSkipChoice() {
 		if (!currentFixture) return;
@@ -69,8 +71,16 @@
 	}
 </script>
 
-<div class="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-8 px-4">
-	<h2 class="font-pixel text-sm text-primary">Pre-Match</h2>
+<div class="mx-auto min-h-dvh max-w-md bg-dark px-4 py-6 font-pixel text-primary">
+	<div class="mb-6 flex items-center justify-between">
+		<button
+			onclick={async () => await goto('/hub')}
+			class="flex items-center gap-1 text-[10px] text-subtle hover:text-primary"
+		>
+			<span class="text-xs leading-none">&lt;</span> Hub
+		</button>
+		<span class="text-[10px] font-bold uppercase tracking-wider text-success">Pre-Match</span>
+	</div>
 
 	{#if allDone}
 		<Card>
@@ -104,7 +114,7 @@
 			Continue
 		</Button>
 	{:else if !allChosen && currentFixture}
-		<p class="font-pixel text-xs text-subtle">
+		<p class="mb-4 font-pixel text-xs text-subtle">
 			Game {currentIndex + 1} of {unplayedFixtures.length}
 		</p>
 
@@ -132,9 +142,20 @@
 			</Card>
 
 			<Button onclick={handleForcedSkipChoice}>Skip Match</Button>
+		{:else if nextChances === undefined}
+			<Card>
+				<div class="flex flex-col items-center gap-2 py-4 text-center">
+					<span class="font-pixel text-sm text-subtle">
+						No cards left in your deck for this game.
+					</span>
+					<span class="font-pixel text-xs text-subtle">The match will be simulated.</span>
+				</div>
+			</Card>
+
+			<Button onclick={() => handleChoice(true)}>Skip Match</Button>
 		{:else}
 			<Card>
-				<DeckCard chances={nextChances} />
+				<DeckCard chances={nextChances} remaining={remainingCards} />
 			</Card>
 
 			<div class="flex w-full flex-col gap-3">
