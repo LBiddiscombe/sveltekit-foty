@@ -1,4 +1,4 @@
-import type { Fixture } from '$lib/types/game';
+import type { DivisionSchedule, Fixture } from '$lib/types/game';
 
 function shuffle<T>(arr: T[]): T[] {
 	const a = [...arr];
@@ -48,5 +48,23 @@ export function generatePlayerFixtures(playerClub: string, divisionClubs: string
 		}
 	}
 
+	return fixtures;
+}
+
+export function deriveFixturesFromSchedule(
+	playerClub: string,
+	schedule: DivisionSchedule
+): Fixture[] {
+	const fixtures: Fixture[] = [];
+	for (const week of schedule.weeks) {
+		const matches = week.matches.filter((m) => m.home === playerClub || m.away === playerClub);
+		for (const match of matches) {
+			fixtures.push({
+				opponent: match.home === playerClub ? match.away : match.home,
+				isHome: match.home === playerClub,
+				weekNumber: week.weekNumber
+			});
+		}
+	}
 	return fixtures;
 }

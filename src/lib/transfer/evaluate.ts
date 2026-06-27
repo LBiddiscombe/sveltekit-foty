@@ -3,7 +3,6 @@ import { getClubsByDivision } from '$lib/config/clubs';
 import { getLevel, getTargetBandsForScout } from '$lib/config/levels';
 import { transferSigningFee } from '$lib/config/economy';
 import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
-import { generatePlayerFixtures } from '$lib/config/fixtures';
 import { generateDivisionSchedule } from '$lib/config/schedule';
 import { simAiMatch } from '$lib/match/engine';
 import { standings } from '$lib/stores/standings.svelte';
@@ -94,30 +93,64 @@ export function evaluateScout(
 
 export function processSameDivisionTransfer(
 	player: { archiveCurrentStats: (season: number, division: number, pos: number | null) => void; club: string; division: number; adjustBalance: (n: number) => void; addDeckCards: (n: number) => void; wage: number },
-	season: { weekNumber: number; seasonNumber: number; divisionRosters: Record<number, string[]> },
+	seasonState: {
+		weekNumber: number;
+		seasonNumber: number;
+		divisionRosters: Record<number, string[]>;
+		fixtures: import('$lib/types/game').Fixture[];
+		divisionSchedule: import('$lib/types/game').DivisionSchedule;
+	},
 	newClub: string,
 	signingFee: number
 ) {
-	const currentSeason = season.seasonNumber;
+	const currentSeason = seasonState.seasonNumber;
 	const currentDiv = player.division;
 
 	player.archiveCurrentStats(currentSeason, currentDiv, null);
-
 	player.club = newClub;
 	player.adjustBalance(signingFee);
 	player.addDeckCards(10);
 
-	const newDivClubs = season.divisionRosters[currentDiv] ?? [];
-	const fixtures = generatePlayerFixtures(newClub, newDivClubs);
-	const week = season.weekNumber;
-	const remainingFixtures = fixtures.filter((f) => f.weekNumber >= week);
-	season.divisionRosters[currentDiv] = newDivClubs;
-	return { remainingFixtures, newDivision: currentDiv };
+	const newFixtures: import('$lib/types/game').Fixture[] = [];
+
+	for (const week of seasonState.divisionSchedule.weeks) {
+		const matches = week.matches.filter((m) => m.home === newClub || m.away === newClub);
+		for (const match of matches) {
+			const opponent = match.home === newClub ? match.away : match.home;
+			const isHome = match.home === newClub;
+
+			const fixture: import('$lib/types/game').Fixture = {
+				opponent,
+				isHome,
+				weekNumber: week.weekNumber
+			};
+
+			if (week.weekNumber < seasonState.weekNumber && match.result) {
+				fixture.result = {
+					goalsFor: isHome ? match.result.homeGoals : match.result.awayGoals,
+					goalsAgainst: isHome ? match.result.awayGoals : match.result.homeGoals,
+					playerGoals: 0,
+					outcomes: []
+				};
+			}
+
+			newFixtures.push(fixture);
+		}
+	}
+
+	seasonState.fixtures = newFixtures;
+	seasonState.divisionRosters[currentDiv] = seasonState.divisionRosters[currentDiv] ?? getClubsByDivision(currentDiv).map((c) => c.name);
 }
 
 export function processDivisionUpTransfer(
 	player: { archiveCurrentStats: (season: number, division: number, pos: number | null) => void; club: string; division: number; adjustBalance: (n: number) => void; addDeckCards: (n: number) => void; wage: number },
-	seasonState: { weekNumber: number; seasonNumber: number; divisionRosters: Record<number, string[]> },
+	seasonState: {
+		weekNumber: number;
+		seasonNumber: number;
+		divisionRosters: Record<number, string[]>;
+		fixtures: import('$lib/types/game').Fixture[];
+		divisionSchedule: import('$lib/types/game').DivisionSchedule;
+	},
 	standingsStore: typeof standings,
 	newClub: string,
 	newDivision: number,
@@ -135,8 +168,6 @@ export function processDivisionUpTransfer(
 	const newDivClubs = seasonState.divisionRosters[newDivision] ?? getClubsByDivision(newDivision).map((c) => c.name);
 
 	const fullSchedule = generateDivisionSchedule(newDivision, newDivClubs);
-	const fixtures = generatePlayerFixtures(newClub, newDivClubs);
-
 	const currentWeek = seasonState.weekNumber;
 
 	for (const week of fullSchedule.weeks) {
@@ -161,9 +192,33 @@ export function processDivisionUpTransfer(
 		standingsStore.processWeekResults(results, week.weekNumber);
 	}
 
-	const remainingFixtures = fixtures.filter((f) => f.weekNumber >= currentWeek);
+	const newFixtures: import('$lib/types/game').Fixture[] = [];
+	for (const week of fullSchedule.weeks) {
+		const matches = week.matches.filter((m) => m.home === newClub || m.away === newClub);
+		for (const match of matches) {
+			const opponent = match.home === newClub ? match.away : match.home;
+			const isHome = match.home === newClub;
 
+			const fixture: import('$lib/types/game').Fixture = {
+				opponent,
+				isHome,
+				weekNumber: week.weekNumber
+			};
+
+			if (week.weekNumber < currentWeek && match.result) {
+				fixture.result = {
+					goalsFor: isHome ? match.result.homeGoals : match.result.awayGoals,
+					goalsAgainst: isHome ? match.result.awayGoals : match.result.homeGoals,
+					playerGoals: 0,
+					outcomes: []
+				};
+			}
+
+			newFixtures.push(fixture);
+		}
+	}
+
+	seasonState.fixtures = newFixtures;
+	seasonState.divisionSchedule = fullSchedule;
 	seasonState.divisionRosters[newDivision] = newDivClubs;
-
-	return { remainingFixtures, fullSchedule };
 }

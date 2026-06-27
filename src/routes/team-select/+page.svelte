@@ -5,7 +5,7 @@
 	import { inbox } from '$lib/stores/inbox.svelte';
 	import { standings } from '$lib/stores/standings.svelte';
 	import { getClubsByDivision } from '$lib/config/clubs';
-	import { generatePlayerFixtures } from '$lib/config/fixtures';
+	import { deriveFixturesFromSchedule } from '$lib/config/fixtures';
 	import { generateDivisionSchedule } from '$lib/config/schedule';
 
 	const div4Clubs = getClubsByDivision(4).map((c) => c.name);
@@ -13,8 +13,9 @@
 	async function selectClub(club: string) {
 		player.club = club;
 		player.division = 4;
-		season.fixtures = generatePlayerFixtures(club, div4Clubs);
-		season.divisionSchedule = generateDivisionSchedule(4, div4Clubs);
+		const schedule = generateDivisionSchedule(4, div4Clubs);
+		season.fixtures = deriveFixturesFromSchedule(club, schedule);
+		season.divisionSchedule = schedule;
 		standings.init(div4Clubs);
 		season.recordStatsSnapshot(0, 0, 0, 0, 0, 0);
 		inbox.init(club);

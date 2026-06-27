@@ -74,6 +74,22 @@
 		}
 
 		match.saveFixtureResult();
+
+		const weekSchedule = season.divisionSchedule.weeks.find((w) => w.weekNumber === game.fixture.weekNumber);
+		if (weekSchedule) {
+			const divMatch = weekSchedule.matches.find(
+				(m) =>
+					(m.home === player.club && m.away === game.fixture.opponent) ||
+					(m.away === player.club && m.home === game.fixture.opponent)
+			);
+			if (divMatch) {
+				divMatch.result = {
+					homeGoals: game.fixture.isHome ? res.score[0] : res.score[1],
+					awayGoals: game.fixture.isHome ? res.score[1] : res.score[0]
+				};
+			}
+		}
+
 		match.advance();
 
 		if (match.batchDone) {

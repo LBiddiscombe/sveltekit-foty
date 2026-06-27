@@ -33,7 +33,11 @@ function makeRoundRobinPairs(teams: string[]): [string, string][][] {
 			}
 		}
 
-		rounds.push(pairs);
+		if (round % 2 === 1) {
+			rounds.push(pairs.map(([h, a]) => [a, h] as [string, string]));
+		} else {
+			rounds.push(pairs);
+		}
 		rotating.unshift(rotating.pop()!);
 	}
 

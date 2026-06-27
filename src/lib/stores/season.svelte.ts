@@ -3,7 +3,7 @@ import { MORALE_CONFIG } from '$lib/config/morale';
 import { getClubsByDivision } from '$lib/config/clubs';
 import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
 import { generateDivisionSchedule } from '$lib/config/schedule';
-import { generatePlayerFixtures } from '$lib/config/fixtures';
+import { deriveFixturesFromSchedule } from '$lib/config/fixtures';
 import { standings } from './standings.svelte';
 
 export type BoundaryResult = {
@@ -166,8 +166,9 @@ function createSeason() {
 
 		weekNumber = 1;
 		seasonNumber++;
-		fixtures = generatePlayerFixtures(playerClub, newDivClubs);
-		divisionSchedule = generateDivisionSchedule(newDivision, newDivClubs);
+		const newSchedule = generateDivisionSchedule(newDivision, newDivClubs);
+		fixtures = deriveFixturesFromSchedule(playerClub, newSchedule);
+		divisionSchedule = newSchedule;
 		morale = MORALE_CONFIG.scale.start;
 		lastWageWeek = 0;
 

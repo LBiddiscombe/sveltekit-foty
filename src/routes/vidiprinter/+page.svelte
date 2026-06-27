@@ -184,6 +184,7 @@
 
 		if (shouldScout) {
 			player.queuedTransferCard = false;
+
 			const report = evaluateScout(player.club, player.division, player.careerXp, season.divisionRosters);
 			if (report) {
 				setScoutReport(report);
@@ -201,8 +202,8 @@
 						{
 							id: nextId,
 							type: 'news',
-							subject: 'New Club',
-							body: `You have joined ${report.scoutClub} in Division ${report.scoutDivision}. Report for training.`,
+							subject: 'New Club!',
+							body: `You've signed for ${report.scoutClub} in Division ${report.scoutDivision}. A fresh start — make it count!`,
 							actionRequired: true,
 							actioned: false
 						}

@@ -7,7 +7,7 @@ import { standings } from './stores/standings.svelte';
 import { match } from './stores/match.svelte';
 import { getClubsByDivision } from './config/clubs';
 import { ECONOMY } from './config/economy';
-import { generatePlayerFixtures } from './config/fixtures';
+import { deriveFixturesFromSchedule } from './config/fixtures';
 import { generateDivisionSchedule } from './config/schedule';
 
 const CLUB = 'Ackrington';
@@ -57,8 +57,9 @@ describe('full career flow persistence', () => {
 		player.bankBalance = 5000;
 		player.club = CLUB;
 		player.division = 4;
-		season.fixtures = generatePlayerFixtures(CLUB, div4Clubs);
-		season.divisionSchedule = generateDivisionSchedule(4, div4Clubs);
+		const schedule = generateDivisionSchedule(4, div4Clubs);
+		season.fixtures = deriveFixturesFromSchedule(CLUB, schedule);
+		season.divisionSchedule = schedule;
 		standings.init(div4Clubs);
 		inbox.init(CLUB);
 
