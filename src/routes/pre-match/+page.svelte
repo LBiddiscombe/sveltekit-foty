@@ -25,6 +25,10 @@ function ordinal(n: number): string {
 const unplayedFixtures = $derived(
 	season.fixtures.filter((f) => f.weekNumber === season.weekNumber && !f.result)
 );
+const weekFixtureCount = $derived(
+	season.fixtures.filter((f) => f.weekNumber === season.weekNumber).length
+);
+const resolvedCount = $derived(weekFixtureCount - unplayedFixtures.length);
 
 const hasForcedSkip = $derived(season.appearanceSkips > 0);
 const allDone = $derived(unplayedFixtures.length === 0);
@@ -105,7 +109,7 @@ async function handleAllResolved() {
 		{:else if !allChosen && currentFixture}
 			<div class="flex flex-col items-center gap-4">
 				<p class="font-pixel text-xs text-subtle">
-					Game {currentIndex + 1} of {unplayedFixtures.length}
+					Game {resolvedCount + currentIndex + 1} of {weekFixtureCount}
 				</p>
 
 				<Card>
