@@ -13,6 +13,7 @@
 	import { XP_CONFIG } from '$lib/config/xp';
 	import { DIVISION_XP_CAPS } from '$lib/config/levels';
 	import { saveGame } from '$lib/save';
+	import { CUP_SCHEDULE } from '$lib/config/cups';
 
 	type GameType = 'penalty' | 'first-time-finish' | 'rebound';
 
@@ -91,6 +92,49 @@
 					homeGoals: game.fixture.isHome ? res.score[0] : res.score[1],
 					awayGoals: game.fixture.isHome ? res.score[1] : res.score[0]
 				};
+			}
+		}
+
+		if (!weekSchedule || !weekSchedule.matches.some(
+			(m) => m.home === game.fixture.opponent || m.away === game.fixture.opponent
+		)) {
+			for (const cupType of ['league-cup', 'fa-cup'] as const) {
+				const bracket = cupType === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
+				if (!bracket || bracket.winner) continue;
+
+				const roundInfo = CUP_SCHEDULE[cupType].find((r) => r.week === season.weekNumber);
+				if (!roundInfo || roundInfo.round !== bracket.currentRound) continue;
+
+				const round = bracket.rounds[roundInfo.round - 1];
+				if (!round) continue;
+
+				const tieIdx = round.ties.findIndex(
+					(t) => t.home === player.club || t.away === player.club
+				);
+				if (tieIdx === -1) continue;
+
+				const tie = round.ties[tieIdx];
+				const isHome = tie.home === player.club;
+				const matchHomeGoals = isHome ? res.score[0] : res.score[1];
+				const matchAwayGoals = isHome ? res.score[1] : res.score[0];
+
+				const winner = res.score[0] > res.score[1] ? player.club : game.fixture.opponent;
+				const resolvedBy = res.score[0] === res.score[1] ? 'coin-toss' : 'match';
+
+				const updatedTies = [...round.ties];
+				updatedTies[tieIdx] = {
+					...tie,
+					result: { homeGoals: matchHomeGoals, awayGoals: matchAwayGoals, winner, resolvedBy }
+				};
+
+				const updatedRounds = [...bracket.rounds];
+				updatedRounds[roundInfo.round - 1] = { ...round, ties: updatedTies };
+
+				if (cupType === 'league-cup') {
+					season.leagueCupBracket = { ...bracket, rounds: updatedRounds };
+				} else {
+					season.faCupBracket = { ...bracket, rounds: updatedRounds };
+				}
 			}
 		}
 

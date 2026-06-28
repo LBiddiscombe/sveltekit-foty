@@ -165,6 +165,35 @@ export interface AiMatchResult {
 	awayGoals: number;
 }
 
+export type CupType = 'league-cup' | 'fa-cup';
+
+export interface CupTie {
+	home: string;
+	away: string;
+	result?: {
+		homeGoals: number;
+		awayGoals: number;
+		winner: string;
+		resolvedBy: 'match' | 'coin-toss';
+		aggHomeGoals?: number;
+		aggAwayGoals?: number;
+	};
+}
+
+export interface CupRound {
+	roundNumber: number;
+	ties: CupTie[];
+}
+
+export interface CupBracket {
+	type: CupType;
+	currentRound: number;
+	rounds: CupRound[];
+	eliminated: Record<string, number>;
+	winner?: string;
+	runnerUp?: string;
+}
+
 export type TransferWindow = 1 | 2;
 
 export interface TransferWindowState {

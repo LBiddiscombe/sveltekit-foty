@@ -44,9 +44,18 @@ function makeRoundRobinPairs(teams: string[]): [string, string][][] {
 	return rounds;
 }
 
-export function generateDivisionSchedule(division: number, clubs: string[]): DivisionSchedule {
-	const isDiv1 = division === 1;
-	const doubleGameWeeks = getDoubleGameWeeks(30, isDiv1 ? 8 : 16);
+export function generateDivisionSchedule(
+	division: number,
+	clubs: string[],
+	leagueWeekNumbers?: number[]
+): DivisionSchedule {
+	const leagueWeeks = leagueWeekNumbers ?? Array.from({ length: 30 }, (_, i) => i + 1);
+	const totalWeeks = leagueWeeks.length;
+
+	const totalRounds = (clubs.length - 1) * 2;
+	const doubleCount = totalRounds - totalWeeks;
+
+	const doubleGameWeeks = getDoubleGameWeeks(totalWeeks, doubleCount);
 
 	const firstLeg = makeRoundRobinPairs(clubs);
 	const secondLeg = firstLeg.map((round) => round.map(([h, a]) => [a, h] as [string, string]));
@@ -56,7 +65,7 @@ export function generateDivisionSchedule(division: number, clubs: string[]): Div
 	const weeks: WeekFixtures[] = [];
 	let roundIdx = 0;
 
-	for (let w = 0; w < 30; w++) {
+	for (let w = 0; w < totalWeeks; w++) {
 		const isDouble = doubleGameWeeks.has(w);
 		const matchesThisWeek: DivisionMatch[] = [];
 
@@ -74,7 +83,7 @@ export function generateDivisionSchedule(division: number, clubs: string[]): Div
 			roundIdx++;
 		}
 
-		weeks.push({ weekNumber: w + 1, matches: matchesThisWeek });
+		weeks.push({ weekNumber: leagueWeeks[w], matches: matchesThisWeek });
 	}
 
 	return { weeks };

@@ -23,12 +23,22 @@
 	import { SvelteMap } from 'svelte/reactivity';
 	import { createTeletype, type TeletypeConfig } from './teletype.svelte';
 	import VidiprinterLine from '$lib/components/VidiprinterLine.svelte';
+	import {
+		CUP_SCHEDULE,
+		CUP_DISPLAY_NAMES,
+		CUP_ROUND_NAMES,
+		simulateCupTie,
+		isLeagueCupDedicatedWeek,
+		isFaCupFinalWeek
+	} from '$lib/config/cups';
+	import type { CupTie, CupType } from '$lib/types/game';
 
 	$effect(() => {
 		season.phase = 'vidiprinter';
 	});
 
 	const PLAYER_CLUB = player.club !== 'Free Agent' ? player.club : 'Exetur';
+	const WEEK = season.weekNumber;
 
 	type ScoreLine = {
 		home: string;
@@ -40,10 +50,12 @@
 	const scoreLines = new SvelteMap<number, ScoreLine>();
 
 	const weekFixtures = season.fixtures.filter(
-		(f) => f.weekNumber === season.weekNumber && f.result
+		(f) => f.weekNumber === WEEK && f.result
 	);
 
-	if (season.weekNumber > standings.lastProcessedWeek) {
+	season.simulateCupWeek();
+
+	if (!isFaCupFinalWeek(WEEK) && WEEK > standings.lastProcessedWeek) {
 		const results: {
 			home: string;
 			away: string;
@@ -64,7 +76,7 @@
 		}
 
 		const weekSchedule = season.divisionSchedule.weeks.find(
-			(w) => w.weekNumber === season.weekNumber
+			(w) => w.weekNumber === WEEK
 		);
 		if (weekSchedule) {
 			for (const m of weekSchedule.matches) {
@@ -78,80 +90,149 @@
 			}
 		}
 
-		standings.processWeekResults(results, season.weekNumber);
+		standings.processWeekResults(results, WEEK);
 		saveGame();
 	}
+
+	function getCupWeekInfo(week: number): { type: CupType; round: number } | null {
+		for (const cupType of ['league-cup', 'fa-cup'] as const) {
+			const schedule = CUP_SCHEDULE[cupType];
+			for (const sr of schedule) {
+				if (sr.week === week) return { type: cupType, round: sr.round };
+			}
+		}
+		return null;
+	}
+
+	function getCupResultsLines(): string[] {
+		const l: string[] = [];
+		const cupInfo = getCupWeekInfo(WEEK);
+		if (!cupInfo) return l;
+
+		const bracket = cupInfo.type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
+		if (!bracket) return l;
+
+		const round = bracket.rounds[cupInfo.round - 1];
+		if (!round) return l;
+
+		const hasResults = round.ties.some((t) => t.result);
+		if (!hasResults) return l;
+
+		l.push('');
+		const cupName = CUP_DISPLAY_NAMES[cupInfo.type];
+		const roundName = CUP_ROUND_NAMES[cupInfo.type][cupInfo.round];
+		l.push(` ${cupName} ${roundName}`);
+		l.push('-'.repeat(cupName.length + roundName.length + 2));
+		l.push('');
+
+		for (const tie of round.ties) {
+			const r = tie.result;
+			if (!r) continue;
+
+			if (r.aggHomeGoals !== undefined && r.aggAwayGoals !== undefined) {
+				const leg1 = `${tie.home} ${r.homeGoals} - ${r.awayGoals} ${tie.away}`;
+				const agg = ` (agg: ${r.aggHomeGoals} - ${r.aggAwayGoals})`;
+				const resolved = r.resolvedBy === 'coin-toss' ? ' *pens' : '';
+				l.push(`  ${leg1}${agg}${resolved}`);
+			} else {
+				const line = `${tie.home} ${r.homeGoals} - ${r.awayGoals} ${tie.away}`;
+				const resolved = r.resolvedBy === 'coin-toss' ? ' *pens' : '';
+				l.push(`  ${line}${resolved}`);
+			}
+
+			const isPlayerTie = tie.home === PLAYER_CLUB || tie.away === PLAYER_CLUB;
+			if (isPlayerTie) {
+				const playerWon = r.winner === PLAYER_CLUB;
+				l.push(`  RESULT - ${playerWon ? 'WIN' : 'LOSE'} : YOU ${playerWon ? 'PROGRESS' : 'ELIMINATED'}`);
+			}
+			l.push('');
+		}
+
+		return l;
+	}
+
+	const cupResultLines = getCupResultsLines();
 
 	const lines = (() => {
 		const l: string[] = [];
 		l.push('INCOMING RESULTS');
 		l.push('----------------');
 		l.push('');
-		l.push(` DIVISION ${player.division} - WEEK ${season.weekNumber}`);
-		l.push('-----------------------');
-		l.push('');
 
-		for (const f of weekFixtures) {
-			const goalsFor = f.result!.goalsFor;
-			const goalsAgainst = f.result!.goalsAgainst;
-			const playerGoals = f.result!.playerGoals ?? 0;
-			const home = f.isHome ? PLAYER_CLUB : f.opponent;
-			const away = f.isHome ? f.opponent : PLAYER_CLUB;
-			const homeScore = f.isHome ? goalsFor : goalsAgainst;
-			const awayScore = f.isHome ? goalsAgainst : goalsFor;
-			const result = goalsFor > goalsAgainst ? 'WIN' : goalsFor === goalsAgainst ? 'DRAW' : 'LOSE';
+		const hasLeague = weekFixtures.length > 0 || 
+			season.divisionSchedule.weeks.some((w) => w.weekNumber === WEEK && w.matches.length > 0);
 
-			scoreLines.set(l.length, { home, away, homeScore, awayScore });
-			l.push(`  ${home.padEnd(14)} ${homeScore} - ${awayScore}    ${away}`);
-			const playerLine =
-				f.result && playerGoals === 0 && f.result.outcomes.length === 0
-					? `RESULT - ${result} : YOU DIDN'T PLAY`
-					: `RESULT - ${result} : YOU SCORED ${playerGoals}`;
-			l.push(`  ${playerLine}`);
+		if (hasLeague && !isFaCupFinalWeek(WEEK)) {
+			l.push(` DIVISION ${player.division} - WEEK ${WEEK}`);
+			l.push('-----------------------');
 			l.push('');
+
+			for (const f of weekFixtures) {
+				const goalsFor = f.result!.goalsFor;
+				const goalsAgainst = f.result!.goalsAgainst;
+				const playerGoals = f.result!.playerGoals ?? 0;
+				const home = f.isHome ? PLAYER_CLUB : f.opponent;
+				const away = f.isHome ? f.opponent : PLAYER_CLUB;
+				const homeScore = f.isHome ? goalsFor : goalsAgainst;
+				const awayScore = f.isHome ? goalsAgainst : goalsFor;
+				const result = goalsFor > goalsAgainst ? 'WIN' : goalsFor === goalsAgainst ? 'DRAW' : 'LOSE';
+
+				scoreLines.set(l.length, { home, away, homeScore, awayScore });
+				l.push(`  ${home.padEnd(14)} ${homeScore} - ${awayScore}    ${away}`);
+				const playerLine =
+					f.result && playerGoals === 0 && f.result.outcomes.length === 0
+						? `RESULT - ${result} : YOU DIDN'T PLAY`
+						: `RESULT - ${result} : YOU SCORED ${playerGoals}`;
+				l.push(`  ${playerLine}`);
+				l.push('');
+			}
+
+			l.push('');
+			l.push(' LEAGUE TABLE');
+			l.push('--------------');
+			l.push('');
+
+			const total = standings.entries.length;
+			const playerPos = standings.getPosition(PLAYER_CLUB);
+			const inTop3 = playerPos <= 3;
+			const inBottom3 = playerPos > total - 3;
+
+			if (total <= 6) {
+				for (const entry of standings.entries) {
+					const pos = standings.getPosition(entry.club);
+					const marker = entry.club === PLAYER_CLUB ? '>' : ' ';
+					l.push(
+						`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`
+					);
+				}
+			} else {
+				function addLine(entry: (typeof standings.entries)[number]) {
+					const pos = standings.getPosition(entry.club);
+					const marker = entry.club === PLAYER_CLUB ? '>' : ' ';
+					l.push(
+						`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`
+					);
+				}
+
+				for (const entry of standings.entries.slice(0, 3)) addLine(entry);
+
+				if (inTop3) {
+					l.push('   ...');
+				} else if (inBottom3) {
+					l.push('   ...');
+				} else {
+					if (playerPos > 4) l.push('   ...');
+					const playerEntry = standings.getByClub(PLAYER_CLUB);
+					if (playerEntry) addLine(playerEntry);
+					if (playerPos < total - 3) l.push('   ...');
+				}
+
+				for (const entry of standings.entries.slice(-3)) addLine(entry);
+			}
 		}
 
-		l.push('');
-		l.push(' LEAGUE TABLE');
-		l.push('--------------');
-		l.push('');
-
-		const total = standings.entries.length;
-		const playerPos = standings.getPosition(PLAYER_CLUB);
-		const inTop3 = playerPos <= 3;
-		const inBottom3 = playerPos > total - 3;
-
-		if (total <= 6) {
-			for (const entry of standings.entries) {
-				const pos = standings.getPosition(entry.club);
-				const marker = entry.club === PLAYER_CLUB ? '>' : ' ';
-				l.push(
-					`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`
-				);
-			}
-		} else {
-			function addLine(entry: (typeof standings.entries)[number]) {
-				const pos = standings.getPosition(entry.club);
-				const marker = entry.club === PLAYER_CLUB ? '>' : ' ';
-				l.push(
-					`  ${marker}${String(pos).padStart(2)}. ${entry.club.padEnd(16)} ${entry.points}pts`
-				);
-			}
-
-			for (const entry of standings.entries.slice(0, 3)) addLine(entry);
-
-			if (inTop3) {
-				l.push('   ...');
-			} else if (inBottom3) {
-				l.push('   ...');
-			} else {
-				if (playerPos > 4) l.push('   ...');
-				const playerEntry = standings.getByClub(PLAYER_CLUB);
-				if (playerEntry) addLine(playerEntry);
-				if (playerPos < total - 3) l.push('   ...');
-			}
-
-			for (const entry of standings.entries.slice(-3)) addLine(entry);
+		if (cupResultLines.length > 0) {
+			l.push(...cupResultLines);
 		}
 
 		return l;
@@ -165,10 +246,30 @@
 		tty.currentLine < lines.length ? tty.textForLine(tty.currentLine) : ''
 	);
 
-	function onContinue() {
-		const isLastWeek = season.weekNumber >= 30;
+	function playerIsInCup(cupType: CupType): boolean {
+		const bracket = cupType === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
+		if (!bracket || bracket.winner) return false;
+		return !(PLAYER_CLUB in bracket.eliminated);
+	}
 
-		if (isLastWeek) {
+	function onContinue() {
+		const isLeagueOver = WEEK >= 30 && !isFaCupFinalWeek(WEEK);
+		const isFaFinalWeek = isFaCupFinalWeek(WEEK);
+
+		if (isFaFinalWeek) {
+			season.recordGamesPlayed(weekFixtures.length);
+			season.advanceWeek();
+			goto(resolve('/season-review'));
+			return;
+		}
+
+		if (isLeagueOver) {
+			if (playerIsInCup('fa-cup')) {
+				season.advanceWeek();
+				saveGame();
+				goto(resolve('/pre-match'));
+				return;
+			}
 			goto(resolve('/season-review'));
 			return;
 		}

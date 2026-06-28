@@ -7,17 +7,20 @@
 	import { getClubsByDivision } from '$lib/config/clubs';
 	import { deriveFixturesFromSchedule } from '$lib/config/fixtures';
 	import { generateDivisionSchedule } from '$lib/config/schedule';
+	import { getLeagueWeeks } from '$lib/config/cups';
 
 	const div4Clubs = getClubsByDivision(4).map((c) => c.name);
 
 	async function selectClub(club: string) {
 		player.club = club;
 		player.division = 4;
-		const schedule = generateDivisionSchedule(4, div4Clubs);
+		const leagueWeeks = getLeagueWeeks();
+		const schedule = generateDivisionSchedule(4, div4Clubs, leagueWeeks);
 		season.fixtures = deriveFixturesFromSchedule(club, schedule);
 		season.divisionSchedule = schedule;
 		standings.init(div4Clubs);
 		season.recordStatsSnapshot(0, 0, 0, 0, 0, 0);
+		season.initCupBrackets();
 		inbox.init(club);
 		await goto('/hub');
 	}

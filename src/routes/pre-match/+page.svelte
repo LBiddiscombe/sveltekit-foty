@@ -9,7 +9,8 @@
 	import Card from '$lib/components/Card.svelte';
 	import DeckCard from '$lib/components/DeckCard.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import type { Fixture } from '$lib/types/game';
+	import type { CupType, Fixture } from '$lib/types/game';
+	import { CUP_SCHEDULE, CUP_DISPLAY_NAMES, CUP_ROUND_NAMES, isLeagueCupDedicatedWeek } from '$lib/config/cups';
 
 $effect(() => {
 	season.phase = 'pre-match';
@@ -22,11 +23,43 @@ function ordinal(n: number): string {
 	return n + (s[(v - 20) % 10] ?? s[v] ?? s[0]);
 }
 
-const unplayedFixtures = $derived(
+function getPlayerCupMatch(): Fixture[] {
+	const week = season.weekNumber;
+	const cupMatches: Fixture[] = [];
+
+	for (const cupType of ['league-cup', 'fa-cup'] as const) {
+		const bracket = cupType === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
+		if (!bracket || bracket.winner) continue;
+
+		const schedule = CUP_SCHEDULE[cupType];
+		const roundInfo = schedule.find((r) => r.week === week);
+		if (!roundInfo || roundInfo.round !== bracket.currentRound) continue;
+		if (player.club in bracket.eliminated) continue;
+
+		const round = bracket.rounds[roundInfo.round - 1];
+		if (!round) continue;
+
+		const tie = round.ties.find((t) => t.home === player.club || t.away === player.club);
+		if (!tie || tie.result) continue;
+
+		cupMatches.push({
+			opponent: tie.home === player.club ? tie.away : tie.home,
+			isHome: tie.home === player.club,
+			weekNumber: week
+		});
+	}
+
+	return cupMatches;
+}
+
+const leagueFixtures = $derived(
 	season.fixtures.filter((f) => f.weekNumber === season.weekNumber && !f.result)
 );
+const cupFixtures = $derived(getPlayerCupMatch());
+
+const unplayedFixtures = $derived([...leagueFixtures, ...cupFixtures]);
 const weekFixtureCount = $derived(
-	season.fixtures.filter((f) => f.weekNumber === season.weekNumber).length
+	season.fixtures.filter((f) => f.weekNumber === season.weekNumber).length + cupFixtures.length
 );
 const resolvedCount = $derived(weekFixtureCount - unplayedFixtures.length);
 
@@ -41,6 +74,22 @@ const nextChances = $derived(player.deck[currentIndex]);
 const allChosen = $derived(intents.length === unplayedFixtures.length);
 const playedCount = $derived(intents.filter((i) => !i.skipped).length);
 const remainingCards = $derived(player.deck.length - playedCount);
+
+function isCupFixture(fixture: Fixture): boolean {
+	return cupFixtures.some((cf) => cf.opponent === fixture.opponent && cf.isHome === fixture.isHome);
+}
+
+function getCupRoundLabel(): string {
+	const week = season.weekNumber;
+	for (const cupType of ['league-cup', 'fa-cup'] as const) {
+		const schedule = CUP_SCHEDULE[cupType];
+		const roundInfo = schedule.find((r) => r.week === week);
+		if (roundInfo) {
+			return `${CUP_DISPLAY_NAMES[cupType]} ${CUP_ROUND_NAMES[cupType][roundInfo.round]}`;
+		}
+	}
+	return '';
+}
 
 function handleForcedSkipChoice() {
 	if (!currentFixture) return;
@@ -87,6 +136,22 @@ async function handleAllResolved() {
 	</div>
 
 	<div class="flex flex-1 flex-col items-center justify-center">
+		{#if season.leagueCupBracket && player.club in season.leagueCupBracket.eliminated && isLeagueCupDedicatedWeek(season.weekNumber)}
+			<Card>
+				<div class="flex flex-col items-center gap-2 py-4 text-center">
+					<span class="font-pixel text-xs text-danger">You're out of the League Cup — enjoy your week off.</span>
+				</div>
+			</Card>
+		{/if}
+
+		{#if season.faCupBracket && player.club in season.faCupBracket.eliminated && CUP_SCHEDULE['fa-cup'].some((r) => r.week === season.weekNumber)}
+			<Card>
+				<div class="flex flex-col items-center gap-2 py-4 text-center">
+					<span class="font-pixel text-xs text-danger">You're already out of the FA Cup. No cup match this week.</span>
+				</div>
+			</Card>
+		{/if}
+
 		{#if allDone}
 			<Card>
 				<div class="flex flex-col items-center gap-2 py-4 text-center">
@@ -118,9 +183,11 @@ async function handleAllResolved() {
 						>
 						<span class="font-pixel text-lg text-primary">
 							{currentFixture.opponent}
-							<span class="text-subtle"
-								>({ordinal(standings.getPosition(currentFixture.opponent))})</span
-							>
+							<span class="text-subtle">
+								{isCupFixture(currentFixture)
+									? getCupRoundLabel()
+									: `(${ordinal(standings.getPosition(currentFixture.opponent))})`}
+							</span>
 						</span>
 					</div>
 				</Card>

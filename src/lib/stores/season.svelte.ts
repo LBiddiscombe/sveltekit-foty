@@ -1,10 +1,11 @@
-import type { DivisionSchedule, Fixture, Phase, Standing } from '$lib/types/game';
+import type { CupBracket, DivisionSchedule, Fixture, Phase, Standing } from '$lib/types/game';
 import { MORALE_CONFIG } from '$lib/config/morale';
 import { getClubsByDivision } from '$lib/config/clubs';
 import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
 import { generateDivisionSchedule } from '$lib/config/schedule';
 import { deriveFixturesFromSchedule } from '$lib/config/fixtures';
 import { standings } from './standings.svelte';
+import { generateAllCupBrackets, getLeagueWeeks, CUP_SCHEDULE, simulateCupRound } from '$lib/config/cups';
 
 export type BoundaryResult = {
 	upper: number;
@@ -50,6 +51,8 @@ function createSeason() {
 	let statsChancesAtStart = $state(0);
 	let statsSavesAtStart = $state(0);
 	let statsMissesAtStart = $state(0);
+	let leagueCupBracket = $state<CupBracket | null>(null);
+	let faCupBracket = $state<CupBracket | null>(null);
 
 	function initDivisionRosters() {
 		for (let d = 1; d <= 4; d++) {
@@ -58,8 +61,26 @@ function createSeason() {
 	}
 	initDivisionRosters();
 
+	function initCupBrackets() {
+		const { leagueCup, faCup } = generateAllCupBrackets();
+		leagueCupBracket = leagueCup;
+		faCupBracket = faCup;
+	}
+
+	function simulateCupWeek() {
+		const lcRound = getCupRound('league-cup', weekNumber);
+		if (lcRound !== null && leagueCupBracket && !leagueCupBracket.winner && leagueCupBracket.currentRound === lcRound) {
+			leagueCupBracket = simulateCupRound(leagueCupBracket);
+		}
+
+		const faRound = getCupRound('fa-cup', weekNumber);
+		if (faRound !== null && faCupBracket && !faCupBracket.winner && faCupBracket.currentRound === faRound) {
+			faCupBracket = simulateCupRound(faCupBracket);
+		}
+	}
+
 	function advanceWeek() {
-		weekNumber = Math.min(weekNumber + 1, 30);
+		weekNumber = Math.min(weekNumber + 1, 31);
 	}
 
 	function recordGamesPlayed(n: number) {
@@ -166,9 +187,11 @@ function createSeason() {
 
 		weekNumber = 1;
 		seasonNumber++;
-		const newSchedule = generateDivisionSchedule(newDivision, newDivClubs);
+		const leagueWeeks = getLeagueWeeks();
+		const newSchedule = generateDivisionSchedule(newDivision, newDivClubs, leagueWeeks);
 		fixtures = deriveFixturesFromSchedule(playerClub, newSchedule);
 		divisionSchedule = newSchedule;
+		initCupBrackets();
 		morale = MORALE_CONFIG.scale.start;
 		lastWageWeek = 0;
 
@@ -333,16 +356,38 @@ function createSeason() {
 		set appearanceSkips(v: number) {
 			appearanceSkips = v;
 		},
+		get leagueCupBracket() {
+			return leagueCupBracket;
+		},
+		set leagueCupBracket(v: CupBracket | null) {
+			leagueCupBracket = v;
+		},
+		get faCupBracket() {
+			return faCupBracket;
+		},
+		set faCupBracket(v: CupBracket | null) {
+			faCupBracket = v;
+		},
 		advanceWeek,
 		recordGamesPlayed,
 		adjustMorale,
 		addAppearanceSkips,
 		consumeAppearanceSkip,
 		endSeason,
+		initCupBrackets,
+		simulateCupWeek,
 		recordStatsSnapshot,
 		getStatsSinceSnapshot,
 		initDivisionRosters
 	};
+}
+
+function getCupRound(type: 'league-cup' | 'fa-cup', week: number): number | null {
+	const schedule = CUP_SCHEDULE[type];
+	for (const sr of schedule) {
+		if (sr.week === week) return sr.round;
+	}
+	return null;
 }
 
 export const season = createSeason();

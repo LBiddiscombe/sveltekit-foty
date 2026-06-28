@@ -4,6 +4,7 @@ import { getLevel, getTargetBandsForScout } from '$lib/config/levels';
 import { transferSigningFee } from '$lib/config/economy';
 import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
 import { generateDivisionSchedule } from '$lib/config/schedule';
+import { getLeagueWeeks } from '$lib/config/cups';
 import { simAiMatch } from '$lib/match/engine';
 import { standings } from '$lib/stores/standings.svelte';
 
@@ -167,7 +168,8 @@ export function processDivisionUpTransfer(
 
 	const newDivClubs = seasonState.divisionRosters[newDivision] ?? getClubsByDivision(newDivision).map((c) => c.name);
 
-	const fullSchedule = generateDivisionSchedule(newDivision, newDivClubs);
+	const leagueWeeks = getLeagueWeeks();
+	const fullSchedule = generateDivisionSchedule(newDivision, newDivClubs, leagueWeeks);
 	const currentWeek = seasonState.weekNumber;
 
 	for (const week of fullSchedule.weeks) {

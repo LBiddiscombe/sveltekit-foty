@@ -6,6 +6,7 @@
 	import { inbox } from '$lib/stores/inbox.svelte';
 	import { saveGame } from '$lib/save';
 	import { XP_CONFIG } from '$lib/config/xp';
+	import { CUP_DISPLAY_NAMES, CUP_ROUND_NAMES } from '$lib/config/cups';
 
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
@@ -84,6 +85,31 @@
 			{/if}
 		</div>
 	</Card>
+
+	{#each (['league-cup', 'fa-cup'] as const) as cupType (cupType)}
+		{@const bracket = cupType === 'league-cup' ? season.leagueCupBracket : season.faCupBracket}
+		{#if bracket?.winner}
+			<Card>
+				<h4 class="mb-2 font-pixel text-xs text-primary">{CUP_DISPLAY_NAMES[cupType]}</h4>
+				<div class="flex flex-col gap-1 font-pixel text-[10px] text-subtle">
+					<p>Winner: <span class="text-success">{bracket.winner}</span></p>
+					<p>Runner-up: <span class="text-primary">{bracket.runnerUp}</span></p>
+					{#if true}
+						{@const eliminatedRound = bracket.eliminated[player.club]}
+						{#if eliminatedRound !== undefined}
+							<p>
+								Your club: <span class="text-danger">eliminated in {CUP_ROUND_NAMES[cupType][eliminatedRound]}</span>
+							</p>
+						{:else if bracket.winner === player.club}
+							<p>Your club: <span class="text-success">CHAMPIONS!</span></p>
+						{:else if bracket.runnerUp === player.club}
+							<p>Your club: <span class="text-warning">Runner-up</span></p>
+						{/if}
+					{/if}
+				</div>
+			</Card>
+		{/if}
+	{/each}
 
 	{#if result.myDivisionPromoted.length > 0 || result.myDivisionRelegated.length > 0}
 		<Card>

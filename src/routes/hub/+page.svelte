@@ -4,7 +4,25 @@
 	import { player } from '$lib/stores/player.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
 	import { saveGame } from '$lib/save';
+	import { CUP_DISPLAY_NAMES, CUP_ROUND_NAMES, CUP_SCHEDULE } from '$lib/config/cups';
+	import type { CupBracket, CupType } from '$lib/types/game';
 	import Button from '$lib/components/Button.svelte';
+
+	function getCupStatus(type: CupType): { alive: boolean; text: string } | null {
+		const bracket = type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
+		if (!bracket) return null;
+
+		const eliminatedRound = bracket.eliminated[player.club];
+		if (eliminatedRound !== undefined) {
+			return { alive: false, text: `Out in ${CUP_ROUND_NAMES[type][eliminatedRound]}` };
+		}
+		if (bracket.winner) {
+			const won = bracket.winner === player.club;
+			return { alive: true, text: won ? 'Winner!' : `Runner-up` };
+		}
+
+		return { alive: true, text: `In ${CUP_ROUND_NAMES[type][bracket.currentRound]}` };
+	}
 
 	$effect(() => {
 		season.phase = 'hub';
@@ -93,7 +111,38 @@
 		</button>
 	</div>
 
-	<div class="mb-3 mt-6">
+	<div class="mb-3 mt-4 grid grid-cols-2 gap-3">
+		<button
+			onclick={async () => await goto('/hub/cup-results')}
+			class="rounded border border-transparent bg-card p-3 text-center hover:border-primary"
+		>
+			<p class="text-[10px] text-subtle">League Cup</p>
+			{#if true}
+				{@const status = getCupStatus('league-cup')}
+				{#if status}
+					<p class="mt-0.5 text-[10px] {status.alive ? 'text-success' : 'text-danger'}">{status.text}</p>
+				{:else}
+					<p class="mt-0.5 text-[10px] text-subtle">Not started</p>
+				{/if}
+			{/if}
+		</button>
+		<button
+			onclick={async () => await goto('/hub/cup-results')}
+			class="rounded border border-transparent bg-card p-3 text-center hover:border-primary"
+		>
+			<p class="text-[10px] text-subtle">FA Cup</p>
+			{#if true}
+				{@const status = getCupStatus('fa-cup')}
+				{#if status}
+					<p class="mt-0.5 text-[10px] {status.alive ? 'text-success' : 'text-danger'}">{status.text}</p>
+				{:else}
+					<p class="mt-0.5 text-[10px] text-subtle">Not started</p>
+				{/if}
+			{/if}
+		</button>
+	</div>
+
+	<div class="mb-3 mt-2">
 		<Button variant="secondary" onclick={async () => await goto('/training-ground')}>
 			Training Ground
 		</Button>

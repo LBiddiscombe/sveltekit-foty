@@ -102,7 +102,7 @@ Double-game weeks are randomly allocated across the season. Not visible in advan
   (50/50; Div 1 same-only). Picks a random target band from:
   - Same division: top 2 XP bands
   - Division above: bottom 2 XP bands
-  Player qualifies if careerXp >= band's minXp
+    Player qualifies if careerXp >= band's minXp
 
 - No negotiation — forced move. Signing fee: 5× wage (same division) or 10× wage (one up).
   10 goal cards added to deck as fresh-start bonus.
@@ -163,17 +163,17 @@ Double-game weeks are randomly allocated across the season. Not visible in advan
 
 ## 16. Delivery Plan
 
-| Cycle                            | Status                                                |
-| -------------------------------- | ----------------------------------------------------- |
-| 1 — Clickthrough Mock            | ✅ Complete                                           |
-| 2 — Goal Card Engine             | ✅ Complete                                           |
-| 3 — Vidiprinter + Incident Cards | ✅ Complete                                           |
-| 4 — Volley Mini-Game             | ✅ Complete                                           |
-| 5 — Penalty Mini-Game            | ✅ Complete                                           |
-| 6 — League Table + Progression   | ✅ Complete                                           |
-| 7 — Transfers                    | ✅ Complete                                          |
+| Cycle                            | Status                                                    |
+| -------------------------------- | --------------------------------------------------------- |
+| 1 — Clickthrough Mock            | ✅ Complete                                               |
+| 2 — Goal Card Engine             | ✅ Complete                                               |
+| 3 — Vidiprinter + Incident Cards | ✅ Complete                                               |
+| 4 — Volley Mini-Game             | ✅ Complete                                               |
+| 5 — Penalty Mini-Game            | ✅ Complete                                               |
+| 6 — League Table + Progression   | ✅ Complete                                               |
+| 7 — Transfers                    | ✅ Complete                                               |
 | 8 — Season Loop + Save + Archive | ✅ Complete (single auto-save slot, season stats archive) |
-| 9+ — Stretch Goals               | ⬜ Not started                                        |
+| 9+ — Stretch Goals               | ⬜ Not started                                            |
 
 ### Cycle 1: Clickthrough Mock
 
@@ -326,6 +326,7 @@ AWAY
 **Goal:** Standings table, XP tracking, progression system with division caps.
 
 **What shipped:**
+
 - League standings store (`standings.svelte.ts`) — full table with points, GD, W/D/L, last-five form
 - XP config (`xp.ts`) — per-event XP: played +1, goal +1, miss -1, promotion +10
 - Level system (`levels.ts`) — 12 tiers, division caps (100/200/350/500), wage derivation
@@ -439,11 +440,86 @@ Division 4
 - Walsawl
 - York
 
+Non-league teams
+
+- Aldershot
+- Altringum
+- Barro
+- Boram Wood
+- Boston
+- Carlisle
+- Eastlee
+- Hallifax
+- Forest Green
+- Gateshed
+- Harrogit
+- Hartlepool
+- Hornchurch
+- Oldum
+- Scunthorp
+- Solihul
+- Southend
+- Sutton
+- Tamwuth
+- Weeldstone
+- Woakin
+- Worthin
+- Yovil
+- Bedfud
+- Bracklee
+- Buxtun
+- Chestur
+- Chorlee
+- Darlinton
+- Harbura
+- Hebburn
+- Hednesfud
+- Herefud
+- Kings Linn
+- Macklesfeeld
+- Mareen
+- Murthur
+- Morekum
+- Oxfud City
+- Radcliff
+- Scarbura
+- Southport
+- South Sheelds
+- Spaulding
+- Spennymoor
+- Worksup
+- Telfud
+- Tottun
+- Bath
+- BraynTree
+- Chelmsfud
+- Cheshum
+- Chipnum
+- Dagenum
+- Dovur
+- Dorkin
+- Eastburn
+- Ebbsfleet
+- Enfeeld
+- Farnbura
+- Hampton Richmund
+- Hemel Hempsted
+- Horshum
+- Maydenhed
+- Maydstun
+- Saulsbury
+- Slou
+- Tunbridge Angels
+- Torkee
+- Truro
+- Weston Super Mare
+
 ### Cycle 7: Transfers & Clubs ✅
 
 **Goal:** Two-path transfer system with scouting, forced moves, same-division and division-up transfers.
 
 **What shipped:**
+
 - Two transfer windows per season (weeks 1-4, 16-19); first window of Season 1 blocked
 - Two paths: passive scouting (25% weekly roll) and purchasable transfer cards (shop, £2.5k-£10k)
 - Scout evaluation: random club from same division or division above (50/50), XP band-based qualification
@@ -461,6 +537,7 @@ Division 4
 **Goal:** Full season progression, single auto-save slot, season stats archive, outcome tracking.
 
 **What shipped:**
+
 - Full season loop: 30-week calendar, double/single-game weeks, promotion/relegation across 4 divisions
 - Season review page with final standings, promotion bonus, new-season generation
 - Auto-save on hub arrival, beforeunload, and all key transitions
@@ -474,6 +551,7 @@ Division 4
 ### Cycle 9+: Stretch Goals
 
 - Domestic cups (FA Cup, League Cup)
+- Penalties shootout mini-game (5-round penalty each, player plays theirs, opponent simmed)
 - Training mini-games
 - Defensive goal cards
 - European competitions
