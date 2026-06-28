@@ -57,8 +57,9 @@
 													</span>
 													<span class="flex-1 truncate {isPlayerHome ? 'font-bold' : ''}">{tie.home}</span>
 													<span class="flex items-center gap-0.5 font-mono shrink-0">
-														{#if onPens}<span class="text-warning">p</span>{/if}
+														{#if onPens && tie.result.winner === tie.home}<span class="text-warning">p</span>{/if}
 														{scoreDisplay}
+														{#if onPens && tie.result.winner === tie.away}<span class="text-warning">p</span>{/if}
 													</span>
 													<span class="flex-1 truncate text-right {isPlayerAway ? 'font-bold' : ''}">{tie.away}</span>
 													<span class="w-3 text-center text-success">

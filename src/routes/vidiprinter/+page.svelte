@@ -130,24 +130,23 @@
 		lines.push('-'.repeat(cupName.length + roundName.length + 2));
 
 		if (isTwoLeg) {
-			const pGoals1 = playerTie.home === PLAYER_CLUB ? r.homeGoals : r.awayGoals;
+			const pGoals1 = PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals;
+			const oppGoals1 = PLAYER_CLUB === playerTie.home ? r.awayGoals : r.homeGoals;
 			lines.push(`  ${playerTie.home.padEnd(14)} ${r.homeGoals} - ${r.awayGoals}    ${playerTie.away}  (leg 1)`);
-			lines.push(`  RESULT - ${pGoals1 > (playerTie.home === PLAYER_CLUB ? r.awayGoals : r.homeGoals) ? 'WIN' : pGoals1 === (playerTie.home === PLAYER_CLUB ? r.awayGoals : r.homeGoals) ? 'DRAW' : 'LOSE'} : YOU SCORED ${pGoals1}`);
+			lines.push(`  RESULT - ${pGoals1 > oppGoals1 ? 'WIN' : pGoals1 === oppGoals1 ? 'DRAW' : 'LOSE'} : YOU SCORED ${pGoals1}`);
 
-			const pGoals2 = playerTie.away === PLAYER_CLUB ? r.homeGoals2 : r.awayGoals2;
-			lines.push(`  ${playerTie.away.padEnd(14)} ${r.homeGoals2} - ${r.awayGoals2}    ${playerTie.home}  (leg 2)`);
-			lines.push(`  RESULT - ${(pGoals2 ?? 0) > (playerTie.away === PLAYER_CLUB ? r.awayGoals2! : r.homeGoals2!) ? 'WIN' : (pGoals2 ?? 0) === (playerTie.away === PLAYER_CLUB ? r.awayGoals2! : r.homeGoals2!) ? 'DRAW' : 'LOSE'} : YOU SCORED ${pGoals2 ?? 0}`);
+			const pGoals2 = PLAYER_CLUB === playerTie.home ? r.homeGoals2 : r.awayGoals2;
+			const oppGoals2 = PLAYER_CLUB === playerTie.home ? r.awayGoals2 : r.homeGoals2;
+			lines.push(`  ${playerTie.away.padEnd(14)} ${r.awayGoals2} - ${r.homeGoals2}    ${playerTie.home}  (leg 2)`);
+			lines.push(`  RESULT - ${(pGoals2 ?? 0) > (oppGoals2 ?? 0) ? 'WIN' : (pGoals2 ?? 0) === (oppGoals2 ?? 0) ? 'DRAW' : 'LOSE'} : YOU SCORED ${pGoals2 ?? 0}`);
 
 			const pens = r.resolvedBy === 'coin-toss' ? ' p' : '';
 			const playerWon = r.winner === PLAYER_CLUB;
 			lines.push(`  Agg: ${r.aggHomeGoals} - ${r.aggAwayGoals}${pens}  ${playerWon ? 'WIN' : 'LOSE'}`);
 		} else {
-			const matchHomeGoals = playerTie.home === PLAYER_CLUB ? r.homeGoals : r.awayGoals;
-			const matchAwayGoals = playerTie.home === PLAYER_CLUB ? r.awayGoals : r.homeGoals;
-			lines.push(`  ${playerTie.home.padEnd(14)} ${matchHomeGoals} - ${matchAwayGoals}    ${playerTie.away}`);
-
+			lines.push(`  ${playerTie.home.padEnd(14)} ${r.homeGoals} - ${r.awayGoals}    ${playerTie.away}`);
 			const playerWon = r.winner === PLAYER_CLUB;
-			const pGoals = playerTie.home === PLAYER_CLUB ? r.homeGoals : r.awayGoals;
+			const pGoals = PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals;
 			lines.push(`  RESULT - ${playerWon ? 'WIN' : 'LOSE'} : YOU SCORED ${pGoals}`);
 		}
 
@@ -245,9 +244,7 @@
 				const playerTie = round?.ties.find((t) => (t.home === PLAYER_CLUB || t.away === PLAYER_CLUB) && t.result);
 				const r = playerTie?.result;
 				if (r && r.homeGoals2 === undefined) {
-					const matchHomeGoals = playerTie!.home === PLAYER_CLUB ? r.homeGoals : r.awayGoals;
-					const matchAwayGoals = playerTie!.home === PLAYER_CLUB ? r.awayGoals : r.homeGoals;
-					scoreLines.set(baseIdx + 2, { home: playerTie!.home, away: playerTie!.away, homeScore: matchHomeGoals, awayScore: matchAwayGoals });
+					scoreLines.set(baseIdx + 2, { home: playerTie!.home, away: playerTie!.away, homeScore: r.homeGoals, awayScore: r.awayGoals });
 				}
 			}
 		}

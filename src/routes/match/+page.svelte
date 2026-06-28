@@ -114,17 +114,14 @@
 				if (tieIdx === -1) continue;
 
 				const tie = round.ties[tieIdx];
-				const isHome = tie.home === player.club;
-				const matchHomeGoals = isHome ? res.score[0] : res.score[1];
-				const matchAwayGoals = isHome ? res.score[1] : res.score[0];
+				const playerIsTieHome = tie.home === player.club;
+
+				const shootHome = playerIsTieHome ? res.score[0] : res.score[1];
+				const shootAway = playerIsTieHome ? res.score[1] : res.score[0];
 
 				if (roundInfo.isTwoLeg && tie.result && tie.result.homeGoals2 === undefined) {
-					const leg1Home = tie.result.homeGoals;
-					const leg1Away = tie.result.awayGoals;
-					const leg2Home = matchAwayGoals;
-					const leg2Away = matchHomeGoals;
-					const aggHome = leg1Home + leg2Home;
-					const aggAway = leg1Away + leg2Away;
+					const aggHome = tie.result.homeGoals + shootHome;
+					const aggAway = tie.result.awayGoals + shootAway;
 
 					let winner: string;
 					let resolvedBy: 'match' | 'coin-toss';
@@ -143,10 +140,10 @@
 					updatedTies[tieIdx] = {
 						...tie,
 						result: {
-							homeGoals: leg1Home,
-							awayGoals: leg1Away,
-							homeGoals2: leg2Home,
-							awayGoals2: leg2Away,
+							homeGoals: tie.result.homeGoals,
+							awayGoals: tie.result.awayGoals,
+							homeGoals2: shootHome,
+							awayGoals2: shootAway,
 							aggHomeGoals: aggHome,
 							aggAwayGoals: aggAway,
 							winner,
@@ -163,15 +160,12 @@
 						season.faCupBracket = { ...bracket, rounds: updatedRounds };
 					}
 				} else if (roundInfo.isTwoLeg) {
-					const leg1Home = matchHomeGoals;
-					const leg1Away = matchAwayGoals;
-
 					const updatedTies = [...round.ties];
 					updatedTies[tieIdx] = {
 						...tie,
 						result: {
-							homeGoals: leg1Home,
-							awayGoals: leg1Away,
+							homeGoals: shootHome,
+							awayGoals: shootAway,
 							winner: '',
 							resolvedBy: 'match'
 						}
@@ -186,13 +180,23 @@
 						season.faCupBracket = { ...bracket, rounds: updatedRounds };
 					}
 				} else {
-					const winner = res.score[0] > res.score[1] ? player.club : game.fixture.opponent;
-					const resolvedBy = res.score[0] === res.score[1] ? 'coin-toss' : 'match';
+					let winner: string;
+					let resolvedBy: 'match' | 'coin-toss';
+					if (res.score[0] > res.score[1]) {
+						winner = player.club;
+						resolvedBy = 'match';
+					} else if (res.score[1] > res.score[0]) {
+						winner = game.fixture.opponent;
+						resolvedBy = 'match';
+					} else {
+						winner = Math.random() < 0.5 ? player.club : game.fixture.opponent;
+						resolvedBy = 'coin-toss';
+					}
 
 					const updatedTies = [...round.ties];
 					updatedTies[tieIdx] = {
 						...tie,
-						result: { homeGoals: matchHomeGoals, awayGoals: matchAwayGoals, winner, resolvedBy }
+						result: { homeGoals: shootHome, awayGoals: shootAway, winner, resolvedBy }
 					};
 
 					const updatedRounds = [...bracket.rounds];
