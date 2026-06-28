@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { playGame, skipGame, getMoraleDelta, consumeDeck, START_MORALE } from './engine';
+import { describe, it, expect, vi } from 'vitest';
+import { playGame, skipGame, getMoraleDelta, consumeDeck, START_MORALE, simAiMatch, AI_DRAW_BREAKER } from './engine';
 import type { Outcome } from '$lib/types/game';
 
 describe('playGame', () => {
@@ -133,5 +133,26 @@ describe('consumeDeck', () => {
 describe('START_MORALE', () => {
 	it('is a number', () => {
 		expect(typeof START_MORALE).toBe('number');
+	});
+});
+
+describe('AI_DRAW_BREAKER', () => {
+	it('is 0.35', () => {
+		expect(AI_DRAW_BREAKER).toBe(0.35);
+	});
+});
+
+describe('simAiMatch', () => {
+	it('returns homeGoals and awayGoals', () => {
+		const result = simAiMatch(5, 5);
+		expect(typeof result.homeGoals).toBe('number');
+		expect(typeof result.awayGoals).toBe('number');
+	});
+
+	it('nudges 35% of draws to a home win', () => {
+		vi.spyOn(Math, 'random').mockReturnValue(0);
+		const result = simAiMatch(5, 5);
+		expect(result.homeGoals).toBeGreaterThan(result.awayGoals);
+		vi.restoreAllMocks();
 	});
 });

@@ -77,11 +77,15 @@ export function consumeDeck(deck: number[], skipped: boolean) {
 	}
 }
 
+export const AI_DRAW_BREAKER = 0.35;
+
 export function simAiMatch(homeStrength: number, awayStrength: number): AiMatchResult {
 	const homeLambda = 0.3 + homeStrength * 0.1;
 	const awayLambda = 0.3 + awayStrength * 0.1;
-	return {
-		homeGoals: poisson(homeLambda),
-		awayGoals: poisson(awayLambda)
-	};
+	let homeGoals = poisson(homeLambda);
+	const awayGoals = poisson(awayLambda);
+	if (homeGoals === awayGoals && Math.random() < AI_DRAW_BREAKER) {
+		homeGoals += 1;
+	}
+	return { homeGoals, awayGoals };
 }
