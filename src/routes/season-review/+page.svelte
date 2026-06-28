@@ -23,11 +23,15 @@
 	player.addSeasonCards();
 	if (result.playerInPromoted) {
 		player.addXp(XP_CONFIG.promotion);
-		const promotionBonus = player.wage * 10;
+		const promotionBonus = player.wage * 15;
 		player.adjustBalance(promotionBonus);
 	}
 
-	const seasonStats = season.getStatsSinceSnapshot(player.goals, player.appearances, player.careerXp);
+	const seasonStats = season.getStatsSinceSnapshot(
+		player.goals,
+		player.appearances,
+		player.careerXp
+	);
 	const playerPosition = result.finalStandings.findIndex((s) => s.club === player.club) + 1;
 	player.archiveCurrentStats(oldSeasonNumber, oldDivision, playerPosition);
 
@@ -76,7 +80,7 @@
 			<p>XP Earned: <span class="text-primary">+{seasonStats.xpEarned}</span></p>
 			{#if result.playerInPromoted}
 				<p>Promotion Bonus: <span class="text-success">+{XP_CONFIG.promotion} XP</span></p>
-				<p>Signing Bonus: <span class="text-success">+£{player.wage * 10}</span></p>
+				<p>Season Bonus: <span class="text-success">+£{player.wage * 15}</span></p>
 			{/if}
 		</div>
 	</Card>
