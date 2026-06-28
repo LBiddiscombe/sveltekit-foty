@@ -4,6 +4,7 @@ import type p5 from 'p5';
 
 interface FirstTimeFinishSketchOptions {
 	onComplete: (outcome: Outcome) => void;
+	showCrowd?: boolean;
 }
 
 const SPAWN_X = -2;
@@ -32,7 +33,10 @@ interface Ball {
 	kicked: boolean;
 }
 
-export function createFirstTimeFinishSketch({ onComplete }: FirstTimeFinishSketchOptions) {
+export function createFirstTimeFinishSketch({
+	onComplete,
+	showCrowd = true
+}: FirstTimeFinishSketchOptions) {
 	let resolveStart: (() => void) | null = null;
 	let startRequested = false;
 
@@ -68,7 +72,7 @@ export function createFirstTimeFinishSketch({ onComplete }: FirstTimeFinishSketc
 		s.draw = () => {
 			p.background(50, 150, 60);
 
-			ft.drawStadium(scored);
+			ft.drawStadium(scored, showCrowd);
 			ft.drawPitch();
 			ft.drawGoal();
 

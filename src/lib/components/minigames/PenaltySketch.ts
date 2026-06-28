@@ -4,6 +4,7 @@ import type p5 from 'p5';
 
 interface PenaltySketchOptions {
 	onComplete: (outcome: Outcome) => void;
+	showCrowd?: boolean;
 }
 
 const GOALIE_DECISIONS = ['read', 'read', 'freeze', 'randcorner'];
@@ -23,7 +24,7 @@ interface Ball {
 	radius: number;
 }
 
-export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
+export function createPenaltySketch({ onComplete, showCrowd = true }: PenaltySketchOptions) {
 	let resolveStart: (() => void) | null = null;
 	let startRequested = false;
 
@@ -58,7 +59,7 @@ export function createPenaltySketch({ onComplete }: PenaltySketchOptions) {
 		s.draw = () => {
 			p.background(50, 150, 60);
 
-			ft.drawStadium(scored);
+			ft.drawStadium(scored, showCrowd);
 			ft.drawPitch();
 			ft.drawGoal();
 

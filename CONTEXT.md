@@ -60,6 +60,8 @@
 
 **Phase progression** — Each route auto-sets its phase via `$effect` on mount. Phase is an effect of navigation, not a driver of it. Self-healing on direct URL entry.
 
+**Training Ground** — A practice mode route (`/training-ground`) where the player can play minigames in an infinite loop with no impact on career state (no XP, no deck consumption, no goals, no morale changes, no appearances). Accessible from the hub via a button. The player selects which minigame to practice, and loops it until they choose to return to the hub.
+
 **Hub menu** — Simple vertical list of buttons on the hub page. Not an icon grid.
 
 **Minigame** — A unified Svelte wrapper (`Minigame.svelte`) that accepts a `createSketch` factory prop and renders it via `<P5Canvas>`. Eliminates per-minigame boilerplate. Sketch factories live in their own `*Sketch.ts` files and conform to the `MinigameSketchFactory` type.

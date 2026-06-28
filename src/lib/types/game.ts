@@ -46,7 +46,10 @@ export type Outcome = 'goal' | 'saved' | 'miss';
 
 export type MinigameSketch = (p: import('p5').default, width: number, height: number) => void;
 
-export type MinigameSketchFactory = (options: { onComplete: (outcome: Outcome) => void }) => {
+export type MinigameSketchFactory = (options: {
+	onComplete: (outcome: Outcome) => void;
+	showCrowd?: boolean;
+}) => {
 	sketch: MinigameSketch;
 	start: () => void;
 };

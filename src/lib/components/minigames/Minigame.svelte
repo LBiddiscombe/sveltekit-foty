@@ -7,9 +7,18 @@
 		createSketch: MinigameSketchFactory;
 		outcomeText?: string | null;
 		gameName?: string;
+		showCrowd?: boolean;
+		skipIntro?: boolean;
 	}
 
-	let { oncomplete, createSketch, outcomeText = null, gameName = '' }: Props = $props();
+	let {
+		oncomplete,
+		createSketch,
+		outcomeText = null,
+		gameName = '',
+		showCrowd = true,
+		skipIntro = false
+	}: Props = $props();
 
 	const INTRO_DELAY = 1500;
 
@@ -19,13 +28,19 @@
 
 	$effect(() => {
 		const result = createSketch({
-			onComplete: (outcome) => oncomplete?.(outcome)
+			onComplete: (outcome) => oncomplete?.(outcome),
+			showCrowd
 		});
 		sketch = result.sketch;
 		start = result.start;
 	});
 
 	$effect(() => {
+		if (skipIntro) {
+			showIntro = false;
+			start?.();
+			return;
+		}
 		const timeout = setTimeout(() => {
 			showIntro = false;
 			start?.();

@@ -93,6 +93,12 @@
 		</button>
 	</div>
 
+	<div class="mb-3 mt-6">
+		<Button variant="secondary" onclick={async () => await goto('/training-ground')}>
+			Training Ground
+		</Button>
+	</div>
+
 	<div class="mt-auto">
 		{#if hasUnread}
 			<Button onclick={async () => await goto('/hub/inbox')}>

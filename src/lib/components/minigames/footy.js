@@ -86,7 +86,7 @@ export function createFooty(p) {
 		p.ellipse(penaltySpot.x, penaltySpot.y, 20, 10);
 	}
 
-	function drawStadium(scored) {
+	function drawStadium(scored, showCrowd = true) {
 		p.noStroke();
 
 		const skyColors = [
@@ -103,42 +103,44 @@ export function createFooty(p) {
 			p.rect(0, i * bandH, p.width, bandH + 1);
 		}
 
-		const rows = 7;
-		for (let row = rows - 1; row >= 0; row--) {
-			const zPos = goal.z + 3 + row * 1.5;
+		if (showCrowd) {
+			const rows = 7;
+			for (let row = rows - 1; row >= 0; row--) {
+				const zPos = goal.z + 3 + row * 1.5;
 
-			const count = Math.max(1, 10 - row);
-			for (let s = 0; s < count; s++) {
-				const sx = p.map(s, 0, count - 1, -9.5, 9.5) + (row % 2) * 0.4;
-				const midZ = zPos - 0.3;
-				const bodyH = 1.5;
+				const count = Math.max(1, 10 - row);
+				for (let s = 0; s < count; s++) {
+					const sx = p.map(s, 0, count - 1, -9.5, 9.5) + (row % 2) * 0.4;
+					const midZ = zPos - 0.3;
+					const bodyH = 1.5;
 
-				const feet = project(sx, row / rows, midZ);
-				const top = project(sx, row / rows + bodyH, midZ);
-				const h = feet.y - top.y;
-				if (h < 3) continue;
+					const feet = project(sx, row / rows, midZ);
+					const top = project(sx, row / rows + bodyH, midZ);
+					const h = feet.y - top.y;
+					if (h < 3) continue;
 
-				const aspect = goalieStandImg.width / goalieStandImg.height;
-				const w = h * aspect;
+					const aspect = goalieStandImg.width / goalieStandImg.height;
+					const w = h * aspect;
 
-				const hue = (row * 47 + s * 31 + 7) % 360;
-				const r = Math.min(255, Math.max(0, 128 + 127 * Math.sin(hue * 0.01745)));
-				const g = Math.min(255, Math.max(0, 128 + 127 * Math.sin(hue * 0.01745 + 2.094)));
-				const b = Math.min(255, Math.max(0, 128 + 127 * Math.sin(hue * 0.01745 + 4.189)));
+					const hue = (row * 47 + s * 31 + 7) % 360;
+					const r = Math.min(255, Math.max(0, 128 + 127 * Math.sin(hue * 0.01745)));
+					const g = Math.min(255, Math.max(0, 128 + 127 * Math.sin(hue * 0.01745 + 2.094)));
+					const b = Math.min(255, Math.max(0, 128 + 127 * Math.sin(hue * 0.01745 + 4.189)));
 
-				p.push();
-				p.tint(r, g, b);
+					p.push();
+					p.tint(r, g, b);
 
-				const celebrating = scored && (row + s) % 2 === 0;
-				const img = celebrating ? goalieDiveImg : goalieStandImg;
+					const celebrating = scored && (row + s) % 2 === 0;
+					const img = celebrating ? goalieDiveImg : goalieStandImg;
 
-				let yy = feet.y;
-				if (celebrating) {
-					yy += Math.sin(p.millis() * 0.03 + row * 2.7 + s * 3.9) * h * 0.12;
+					let yy = feet.y;
+					if (celebrating) {
+						yy += Math.sin(p.millis() * 0.03 + row * 2.7 + s * 3.9) * h * 0.12;
+					}
+
+					p.image(img, feet.x - w / 2, yy - h, w, h);
+					p.pop();
 				}
-
-				p.image(img, feet.x - w / 2, yy - h, w, h);
-				p.pop();
 			}
 		}
 
