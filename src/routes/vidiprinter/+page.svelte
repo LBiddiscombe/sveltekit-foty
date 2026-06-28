@@ -103,9 +103,10 @@
 
 			scoreLines.set(l.length, { home, away, homeScore, awayScore });
 			l.push(`  ${home.padEnd(14)} ${homeScore} - ${awayScore}    ${away}`);
-			const playerLine = f.result && playerGoals === 0 && f.result.outcomes.length === 0
-				? `RESULT - ${result} : YOU DIDN'T PLAY`
-				: `RESULT - ${result} : YOU SCORED ${playerGoals}`;
+			const playerLine =
+				f.result && playerGoals === 0 && f.result.outcomes.length === 0
+					? `RESULT - ${result} : YOU DIDN'T PLAY`
+					: `RESULT - ${result} : YOU SCORED ${playerGoals}`;
 			l.push(`  ${playerLine}`);
 			l.push('');
 		}
@@ -188,7 +189,12 @@
 		if (shouldScout) {
 			player.queuedTransferCard = false;
 
-			const report = evaluateScout(player.club, player.division, player.careerXp, season.divisionRosters);
+			const report = evaluateScout(
+				player.club,
+				player.division,
+				player.careerXp,
+				season.divisionRosters
+			);
 			if (report) {
 				setScoutReport(report);
 				if (report.success && report.signingFee) {
@@ -196,7 +202,14 @@
 					if (scoutDiv === player.division) {
 						processSameDivisionTransfer(player, season, report.scoutClub, report.signingFee);
 					} else {
-						processDivisionUpTransfer(player, season, standings, report.scoutClub, scoutDiv, report.signingFee);
+						processDivisionUpTransfer(
+							player,
+							season,
+							standings,
+							report.scoutClub,
+							scoutDiv,
+							report.signingFee
+						);
 					}
 					player.lastTransferWindow = { season: season.seasonNumber, window: transferWindow! };
 					const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
@@ -233,7 +246,7 @@
 </script>
 
 <svelte:window
-	onpointerdown={() => (tty.speed = 5)}
+	onpointerdown={() => (tty.speed = 1)}
 	onpointerup={() => (tty.speed = 25)}
 	onpointerleave={() => (tty.speed = 25)}
 />
