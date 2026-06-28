@@ -47,7 +47,7 @@ function handleForcedSkipChoice() {
 		playerGoals: 0,
 		outcomes: []
 	};
-	season.adjustMorale(getMoraleDelta(result.score, 0));
+	season.adjustMorale(getMoraleDelta(result.score));
 	season.consumeAppearanceSkip();
 }
 

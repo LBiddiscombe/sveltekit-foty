@@ -91,30 +91,16 @@ describe('skipGame', () => {
 });
 
 describe('getMoraleDelta', () => {
-	it('returns positive delta for a win', () => {
-		const delta = getMoraleDelta([3, 1], 2);
-		expect(delta).toBeGreaterThan(0);
+	it('returns 1 for a win', () => {
+		expect(getMoraleDelta([3, 1])).toBe(1);
 	});
 
-	it('returns zero delta for a draw', () => {
-		const delta = getMoraleDelta([2, 2], 1);
-		expect(delta).toBe(0);
+	it('returns 0 for a draw', () => {
+		expect(getMoraleDelta([2, 2])).toBe(0);
 	});
 
-	it('returns negative delta for a loss', () => {
-		const delta = getMoraleDelta([0, 2], 0);
-		expect(delta).toBeLessThan(0);
-	});
-
-	it('applies two-goal bonus when player scores 2+ goals', () => {
-		const base = getMoraleDelta([3, 1], 1);
-		const bonus = getMoraleDelta([3, 1], 2);
-		expect(bonus).toBeGreaterThan(base);
-	});
-
-	it('applies two-goal bonus even on a loss when player scores 2+ goals', () => {
-		const delta = getMoraleDelta([1, 3], 2);
-		expect(delta).toBeGreaterThan(0);
+	it('returns -1 for a loss', () => {
+		expect(getMoraleDelta([0, 2])).toBe(-1);
 	});
 });
 

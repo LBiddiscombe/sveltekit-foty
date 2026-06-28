@@ -216,9 +216,7 @@ function simulateSeason(
 						gf = oppGoals; ga = teamGoals + playerGoals;
 					}
 					const result = gf > ga ? 'win' : gf === ga ? 'draw' : 'loss';
-					let delta = MORALE_CONFIG.deltas[result];
-					if (playerGoals >= 2) delta = MORALE_CONFIG.deltas.twoGoalBonus;
-					morale = MORALE_CONFIG.adjustMorale(morale, delta);
+					morale = MORALE_CONFIG.adjustMorale(morale, MORALE_CONFIG.deltas[result]);
 				} else {
 					if (m.home === playerClub) {
 						gf = teamGoals; ga = oppGoals;
@@ -391,9 +389,7 @@ describe.skip('formula comparison', () => {
 						if (m.home === playerClub) { gf = tg + pg; ga = og; }
 						else { gf = og; ga = tg + pg; }
 						const r = gf > ga ? 'win' : gf === ga ? 'draw' : 'loss';
-						let d = MORALE_CONFIG.deltas[r];
-						if (pg >= 2) d = MORALE_CONFIG.deltas.twoGoalBonus;
-						morale = MORALE_CONFIG.adjustMorale(morale, d);
+						morale = MORALE_CONFIG.adjustMorale(morale, MORALE_CONFIG.deltas[r]);
 					} else {
 						if (m.home === playerClub) { gf = tg; ga = og; }
 						else { gf = og; ga = tg; }
@@ -452,9 +448,7 @@ describe.skip('formula comparison', () => {
 						if (m.home === playerClub) { gf = tg + pg; ga = og; }
 						else { gf = og; ga = tg + pg; }
 						const r = gf > ga ? 'win' : gf === ga ? 'draw' : 'loss';
-						let d = MORALE_CONFIG.deltas[r];
-						if (pg >= 2) d = MORALE_CONFIG.deltas.twoGoalBonus;
-						morale = MORALE_CONFIG.adjustMorale(morale, d);
+						morale = MORALE_CONFIG.adjustMorale(morale, MORALE_CONFIG.deltas[r]);
 					} else {
 						if (m.home === playerClub) { gf = tg; ga = og; }
 						else { gf = og; ga = tg; }

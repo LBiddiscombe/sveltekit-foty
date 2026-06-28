@@ -4,8 +4,7 @@ export const MORALE_CONFIG = {
 	deltas: {
 		win: 1,
 		draw: 0,
-		loss: -1,
-		twoGoalBonus: 2
+		loss: -1
 	},
 
 	adjustMorale(current: number, delta: number): number {

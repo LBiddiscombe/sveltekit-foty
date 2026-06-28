@@ -63,12 +63,10 @@ export function skipGame(
 	};
 }
 
-export function getMoraleDelta(score: [number, number], playerGoals: number): number {
+export function getMoraleDelta(score: [number, number]): number {
 	const [us, them] = score;
 	const result = us > them ? 'win' : us === them ? 'draw' : 'loss';
-	let delta = MORALE_CONFIG.deltas[result];
-	if (playerGoals >= 2) delta = MORALE_CONFIG.deltas.twoGoalBonus;
-	return delta;
+	return MORALE_CONFIG.deltas[result];
 }
 
 export function consumeDeck(deck: number[], skipped: boolean) {

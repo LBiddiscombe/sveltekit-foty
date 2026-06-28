@@ -10,8 +10,7 @@ describe('MORALE_CONFIG', () => {
 		expect(MORALE_CONFIG.deltas).toEqual({
 			win: 1,
 			draw: 0,
-			loss: -1,
-			twoGoalBonus: 2
+			loss: -1
 		});
 	});
 

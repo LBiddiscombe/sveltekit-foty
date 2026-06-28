@@ -63,7 +63,7 @@
 		const res = match.result!;
 		const game = match.pendingGames[match.currentGameIndex];
 		const playerGoals = res.outcomes.filter((o) => o === 'goal').length;
-		season.adjustMorale(getMoraleDelta(res.score, playerGoals));
+		season.adjustMorale(getMoraleDelta(res.score));
 
 		if (!game.skipped) {
 			const matchXp = calcMatchXp(res.outcomes, res.score);
