@@ -18,11 +18,11 @@ function poisson(lambda: number): number {
 const DEFAULT_STRENGTH = 3;
 
 function calcTeamGoals(strength: number, morale: number): number {
-	return poisson(0.3 + strength * 0.1 + morale * 0.05);
+	return poisson(0.3 + strength * 0.1 + morale * 0.01);
 }
 
 function calcOpponentGoals(strength: number, morale: number): number {
-	return poisson(0.3 + strength * 0.1 - morale * 0.05);
+	return poisson(0.3 + strength * 0.1);
 }
 
 function strength(club: string): number {
