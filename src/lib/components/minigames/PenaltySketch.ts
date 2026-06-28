@@ -8,7 +8,7 @@ interface PenaltySketchOptions {
 
 const GOALIE_DECISIONS = ['read', 'read', 'freeze', 'randcorner'];
 const MAX_REACTION_DELAY_MS = 400;
-const KICK_RADIUS = 50;
+const KICK_RADIUS = 100;
 const MAX_VX = 16;
 const MAX_VY = 18;
 const POWER_CYCLE_MS = 600;

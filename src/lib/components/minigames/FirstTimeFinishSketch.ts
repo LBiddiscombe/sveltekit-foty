@@ -17,7 +17,7 @@ const TRAIL_LENGTH = 40;
 const KICK_VX_MAX = 16;
 const KICK_VY_MAX = 18;
 const KICK_VZ = 25;
-const KICK_RADIUS = 50;
+const KICK_RADIUS = 100;
 const GOALIE_DECISIONS = ['read'];
 const MAX_REACTION_DELAY_MS = 800;
 
