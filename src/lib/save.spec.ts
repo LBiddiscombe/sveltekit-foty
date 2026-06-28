@@ -14,7 +14,6 @@ import { match } from './stores/match.svelte';
 
 function seedStores() {
 	player.name = 'Test Player';
-	player.age = 17;
 	player.wage = 75;
 	player.bankBalance = 5000;
 	player.goals = 5;
@@ -213,7 +212,6 @@ describe('loadGame resilience', () => {
 			player: {
 				club: 'Exetur',
 				name: 'T',
-				age: 17,
 				bankBalance: 5000,
 				goals: 0,
 				appearances: 0,

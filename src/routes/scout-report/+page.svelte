@@ -5,11 +5,25 @@
 	import { player } from '$lib/stores/player.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Card from '$lib/components/Card.svelte';
+	import { scale } from 'svelte/transition';
+	import { onDestroy } from 'svelte';
 
 	const report = $derived(getScoutReport());
 
+	let showBanner = $state(false);
+	let isProcessing = $state(false);
+	let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+	onDestroy(() => clearTimeout(timeoutId));
+
 	function onContinue() {
-		goto(resolveRoute('/hub'));
+		if (report?.success) {
+			showBanner = true;
+			isProcessing = true;
+			timeoutId = setTimeout(() => goto(resolveRoute('/hub')), 2200);
+		} else {
+			goto(resolveRoute('/hub'));
+		}
 	}
 </script>
 
@@ -35,11 +49,16 @@
 				</p>
 			</Card>
 	{:else if report.success}
-		<div class="mb-4 rounded border border-success bg-card p-3 text-center">
-			<p class="font-pixel text-sm uppercase tracking-wider text-success">
-				You've been transferred!!
-			</p>
-		</div>
+		{#if showBanner}
+			<div
+				in:scale={{ duration: 300, start: 0.5 }}
+				class="mb-4 rounded border border-success bg-card p-3 text-center animate-pulse"
+			>
+				<p class="font-pixel text-sm uppercase tracking-wider text-success">
+					You've been transferred!!
+				</p>
+			</div>
+		{/if}
 		<Card>
 			<h3 class="mb-3 text-center font-pixel text-xs uppercase tracking-wider text-primary">
 				SCOUT REPORT
@@ -47,7 +66,8 @@
 			<div class="flex flex-col gap-4 font-pixel text-[10px] leading-relaxed text-subtle">
 				<p>
 					Hi <span class="text-primary">{player.name}</span>, I'm a scout from
-					<span class="text-primary">{report.scoutClub}</span> and I've been watching your
+					<span class="text-primary">{report.scoutClub}</span>
+					(Division <span class="text-primary">{report.scoutDivision}</span>) and I've been watching your
 					performances this week.
 				</p>
 				<p>
@@ -69,7 +89,8 @@
 			<div class="flex flex-col gap-4 font-pixel text-[10px] leading-relaxed text-subtle">
 				<p>
 					Hi <span class="text-primary">{player.name}</span>, I'm a scout from
-					<span class="text-primary">{report.scoutClub}</span> and I've been watching your
+					<span class="text-primary">{report.scoutClub}</span>
+					(Division <span class="text-primary">{report.scoutDivision}</span>) and I've been watching your
 					performances this week.
 				</p>
 				<p>
@@ -83,6 +104,6 @@
 		{/if}
 	</div>
 	<div class="mt-auto">
-		<Button onclick={onContinue}>{report?.success ? 'Continue to Hub' : 'Dismiss'}</Button>
+		<Button onclick={onContinue} disabled={isProcessing}>{isProcessing ? 'Continuing...' : report?.success ? 'Continue' : 'Dismiss'}</Button>
 	</div>
 </div>

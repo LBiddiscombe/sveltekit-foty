@@ -24,7 +24,6 @@
 	async function startCareer() {
 		if (!name.trim()) return;
 		player.name = name.trim();
-		player.age = 17;
 		player.bankBalance = 5000;
 		player.careerXp = 0;
 		player.wage = 75;

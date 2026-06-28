@@ -61,7 +61,6 @@ export function createInMemoryAdapter(): SaveAdapter {
 interface SaveState {
 	player: {
 		name: string;
-		age: number;
 		bankBalance: number;
 		goals: number;
 		appearances: number;
@@ -111,7 +110,6 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 	const state: SaveState = {
 		player: {
 			name: player.name,
-			age: player.age,
 			bankBalance: player.bankBalance,
 			goals: player.goals,
 			appearances: player.appearances,
@@ -185,7 +183,6 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 
 	try {
 		player.name = state.player.name;
-		player.age = state.player.age;
 		player.bankBalance = state.player.bankBalance;
 		player.goals = state.player.goals;
 		player.appearances = state.player.appearances;

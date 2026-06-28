@@ -14,7 +14,6 @@ const CLUB = 'Ackrington';
 
 function defaultStores() {
 	player.name = '';
-	player.age = 17;
 	player.wage = ECONOMY.weeklyWages[4];
 	player.bankBalance = 5000;
 	player.goals = 0;
@@ -53,7 +52,6 @@ describe('full career flow persistence', () => {
 
 		// team-select
 		player.name = 'TestPlayer';
-		player.age = 17;
 		player.bankBalance = 5000;
 		player.club = CLUB;
 		player.division = 4;

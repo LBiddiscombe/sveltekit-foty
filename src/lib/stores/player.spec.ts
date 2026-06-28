@@ -4,7 +4,6 @@ import { player } from './player.svelte';
 describe('player store', () => {
 	beforeEach(() => {
 		player.name = '';
-		player.age = 17;
 		player.bankBalance = 5000;
 		player.goals = 0;
 		player.appearances = 0;

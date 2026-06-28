@@ -10,7 +10,6 @@ function randomDeck(size: number): number[] {
 
 function createPlayer() {
 	let name = $state('');
-	let age = $state(17);
 	let wage = $state(wageForLevel(getLevelIndex(0)));
 	let bankBalance = $state(5000);
 	let goals = $state(0);
@@ -132,10 +131,7 @@ function createPlayer() {
 			name = v;
 		},
 		get age() {
-			return age;
-		},
-		set age(v: number) {
-			age = v;
+			return 17 + (season.seasonNumber - 1);
 		},
 		get wage() {
 			return wage;
