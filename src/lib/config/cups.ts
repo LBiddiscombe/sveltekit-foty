@@ -24,7 +24,8 @@ export const CUP_SCHEDULE: Record<CupType, { round: number; week: number; isTwoL
 		{ round: 3, week: 9, isTwoLeg: true },
 		{ round: 4, week: 13, isTwoLeg: true },
 		{ round: 5, week: 17, isTwoLeg: true },
-		{ round: 6, week: 25, isTwoLeg: false }
+		{ round: 6, week: 21, isTwoLeg: false },
+		{ round: 7, week: 25, isTwoLeg: false }
 	],
 	'fa-cup': [
 		{ round: 1, week: 3, isTwoLeg: false },
@@ -44,16 +45,17 @@ export const CUP_PRIZES: Record<CupType, Record<number, { prize: number; xp: num
 		3: { prize: 2000, xp: 3 },
 		4: { prize: 5000, xp: 3 },
 		5: { prize: 10000, xp: 4 },
-		6: { prize: 15000, xp: 5 }
+		6: { prize: 15000, xp: 5 },
+		7: { prize: 20000, xp: 5 }
 	},
 	'fa-cup': {
-		1: { prize: 500, xp: 1 },
-		2: { prize: 1000, xp: 2 },
-		3: { prize: 2000, xp: 3 },
-		4: { prize: 5000, xp: 3 },
-		5: { prize: 10000, xp: 4 },
-		6: { prize: 15000, xp: 5 },
-		7: { prize: 25000, xp: 5 }
+		1: { prize: 1000, xp: 2 },
+		2: { prize: 2000, xp: 4 },
+		3: { prize: 4000, xp: 6 },
+		4: { prize: 8000, xp: 6 },
+		5: { prize: 16000, xp: 8 },
+		6: { prize: 25000, xp: 10 },
+		7: { prize: 50000, xp: 10 }
 	}
 };
 
@@ -62,9 +64,10 @@ export const CUP_ROUND_NAMES: Record<CupType, Record<number, string>> = {
 		1: 'Round 1',
 		2: 'Round 2',
 		3: 'Round 3',
-		4: 'Quarter Final',
-		5: 'Semi Final',
-		6: 'Final'
+		4: 'Round 4',
+		5: 'Quarter Final',
+		6: 'Semi Final',
+		7: 'Final'
 	},
 	'fa-cup': {
 		1: 'Round 1',

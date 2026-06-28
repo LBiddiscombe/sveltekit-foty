@@ -13,7 +13,8 @@
 	import { XP_CONFIG } from '$lib/config/xp';
 	import { DIVISION_XP_CAPS } from '$lib/config/levels';
 	import { saveGame } from '$lib/save';
-	import { CUP_SCHEDULE } from '$lib/config/cups';
+	import { CUP_SCHEDULE, CUP_PRIZES, CUP_DISPLAY_NAMES, CUP_ROUND_NAMES } from '$lib/config/cups';
+	import { inbox } from '$lib/stores/inbox.svelte';
 
 	type GameType = 'penalty' | 'first-time-finish' | 'rebound';
 
@@ -80,7 +81,9 @@
 
 		match.saveFixtureResult();
 
-		const weekSchedule = season.divisionSchedule.weeks.find((w) => w.weekNumber === game.fixture.weekNumber);
+		const weekSchedule = season.divisionSchedule.weeks.find(
+			(w) => w.weekNumber === game.fixture.weekNumber
+		);
 		if (weekSchedule) {
 			const divMatch = weekSchedule.matches.find(
 				(m) =>
@@ -95,9 +98,12 @@
 			}
 		}
 
-		if (!weekSchedule || !weekSchedule.matches.some(
-			(m) => m.home === game.fixture.opponent || m.away === game.fixture.opponent
-		)) {
+		if (
+			!weekSchedule ||
+			!weekSchedule.matches.some(
+				(m) => m.home === game.fixture.opponent || m.away === game.fixture.opponent
+			)
+		) {
 			for (const cupType of ['league-cup', 'fa-cup'] as const) {
 				const bracket = cupType === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
 				if (!bracket || bracket.winner) continue;
@@ -147,7 +153,11 @@
 							aggHomeGoals: aggHome,
 							aggAwayGoals: aggAway,
 							winner,
-							resolvedBy
+							resolvedBy,
+							playerLeg1Goals: tie.result.playerLeg1Goals,
+							playerLeg1Outcomes: tie.result.playerLeg1Outcomes,
+							playerLeg2Goals: playerGoals,
+							playerLeg2Outcomes: [...res.outcomes]
 						}
 					};
 
@@ -159,6 +169,24 @@
 					} else {
 						season.faCupBracket = { ...bracket, rounds: updatedRounds };
 					}
+
+					if (winner === player.club) {
+						const prize = CUP_PRIZES[cupType][roundInfo.round];
+						player.bankBalance += prize.prize;
+						player.addXp(prize.xp);
+						const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
+						inbox.items = [
+							...inbox.items,
+							{
+								id: nextId,
+								type: 'news',
+								subject: `${CUP_DISPLAY_NAMES[cupType]} ${CUP_ROUND_NAMES[cupType][roundInfo.round]} Win!`,
+								body: `Prize money: £${prize.prize} +${prize.xp}XP`,
+								actionRequired: false,
+								actioned: false
+							}
+						];
+					}
 				} else if (roundInfo.isTwoLeg) {
 					const updatedTies = [...round.ties];
 					updatedTies[tieIdx] = {
@@ -167,7 +195,9 @@
 							homeGoals: shootHome,
 							awayGoals: shootAway,
 							winner: '',
-							resolvedBy: 'match'
+							resolvedBy: 'match',
+							playerLeg1Goals: playerGoals,
+							playerLeg1Outcomes: [...res.outcomes]
 						}
 					};
 
@@ -196,7 +226,14 @@
 					const updatedTies = [...round.ties];
 					updatedTies[tieIdx] = {
 						...tie,
-						result: { homeGoals: shootHome, awayGoals: shootAway, winner, resolvedBy }
+						result: {
+							homeGoals: shootHome,
+							awayGoals: shootAway,
+							winner,
+							resolvedBy,
+							playerLeg1Goals: playerGoals,
+							playerLeg1Outcomes: [...res.outcomes]
+						}
 					};
 
 					const updatedRounds = [...bracket.rounds];
@@ -206,6 +243,24 @@
 						season.leagueCupBracket = { ...bracket, rounds: updatedRounds };
 					} else {
 						season.faCupBracket = { ...bracket, rounds: updatedRounds };
+					}
+
+					if (winner === player.club) {
+						const prize = CUP_PRIZES[cupType][roundInfo.round];
+						player.bankBalance += prize.prize;
+						player.addXp(prize.xp);
+						const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
+						inbox.items = [
+							...inbox.items,
+							{
+								id: nextId,
+								type: 'news',
+								subject: `${CUP_DISPLAY_NAMES[cupType]} ${CUP_ROUND_NAMES[cupType][roundInfo.round]} Win!`,
+								body: `Prize money: £${prize.prize} +${prize.xp}XP`,
+								actionRequired: false,
+								actioned: false
+							}
+						];
 					}
 				}
 			}
@@ -300,9 +355,17 @@
 			{#key `${match.currentGameIndex}-${currentChance}`}
 				<Minigame
 					oncomplete={handleComplete}
-					createSketch={gameType === 'penalty' ? createPenaltySketch : gameType === 'rebound' ? createReboundSketch : createFirstTimeFinishSketch}
+					createSketch={gameType === 'penalty'
+						? createPenaltySketch
+						: gameType === 'rebound'
+							? createReboundSketch
+							: createFirstTimeFinishSketch}
 					outcomeText={currentOutcomeText}
-					gameName={gameType === 'penalty' ? 'Penalty!' : gameType === 'rebound' ? 'Rebound' : 'First-Time Finish!'}
+					gameName={gameType === 'penalty'
+						? 'Penalty!'
+						: gameType === 'rebound'
+							? 'Rebound'
+							: 'First-Time Finish!'}
 				/>
 			{/key}
 		</div>

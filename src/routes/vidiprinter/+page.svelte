@@ -49,9 +49,7 @@
 
 	const scoreLines = new SvelteMap<number, ScoreLine>();
 
-	const weekFixtures = season.fixtures.filter(
-		(f) => f.weekNumber === WEEK && f.result
-	);
+	const weekFixtures = season.fixtures.filter((f) => f.weekNumber === WEEK && f.result);
 
 	season.simulateCupWeek();
 
@@ -75,9 +73,7 @@
 			});
 		}
 
-		const weekSchedule = season.divisionSchedule.weeks.find(
-			(w) => w.weekNumber === WEEK
-		);
+		const weekSchedule = season.divisionSchedule.weeks.find((w) => w.weekNumber === WEEK);
 		if (weekSchedule) {
 			for (const m of weekSchedule.matches) {
 				if (m.home === PLAYER_CLUB || m.away === PLAYER_CLUB) continue;
@@ -104,56 +100,147 @@
 		return null;
 	}
 
-	function getCupResultLines(): string[] {
+	function getCupResultLines(): {
+		lines: string[];
+		scoreEntries: {
+			index: number;
+			home: string;
+			away: string;
+			homeScore: number;
+			awayScore: number;
+		}[];
+	} {
 		const cupInfo = getCupWeekInfo(WEEK);
-		if (!cupInfo) return [];
+		if (!cupInfo) return { lines: [], scoreEntries: [] };
 
 		const bracket = cupInfo.type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
-		if (!bracket) return [];
+		if (!bracket) return { lines: [], scoreEntries: [] };
 
 		const round = bracket.rounds[cupInfo.round - 1];
-		if (!round) return [];
+		if (!round) return { lines: [], scoreEntries: [] };
 
 		const hasResults = round.ties.some((t) => t.result);
-		if (!hasResults) return [];
+		if (!hasResults) return { lines: [], scoreEntries: [] };
 
-		const playerTie = round.ties.find((t) => (t.home === PLAYER_CLUB || t.away === PLAYER_CLUB) && t.result);
-		if (!playerTie) return [];
+		const playerTie = round.ties.find(
+			(t) => (t.home === PLAYER_CLUB || t.away === PLAYER_CLUB) && t.result
+		);
+		if (!playerTie) return { lines: [], scoreEntries: [] };
 
 		const r = playerTie.result!;
 		const isTwoLeg = r.homeGoals2 !== undefined;
+		const cupName = CUP_DISPLAY_NAMES[cupInfo.type].toUpperCase();
+		const roundName = CUP_ROUND_NAMES[cupInfo.type][cupInfo.round].toUpperCase();
 
+		const scoreEntries: {
+			index: number;
+			home: string;
+			away: string;
+			homeScore: number;
+			awayScore: number;
+		}[] = [];
 		const lines: string[] = [];
-		const cupName = CUP_DISPLAY_NAMES[cupInfo.type];
-		const roundName = CUP_ROUND_NAMES[cupInfo.type][cupInfo.round];
-		lines.push(` ${cupName} ${roundName}`);
-		lines.push('-'.repeat(cupName.length + roundName.length + 2));
 
 		if (isTwoLeg) {
-			const pGoals1 = PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals;
-			const oppGoals1 = PLAYER_CLUB === playerTie.home ? r.awayGoals : r.homeGoals;
-			lines.push(`  ${playerTie.home.padEnd(14)} ${r.homeGoals} - ${r.awayGoals}    ${playerTie.away}  (leg 1)`);
-			lines.push(`  RESULT - ${pGoals1 > oppGoals1 ? 'WIN' : pGoals1 === oppGoals1 ? 'DRAW' : 'LOSE'} : YOU SCORED ${pGoals1}`);
+			const hdr1 = ` ${cupName} ${roundName} LEG 1`;
+			lines.push(hdr1);
+			lines.push('-'.repeat(hdr1.length));
 
-			const pGoals2 = PLAYER_CLUB === playerTie.home ? r.homeGoals2 : r.awayGoals2;
+			const leg1Result = `${playerTie.home.padEnd(14)} ${r.homeGoals} - ${r.awayGoals}    ${playerTie.away}`;
+			scoreEntries.push({
+				index: lines.length,
+				home: playerTie.home,
+				away: playerTie.away,
+				homeScore: r.homeGoals,
+				awayScore: r.awayGoals
+			});
+			lines.push(`  ${leg1Result}`);
+
+			const pGoals1 =
+				r.playerLeg1Goals ?? (PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals);
+			const oppGoals1 = PLAYER_CLUB === playerTie.home ? r.awayGoals : r.homeGoals;
+			const leg1ResultText = pGoals1 > oppGoals1 ? 'WIN' : pGoals1 === oppGoals1 ? 'DRAW' : 'LOSE';
+			const leg1Line =
+				r.playerLeg1Goals !== undefined &&
+				pGoals1 === 0 &&
+				(!r.playerLeg1Outcomes || r.playerLeg1Outcomes.length === 0)
+					? `  RESULT - ${leg1ResultText} : YOU DIDN'T PLAY`
+					: `  RESULT - ${leg1ResultText} : YOU SCORED ${pGoals1}`;
+			lines.push(leg1Line);
+			lines.push('');
+
+			const hdr2 = ` ${cupName} ${roundName} LEG 2`;
+			lines.push(hdr2);
+			lines.push('-'.repeat(hdr2.length));
+
+			const leg2Result = `${playerTie.away.padEnd(14)} ${r.awayGoals2} - ${r.homeGoals2}    ${playerTie.home}`;
+			scoreEntries.push({
+				index: lines.length,
+				home: playerTie.away,
+				away: playerTie.home,
+				homeScore: r.awayGoals2!,
+				awayScore: r.homeGoals2!
+			});
+			lines.push(`  ${leg2Result}`);
+
+			const pGoals2 =
+				r.playerLeg2Goals ?? (PLAYER_CLUB === playerTie.home ? r.homeGoals2 : r.awayGoals2);
 			const oppGoals2 = PLAYER_CLUB === playerTie.home ? r.awayGoals2 : r.homeGoals2;
-			lines.push(`  ${playerTie.away.padEnd(14)} ${r.awayGoals2} - ${r.homeGoals2}    ${playerTie.home}  (leg 2)`);
-			lines.push(`  RESULT - ${(pGoals2 ?? 0) > (oppGoals2 ?? 0) ? 'WIN' : (pGoals2 ?? 0) === (oppGoals2 ?? 0) ? 'DRAW' : 'LOSE'} : YOU SCORED ${pGoals2 ?? 0}`);
+			const leg2ResultText =
+				(pGoals2 ?? 0) > (oppGoals2 ?? 0)
+					? 'WIN'
+					: (pGoals2 ?? 0) === (oppGoals2 ?? 0)
+						? 'DRAW'
+						: 'LOSE';
+			const leg2Line =
+				r.playerLeg2Goals !== undefined &&
+				pGoals2 === 0 &&
+				(!r.playerLeg2Outcomes || r.playerLeg2Outcomes.length === 0)
+					? `  RESULT - ${leg2ResultText} : YOU DIDN'T PLAY`
+					: `  RESULT - ${leg2ResultText} : YOU SCORED ${pGoals2 ?? 0}`;
+			lines.push(leg2Line);
+			lines.push('');
 
 			const pens = r.resolvedBy === 'coin-toss' ? ' p' : '';
 			const playerWon = r.winner === PLAYER_CLUB;
-			lines.push(`  Agg: ${r.aggHomeGoals} - ${r.aggAwayGoals}${pens}  ${playerWon ? 'WIN' : 'LOSE'}`);
+			lines.push(
+				`  Agg: ${r.aggHomeGoals} - ${r.aggAwayGoals}${pens}  ${playerWon ? 'WIN' : 'LOSE'}`
+			);
 		} else {
-			lines.push(`  ${playerTie.home.padEnd(14)} ${r.homeGoals} - ${r.awayGoals}    ${playerTie.away}`);
+			const hdr = ` ${cupName} ${roundName}`;
+			lines.push(hdr);
+			lines.push('-'.repeat(hdr.length));
+
+			scoreEntries.push({
+				index: lines.length,
+				home: playerTie.home,
+				away: playerTie.away,
+				homeScore: r.homeGoals,
+				awayScore: r.awayGoals
+			});
+			lines.push(
+				`  ${playerTie.home.padEnd(14)} ${r.homeGoals} - ${r.awayGoals}    ${playerTie.away}`
+			);
+
 			const playerWon = r.winner === PLAYER_CLUB;
-			const pGoals = PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals;
-			lines.push(`  RESULT - ${playerWon ? 'WIN' : 'LOSE'} : YOU SCORED ${pGoals}`);
+			const pGoals =
+				r.playerLeg1Goals ?? (PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals);
+			const resultText = playerWon ? 'WIN' : 'LOSE';
+			const line =
+				r.playerLeg1Goals !== undefined &&
+				pGoals === 0 &&
+				(!r.playerLeg1Outcomes || r.playerLeg1Outcomes.length === 0)
+					? `  RESULT - ${resultText} : YOU DIDN'T PLAY`
+					: `  RESULT - ${resultText} : YOU SCORED ${pGoals}`;
+			lines.push(line);
 		}
 
-		return lines;
+		return { lines, scoreEntries };
 	}
 
-	const cupResultHeaderLines = getCupResultLines();
+	const cupResult = getCupResultLines();
+	const cupResultHeaderLines = cupResult.lines;
+	const cupScoreEntries = cupResult.scoreEntries;
 
 	const lines = (() => {
 		const l: string[] = [];
@@ -161,7 +248,22 @@
 		l.push('----------------');
 		l.push('');
 
-		const hasLeague = weekFixtures.length > 0 || 
+		if (cupResultHeaderLines.length > 0) {
+			const cupBase = l.length;
+			l.push(...cupResultHeaderLines);
+			for (const entry of cupScoreEntries) {
+				scoreLines.set(cupBase + entry.index, {
+					home: entry.home,
+					away: entry.away,
+					homeScore: entry.homeScore,
+					awayScore: entry.awayScore
+				});
+			}
+			l.push('');
+		}
+
+		const hasLeague =
+			weekFixtures.length > 0 ||
 			season.divisionSchedule.weeks.some((w) => w.weekNumber === WEEK && w.matches.length > 0);
 
 		if (hasLeague && !isFaCupFinalWeek(WEEK)) {
@@ -177,7 +279,8 @@
 				const away = f.isHome ? f.opponent : PLAYER_CLUB;
 				const homeScore = f.isHome ? goalsFor : goalsAgainst;
 				const awayScore = f.isHome ? goalsAgainst : goalsFor;
-				const result = goalsFor > goalsAgainst ? 'WIN' : goalsFor === goalsAgainst ? 'DRAW' : 'LOSE';
+				const result =
+					goalsFor > goalsAgainst ? 'WIN' : goalsFor === goalsAgainst ? 'DRAW' : 'LOSE';
 
 				scoreLines.set(l.length, { home, away, homeScore, awayScore });
 				l.push(`  ${home.padEnd(14)} ${homeScore} - ${awayScore}    ${away}`);
@@ -230,22 +333,6 @@
 				}
 
 				for (const entry of standings.entries.slice(-3)) addLine(entry);
-			}
-		}
-
-		if (cupResultHeaderLines.length > 0) {
-			l.push('');
-			const baseIdx = l.length;
-			l.push(...cupResultHeaderLines);
-			const cupInfo = getCupWeekInfo(WEEK);
-			if (cupInfo) {
-				const bracket = cupInfo.type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
-				const round = bracket?.rounds[cupInfo.round - 1];
-				const playerTie = round?.ties.find((t) => (t.home === PLAYER_CLUB || t.away === PLAYER_CLUB) && t.result);
-				const r = playerTie?.result;
-				if (r && r.homeGoals2 === undefined) {
-					scoreLines.set(baseIdx + 2, { home: playerTie!.home, away: playerTie!.away, homeScore: r.homeGoals, awayScore: r.awayGoals });
-				}
 			}
 		}
 

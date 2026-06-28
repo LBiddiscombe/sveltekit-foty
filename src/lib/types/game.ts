@@ -179,6 +179,10 @@ export interface CupTie {
 		resolvedBy: 'match' | 'coin-toss';
 		aggHomeGoals?: number;
 		aggAwayGoals?: number;
+		playerLeg1Goals?: number;
+		playerLeg1Outcomes?: Outcome[];
+		playerLeg2Goals?: number;
+		playerLeg2Outcomes?: Outcome[];
 	};
 }
 

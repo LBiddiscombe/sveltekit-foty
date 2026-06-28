@@ -171,11 +171,11 @@
 
 ## Cups
 
-**Cup competition** — One of two knockout tournaments: League Cup (2 legs per round, except final) and FA Cup (1 leg). Both use a 128-team bracket: 92 league clubs + 36 randomly selected non-league clubs at season start.
+**Cup competition** — One of two knockout tournaments: League Cup (rounds 1-5 two-leg, rounds 6-7 one-leg) and FA Cup (all one-leg). Both use a 128-team bracket: 92 league clubs + 36 randomly selected non-league clubs at season start.
 
 **Non-league club** — Fictional club with `(N/L)` suffix, strength 1, drawn from a seasonal pool. Never playable, not part of the promotion/relegation pyramid. Re-selected each season.
 
-**League Cup week** — A dedicated week (no league games) where both legs of a League Cup round are played (Tue 1st leg, Sat 2nd leg). Occurs weeks 1, 5, 9, 13, 17. Final is week 25 alongside league.
+**League Cup week** — Dedicated weeks (no league games) where both legs of rounds 1-5 are played (Tue 1st leg, Sat 2nd leg): weeks 1, 5, 9, 13, 17. Semi Final is week 21 (alongside league). Final is week 25 (alongside league).
 
 **FA Cup week** — A week where an FA Cup round (1 leg) is added alongside regular league games. Occurs weeks 3, 7, 11, 15, 19, 23. Final is week 31 (after league season ends).
 
@@ -183,6 +183,6 @@
 
 **Cup draw** — Random pairing per round, including home/away assignment. Seeded at season start for round 1; subsequent rounds drawn after the previous round completes.
 
-**Cup rewards** — Per-match XP identical to league (played +1, goal +1, miss -1, result bonus). Flat XP bonus per round survived (+1 to +5). Prize money per round (£500 to £25,000). Morale changes same as league.
+**Cup rewards** — Per-match XP identical to league (played +1, goal +1, miss -1, result bonus). Flat XP bonus per round survived (+1 to +5). Prize money per round (£500 to £20,000 for League Cup, £1,000 to £50,000 for FA Cup). Morale changes same as league.
 
 **Cup elimination taunt** — When the player's club is eliminated from a cup, subsequent pre-match views in cup weeks show a reminder that they're out.
