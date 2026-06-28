@@ -96,11 +96,11 @@
 
 	<div class="mb-5 grid grid-cols-2 gap-3">
 		<div class="rounded bg-card p-3 text-center">
-			<p class="text-base text-primary">{player.appearances}</p>
+			<p class="text-base text-primary">{currentSeason.appearances}</p>
 			<p class="mt-0.5 text-[9px] text-subtle">APPS</p>
 		</div>
 		<div class="rounded bg-card p-3 text-center">
-			<p class="text-base text-primary">{player.goals}</p>
+			<p class="text-base text-primary">{currentSeason.goals}</p>
 			<p class="mt-0.5 text-[9px] text-subtle">GOALS</p>
 		</div>
 	</div>
@@ -144,23 +144,23 @@
 			{player.club} · Season {season.seasonNumber} (in progress)
 		</h3>
 		<div class="mb-4 grid grid-cols-6 gap-1 text-center text-[9px]">
+			<span class="text-subtle">APP</span>
 			<span class="text-subtle">CHN</span>
 			<span class="text-subtle">GLS</span>
 			<span class="text-subtle">SVD</span>
 			<span class="text-subtle">MSS</span>
-			<span class="text-subtle">APP</span>
 			<span class="text-subtle">XP</span>
+			<span class="text-primary">{currentSeason.appearances}</span>
 			<span class="text-primary">{currentSeason.chances}</span>
 			<span class="text-success">{currentSeason.goals}</span>
 			<span class="text-warning">{currentSeason.saves}</span>
 			<span class="text-danger">{currentSeason.misses}</span>
-			<span class="text-primary">{currentSeason.appearances}</span>
 			<span class="text-warning">+{currentSeason.xp}</span>
+			<span></span>
 			<span></span>
 			<span class="text-success">{currentSeason.chances > 0 ? Math.round(currentSeason.goals / currentSeason.chances * 100) + '%' : ''}</span>
 			<span class="text-warning">{currentSeason.chances > 0 ? Math.round(currentSeason.saves / currentSeason.chances * 100) + '%' : ''}</span>
 			<span class="text-danger">{currentSeason.chances > 0 ? Math.round(currentSeason.misses / currentSeason.chances * 100) + '%' : ''}</span>
-			<span></span>
 			<span></span>
 		</div>
 
@@ -180,23 +180,23 @@
 							{/if}
 						</div>
 						<div class="grid grid-cols-6 gap-1 text-center">
+							<span class="text-subtle">APP</span>
 							<span class="text-subtle">CHN</span>
 							<span class="text-subtle">GLS</span>
 							<span class="text-subtle">SVD</span>
 							<span class="text-subtle">MSS</span>
-							<span class="text-subtle">APP</span>
 							<span class="text-subtle">XP</span>
+							<span class="text-primary">{entry.appearances}</span>
 							<span class="text-primary">{entry.chances}</span>
 							<span class="text-success">{entry.goals}</span>
 							<span class="text-warning">{entry.saves}</span>
 							<span class="text-danger">{entry.misses}</span>
-							<span class="text-primary">{entry.appearances}</span>
 							<span class="text-warning">+{entry.xpEarned}</span>
+							<span></span>
 							<span></span>
 							<span class="text-success">{entry.chances > 0 ? Math.round(entry.goals / entry.chances * 100) + '%' : ''}</span>
 							<span class="text-warning">{entry.chances > 0 ? Math.round(entry.saves / entry.chances * 100) + '%' : ''}</span>
 							<span class="text-danger">{entry.chances > 0 ? Math.round(entry.misses / entry.chances * 100) + '%' : ''}</span>
-							<span></span>
 							<span></span>
 						</div>
 					</div>
@@ -206,23 +206,23 @@
 
 		<h3 class="mb-2 text-[9px] text-subtle">CAREER TOTALS</h3>
 		<div class="grid grid-cols-6 gap-1 text-center text-[9px]">
+			<span class="text-subtle">APP</span>
 			<span class="text-subtle">CHN</span>
 			<span class="text-subtle">GLS</span>
 			<span class="text-subtle">SVD</span>
 			<span class="text-subtle">MSS</span>
-			<span class="text-subtle">APP</span>
 			<span class="text-subtle">XP</span>
+			<span class="text-primary">{careerTotal.appearances}</span>
 			<span class="text-primary">{careerTotal.chances}</span>
 			<span class="text-success">{careerTotal.goals}</span>
 			<span class="text-warning">{careerTotal.saves}</span>
 			<span class="text-danger">{careerTotal.misses}</span>
-			<span class="text-primary">{careerTotal.appearances}</span>
 			<span class="text-warning">+{careerTotal.xp}</span>
+			<span></span>
 			<span></span>
 			<span class="text-success">{careerTotal.chances > 0 ? Math.round(careerTotal.goals / careerTotal.chances * 100) + '%' : ''}</span>
 			<span class="text-warning">{careerTotal.chances > 0 ? Math.round(careerTotal.saves / careerTotal.chances * 100) + '%' : ''}</span>
 			<span class="text-danger">{careerTotal.chances > 0 ? Math.round(careerTotal.misses / careerTotal.chances * 100) + '%' : ''}</span>
-			<span></span>
 			<span></span>
 		</div>
 	</div>

@@ -15,6 +15,11 @@
 		saveGame();
 	});
 
+	const currentSeason = $derived({
+		goals: player.goals - season.statsGoalsAtStart,
+		appearances: player.appearances - season.statsAppsAtStart
+	});
+
 	const hasUnread = $derived(inbox.unreadCount > 0);
 </script>
 
@@ -42,7 +47,7 @@
 			onclick={async () => await goto('/hub/player')}
 			class="relative rounded border border-transparent bg-card p-3 text-center hover:border-primary"
 		>
-			<p class="text-sm text-primary">{player.appearances}</p>
+			<p class="text-sm text-primary">{currentSeason.appearances}</p>
 			<p class="mt-0.5 text-[9px] text-subtle">APPS</p>
 			<span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-subtle">&gt;</span>
 		</button>
@@ -50,7 +55,7 @@
 			onclick={async () => await goto('/hub/player')}
 			class="relative rounded border border-transparent bg-card p-3 text-center hover:border-primary"
 		>
-			<p class="text-sm text-primary">{player.goals}</p>
+			<p class="text-sm text-primary">{currentSeason.goals}</p>
 			<p class="mt-0.5 text-[9px] text-subtle">GOALS</p>
 			<span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-subtle">&gt;</span>
 		</button>
