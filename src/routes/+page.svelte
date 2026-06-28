@@ -34,6 +34,7 @@
 </script>
 
 <div class="flex min-h-dvh flex-col items-center justify-center px-4">
+	<div class="flex-1" />
 	<div class="w-full max-w-md rounded border border-subtle bg-card p-8 text-center">
 		<h1 class="font-pixel text-lg text-primary">FOOTBALLER OF THE YEAR</h1>
 		<p class="mt-2 font-pixel text-xs text-subtle">— REMake —</p>
@@ -61,4 +62,6 @@
 			{/if}
 		</div>
 	</div>
+	<div class="flex-1" />
+	<p class="pb-3 font-pixel text-[10px] text-subtle/50">{__BUILD_SHA__}</p>
 </div>

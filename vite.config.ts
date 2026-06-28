@@ -5,6 +5,13 @@ import adapter from '@sveltejs/adapter-vercel';
 import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
+	define: {
+		__BUILD_SHA__: JSON.stringify(
+			process.env.VERCEL_GIT_COMMIT_SHA
+				? process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7)
+				: 'dev'
+		)
+	},
 	server: {
 		port: 5175
 	},
