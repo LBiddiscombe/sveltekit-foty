@@ -246,7 +246,7 @@ export function createFooty(p) {
 		}
 
 		p.stroke(255, 120);
-		p.strokeWeight(1);
+		p.strokeWeight(2);
 
 		for (let c = 0; c <= cols; c++) {
 			for (let r = 0; r < rows; r++) {
@@ -322,7 +322,7 @@ export function createFooty(p) {
 		const tr = grid[rows][cols];
 
 		p.stroke(255, 180);
-		p.strokeWeight(1.5);
+		p.strokeWeight(2.5);
 
 		p.line(leftTop.x, leftTop.y, tl.x, tl.y);
 		p.line(rightTop.x, rightTop.y, tr.x, tr.y);
