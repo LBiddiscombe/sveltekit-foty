@@ -143,8 +143,8 @@
 	});
 </script>
 
-<div class="mx-auto min-h-dvh max-w-md bg-dark px-4 py-6 font-pixel text-primary">
-	<div class="mb-6 flex items-center justify-between">
+<div class="mx-auto flex min-h-dvh max-w-md flex-col bg-dark px-4 py-6 font-pixel text-primary">
+	<div class="mb-6 flex shrink-0 items-center justify-between">
 		<button
 			onclick={async () => await goto('/hub/inbox')}
 			disabled={tickerState !== 'stopped'}
@@ -156,7 +156,7 @@
 	</div>
 
 	{#if card}
-		<div class="flex flex-col items-center gap-8">
+		<div class="flex flex-1 flex-col items-center justify-center gap-8">
 			<Card>
 				<div class="flex flex-col items-center gap-4 py-4 text-center">
 					<h2 class="font-pixel text-sm text-primary">{card.title}</h2>
@@ -178,7 +178,9 @@
 					</div>
 				</div>
 			</div>
+		</div>
 
+		<div class="mt-auto shrink-0">
 			<Button
 				onclick={tickerState === 'spinning'
 					? stop

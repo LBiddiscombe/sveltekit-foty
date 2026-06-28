@@ -11,68 +11,68 @@
 	import Button from '$lib/components/Button.svelte';
 	import type { Fixture } from '$lib/types/game';
 
-	$effect(() => {
-		season.phase = 'pre-match';
-		match.reset();
-	});
+$effect(() => {
+	season.phase = 'pre-match';
+	match.reset();
+});
 
-	function ordinal(n: number): string {
-		const s = ['th', 'st', 'nd', 'rd'];
-		const v = n % 100;
-		return n + (s[(v - 20) % 10] ?? s[v] ?? s[0]);
+function ordinal(n: number): string {
+	const s = ['th', 'st', 'nd', 'rd'];
+	const v = n % 100;
+	return n + (s[(v - 20) % 10] ?? s[v] ?? s[0]);
+}
+
+const unplayedFixtures = $derived(
+	season.fixtures.filter((f) => f.weekNumber === season.weekNumber && !f.result)
+);
+
+const hasForcedSkip = $derived(season.appearanceSkips > 0);
+const allDone = $derived(unplayedFixtures.length === 0);
+
+let currentIndex = $state(0);
+let intents = $state<{ fixture: Fixture; skipped: boolean }[]>([]);
+
+const currentFixture = $derived(unplayedFixtures[currentIndex]);
+const nextChances = $derived(player.deck[currentIndex]);
+const allChosen = $derived(intents.length === unplayedFixtures.length);
+const playedCount = $derived(intents.filter((i) => !i.skipped).length);
+const remainingCards = $derived(player.deck.length - playedCount);
+
+function handleForcedSkipChoice() {
+	if (!currentFixture) return;
+	const result = skipGame(0, season.morale, player.club, currentFixture.opponent);
+	currentFixture.result = {
+		goalsFor: result.score[0],
+		goalsAgainst: result.score[1],
+		playerGoals: 0,
+		outcomes: []
+	};
+	season.adjustMorale(getMoraleDelta(result.score, 0));
+	season.consumeAppearanceSkip();
+}
+
+function handleChoice(skipped: boolean) {
+	const fixture = currentFixture;
+	if (!fixture) return;
+	intents = [...intents, { fixture, skipped }];
+	if (currentIndex < unplayedFixtures.length - 1) {
+		currentIndex++;
 	}
+}
 
-	const unplayedFixtures = $derived(
-		season.fixtures.filter((f) => f.weekNumber === season.weekNumber && !f.result)
-	);
+async function handleContinue() {
+	match.setGames(intents);
+	await goto('/match');
+}
 
-	const hasForcedSkip = $derived(season.appearanceSkips > 0);
-	const allDone = $derived(unplayedFixtures.length === 0);
-
-	let currentIndex = $state(0);
-	let intents = $state<{ fixture: Fixture; skipped: boolean }[]>([]);
-
-	const currentFixture = $derived(unplayedFixtures[currentIndex]);
-	const nextChances = $derived(player.deck[currentIndex]);
-	const allChosen = $derived(intents.length === unplayedFixtures.length);
-	const playedCount = $derived(intents.filter((i) => !i.skipped).length);
-	const remainingCards = $derived(player.deck.length - playedCount);
-
-	function handleForcedSkipChoice() {
-		if (!currentFixture) return;
-		const result = skipGame(0, season.morale, player.club, currentFixture.opponent);
-		currentFixture.result = {
-			goalsFor: result.score[0],
-			goalsAgainst: result.score[1],
-			playerGoals: 0,
-			outcomes: []
-		};
-		season.adjustMorale(getMoraleDelta(result.score, 0));
-		season.consumeAppearanceSkip();
-	}
-
-	function handleChoice(skipped: boolean) {
-		const fixture = currentFixture;
-		if (!fixture) return;
-		intents = [...intents, { fixture, skipped }];
-		if (currentIndex < unplayedFixtures.length - 1) {
-			currentIndex++;
-		}
-	}
-
-	async function handleContinue() {
-		match.setGames(intents);
-		await goto('/match');
-	}
-
-	async function handleAllResolved() {
-		saveGame();
-		await goto('/vidiprinter');
-	}
+async function handleAllResolved() {
+	saveGame();
+	await goto('/vidiprinter');
+}
 </script>
 
-<div class="mx-auto min-h-dvh max-w-md bg-dark px-4 py-6 font-pixel text-primary">
-	<div class="mb-6 flex items-center justify-between">
+<div class="mx-auto flex min-h-dvh max-w-md flex-col bg-dark px-4 py-6 font-pixel text-primary">
+	<div class="mb-6 flex shrink-0 items-center justify-between">
 		<button
 			onclick={async () => await goto('/hub')}
 			class="flex items-center gap-1 text-[10px] text-subtle hover:text-primary"
@@ -82,97 +82,106 @@
 		<span class="text-[10px] font-bold uppercase tracking-wider text-success">Pre-Match</span>
 	</div>
 
-	{#if allDone}
-		<Card>
-			<div class="flex flex-col items-center gap-2 py-4 text-center">
-				<span class="font-pixel text-sm text-primary">All Matches Resolved</span>
-				<span class="font-pixel text-xs text-subtle"
-					>All matches for this week have been resolved.</span
-				>
-			</div>
-		</Card>
-
-		<Button onclick={handleAllResolved}>Continue</Button>
-	{:else if player.deck.length === 0}
-		<Card>
-			<div class="flex flex-col items-center gap-2 py-4 text-center">
-				<span class="font-pixel text-sm text-subtle">
-					No cards in your deck — all matches this week will be simulated.
-				</span>
-				<span class="font-pixel text-xs text-subtle">Visit the Shop between weeks to buy more.</span
-				>
-			</div>
-		</Card>
-
-		<Button
-			onclick={() => {
-				intents = unplayedFixtures.map((f) => ({ fixture: f, skipped: true }));
-				match.setGames(intents);
-				goto('/match');
-			}}
-		>
-			Continue
-		</Button>
-	{:else if !allChosen && currentFixture}
-		<p class="mb-4 font-pixel text-xs text-subtle">
-			Game {currentIndex + 1} of {unplayedFixtures.length}
-		</p>
-
-		<Card>
-			<div class="flex flex-col items-center gap-1 py-2 text-center">
-				<span class="font-pixel text-xs text-subtle">{currentFixture.isHome ? 'HOME' : 'AWAY'}</span
-				>
-				<span class="font-pixel text-lg text-primary">
-					{currentFixture.opponent}
-					<span class="text-subtle"
-						>({ordinal(standings.getPosition(currentFixture.opponent))})</span
-					>
-				</span>
-			</div>
-		</Card>
-
-		{#if hasForcedSkip}
+	<div class="flex flex-1 flex-col items-center justify-center">
+		{#if allDone}
 			<Card>
 				<div class="flex flex-col items-center gap-2 py-4 text-center">
-					<span class="font-pixel text-sm text-primary">
-						You are unavailable &mdash; forced to miss this match ({season.appearanceSkips} remaining)
-					</span>
-					<span class="font-pixel text-xs text-subtle">The team will play without you.</span>
+					<span class="font-pixel text-sm text-primary">All Matches Resolved</span>
+					<span class="font-pixel text-xs text-subtle"
+						>All matches for this week have been resolved.</span
+					>
 				</div>
 			</Card>
-
-			<Button onclick={handleForcedSkipChoice}>Skip Match</Button>
-		{:else if nextChances === undefined}
+		{:else if player.deck.length === 0}
 			<Card>
 				<div class="flex flex-col items-center gap-2 py-4 text-center">
 					<span class="font-pixel text-sm text-subtle">
-						No cards left in your deck for this game.
+						No cards in your deck — all matches this week will be simulated.
 					</span>
-					<span class="font-pixel text-xs text-subtle">The match will be simulated.</span>
+					<span class="font-pixel text-xs text-subtle">Visit the Shop between weeks to buy more.</span
+					>
 				</div>
 			</Card>
+		{:else if !allChosen && currentFixture}
+			<div class="flex flex-col items-center gap-4">
+				<p class="font-pixel text-xs text-subtle">
+					Game {currentIndex + 1} of {unplayedFixtures.length}
+				</p>
 
-			<Button onclick={() => handleChoice(true)}>Skip Match</Button>
-		{:else}
+				<Card>
+					<div class="flex flex-col items-center gap-1 py-2 text-center">
+						<span class="font-pixel text-xs text-subtle">{currentFixture.isHome ? 'HOME' : 'AWAY'}</span
+						>
+						<span class="font-pixel text-lg text-primary">
+							{currentFixture.opponent}
+							<span class="text-subtle"
+								>({ordinal(standings.getPosition(currentFixture.opponent))})</span
+							>
+						</span>
+					</div>
+				</Card>
+
+				{#if hasForcedSkip}
+					<Card>
+						<div class="flex flex-col items-center gap-2 py-4 text-center">
+							<span class="font-pixel text-sm text-primary">
+								You are unavailable &mdash; forced to miss this match ({season.appearanceSkips} remaining)
+							</span>
+							<span class="font-pixel text-xs text-subtle">The team will play without you.</span>
+						</div>
+					</Card>
+				{:else if nextChances === undefined}
+					<Card>
+						<div class="flex flex-col items-center gap-2 py-4 text-center">
+							<span class="font-pixel text-sm text-subtle">
+								No cards left in your deck for this game.
+							</span>
+							<span class="font-pixel text-xs text-subtle">The match will be simulated.</span>
+						</div>
+					</Card>
+				{:else}
+					<Card>
+						<DeckCard chances={nextChances} remaining={remainingCards} />
+					</Card>
+		{/if}
+	</div>
+
+		{:else if allChosen}
 			<Card>
-				<DeckCard chances={nextChances} remaining={remainingCards} />
+				<div class="flex flex-col items-center gap-2 py-4 text-center">
+					<span class="font-pixel text-sm text-primary">All Set</span>
+					<span class="font-pixel text-xs text-subtle">
+						{unplayedFixtures.length} game{unplayedFixtures.length !== 1 ? 's' : ''} ready
+					</span>
+				</div>
 			</Card>
+		{/if}
+	</div>
 
+	<div class="mt-auto shrink-0">
+		{#if allDone}
+			<Button onclick={handleAllResolved}>Continue</Button>
+		{:else if player.deck.length === 0}
+			<Button
+				onclick={() => {
+					intents = unplayedFixtures.map((f) => ({ fixture: f, skipped: true }));
+					match.setGames(intents);
+					goto('/match');
+				}}
+			>
+				Continue
+			</Button>
+		{:else if !allChosen && currentFixture && hasForcedSkip}
+			<Button onclick={handleForcedSkipChoice}>Skip Match</Button>
+		{:else if !allChosen && currentFixture && nextChances === undefined}
+			<Button onclick={() => handleChoice(true)}>Skip Match</Button>
+		{:else if !allChosen && currentFixture}
 			<div class="flex w-full flex-col gap-3">
 				<Button onclick={() => handleChoice(false)}>Play</Button>
 				<Button variant="secondary" onclick={() => handleChoice(true)}>Skip</Button>
 			</div>
+		{:else if allChosen}
+			<Button onclick={handleContinue}>Continue</Button>
 		{/if}
-	{:else if allChosen}
-		<Card>
-			<div class="flex flex-col items-center gap-2 py-4 text-center">
-				<span class="font-pixel text-sm text-primary">All Set</span>
-				<span class="font-pixel text-xs text-subtle">
-					{unplayedFixtures.length} game{unplayedFixtures.length !== 1 ? 's' : ''} ready
-				</span>
-			</div>
-		</Card>
-
-		<Button onclick={handleContinue}>Continue</Button>
-	{/if}
+	</div>
 </div>

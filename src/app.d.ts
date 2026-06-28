@@ -1,8 +1,9 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
-declare const __BUILD_SHA__: string;
 
 declare global {
+	var __BUILD_SHA__: string;
+
 	namespace App {
 		// interface Error {}
 		// interface Locals {}
