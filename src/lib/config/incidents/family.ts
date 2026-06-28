@@ -93,7 +93,10 @@ export const FAMILY_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: "Lovely weekend. Mum's cooking is the best!",
-				effects: [{ type: 'morale', delta: 2 }]
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
 			},
 			{ label: "Good to see them. They're proud.", effects: [{ type: 'morale', delta: 1 }] },
 			{
@@ -133,7 +136,13 @@ export const FAMILY_CARDS: IncidentCard[] = [
 		title: 'Family Holiday',
 		description: "You're taking the family on holiday.",
 		outcomes: [
-			{ label: 'Best holiday ever! Family memories!', effects: [{ type: 'morale', delta: 3 }] },
+			{
+				label: 'Best holiday ever! Family memories!',
+				effects: [
+					{ type: 'morale', delta: 3 },
+					{ type: 'bankBalance', delta: -2, scale: 'wage' }
+				]
+			},
 			{
 				label: 'Lovely break. Everyone had fun.',
 				effects: [
@@ -155,8 +164,11 @@ export const FAMILY_CARDS: IncidentCard[] = [
 		description: "It's your birthday!",
 		outcomes: [
 			{
-				label: 'Teammates throw a surprise party! Amazing!',
-				effects: [{ type: 'morale', delta: 3 }]
+				label: 'The child settles in. Family complete!',
+				effects: [
+					{ type: 'morale', delta: 3 },
+					{ type: 'deckAdd', delta: 1 }
+				]
 			},
 			{ label: 'Nice birthday. Presents and cake.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Nobody remembered. Bit sad.', effects: [{ type: 'morale', delta: -1 }] },
@@ -315,7 +327,10 @@ export const FAMILY_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Wonderful to see everyone! Best reunion!',
-				effects: [{ type: 'morale', delta: 2 }]
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
 			},
 			{ label: "Good catch-up. Auntie's pie is amazing.", effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Family drama. Arguments all day.', effects: [{ type: 'morale', delta: -2 }] },
@@ -344,8 +359,11 @@ export const FAMILY_CARDS: IncidentCard[] = [
 		description: "It's your anniversary. Have you remembered?",
 		outcomes: [
 			{
-				label: 'You planned a romantic surprise. Big points!',
-				effects: [{ type: 'morale', delta: 2 }]
+				label: 'Teammates throw a surprise party! Amazing!',
+				effects: [
+					{ type: 'morale', delta: 3 },
+					{ type: 'deckAdd', delta: 1 }
+				]
 			},
 			{
 				label: 'You remembered just in time. Phew.',

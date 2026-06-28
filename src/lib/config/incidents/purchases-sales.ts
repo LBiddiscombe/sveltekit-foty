@@ -36,7 +36,10 @@ export const PURCHASES_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Turn heads everywhere. Feels incredible!',
-				effects: [{ type: 'morale', delta: 2 }]
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
 			},
 			{
 				label: 'Fun car. Weekend drives are a joy.',
@@ -123,7 +126,10 @@ export const PURCHASES_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Incredible setup. Movie nights with the lads!',
-				effects: [{ type: 'morale', delta: 2 }]
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
 			},
 			{
 				label: 'Great for match replays. Worth it.',
@@ -146,7 +152,8 @@ export const PURCHASES_CARDS: IncidentCard[] = [
 				label: 'Amazing for recovery. Best decision ever!',
 				effects: [
 					{ type: 'xp', delta: 2 },
-					{ type: 'morale', delta: 2 }
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
 				]
 			},
 			{
@@ -223,7 +230,13 @@ export const PURCHASES_CARDS: IncidentCard[] = [
 		title: 'Helicopter Lessons',
 		description: "You've signed up for helicopter pilot lessons.",
 		outcomes: [
-			{ label: 'Get your licence! Fly to matches!', effects: [{ type: 'morale', delta: 3 }] },
+			{
+				label: 'Get your licence! Fly to matches!',
+				effects: [
+					{ type: 'morale', delta: 3 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{
 				label: 'Great skill. Enjoying the lessons.',
 				effects: [{ type: 'bankBalance', delta: -2, scale: 'wage' }]
@@ -355,7 +368,13 @@ export const PURCHASES_CARDS: IncidentCard[] = [
 		title: 'Jewellery Gift',
 		description: 'You want to buy special jewellery as a gift.',
 		outcomes: [
-			{ label: 'Beloved gift. Best partner ever!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'Beloved gift. Best partner ever!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'bankBalance', delta: -2, scale: 'wage' }
+				]
+			},
 			{
 				label: 'Lovely gift. Much appreciated.',
 				effects: [{ type: 'bankBalance', delta: -2, scale: 'wage' }]

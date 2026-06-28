@@ -7,7 +7,13 @@ export const MEDIA_CARDS: IncidentCard[] = [
 		title: 'Late-Night TV Appearance',
 		description: "You've been booked on a late-night chat show.",
 		outcomes: [
-			{ label: 'Great interview — fans love you!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'Great interview — fans love you!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{
 				label: 'Sponsor offers a new contract.',
 				effects: [{ type: 'wageMultiplier', delta: 1.25 }]
@@ -29,7 +35,8 @@ export const MEDIA_CARDS: IncidentCard[] = [
 				label: 'Cover story! You look fantastic.',
 				effects: [
 					{ type: 'morale', delta: 2 },
-					{ type: 'bankBalance', delta: 1, scale: 'wage' }
+					{ type: 'bankBalance', delta: 2, scale: 'wage' },
+					{ type: 'deckAdd', delta: 1 }
 				]
 			},
 			{ label: 'Good article. Positive coverage.', effects: [{ type: 'morale', delta: 1 }] },
@@ -48,7 +55,10 @@ export const MEDIA_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'It goes viral for all the right reasons!',
-				effects: [{ type: 'morale', delta: 2 }]
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'bankBalance', delta: 1, scale: 'wage' }
+				]
 			},
 			{ label: 'A few raised eyebrows but no damage.', effects: [] },
 			{
@@ -89,7 +99,8 @@ export const MEDIA_CARDS: IncidentCard[] = [
 				label: "The campaign is a smash hit! You're the face of the brand!",
 				effects: [
 					{ type: 'bankBalance', delta: 4, scale: 'wage' },
-					{ type: 'morale', delta: 2 }
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
 				]
 			},
 			{
@@ -154,7 +165,13 @@ export const MEDIA_CARDS: IncidentCard[] = [
 		title: 'Press Praise',
 		description: 'The media has been full of praise for you.',
 		outcomes: [
-			{ label: 'Comparisons to club legends! Humbling!', effects: [{ type: 'morale', delta: 3 }] },
+			{
+				label: 'Comparisons to club legends! Humbling!',
+				effects: [
+					{ type: 'morale', delta: 3 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Nice words. Motivates you further.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'The praise puts unwanted pressure on.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: "You don't read the papers.", effects: [] }
@@ -185,7 +202,8 @@ export const MEDIA_CARDS: IncidentCard[] = [
 				label: "Critically acclaimed! You're a star!",
 				effects: [
 					{ type: 'morale', delta: 3 },
-					{ type: 'bankBalance', delta: 3, scale: 'wage' }
+					{ type: 'bankBalance', delta: 5, scale: 'wage' },
+					{ type: 'deckAdd', delta: 1 }
 				]
 			},
 			{ label: 'Interesting project. Makes you reflect.', effects: [{ type: 'morale', delta: 1 }] },
@@ -234,7 +252,10 @@ export const MEDIA_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: "Incredible artwork! You're immortalised!",
-				effects: [{ type: 'morale', delta: 3 }]
+				effects: [
+					{ type: 'morale', delta: 3 },
+					{ type: 'deckAdd', delta: 1 }
+				]
 			},
 			{ label: 'Touching tribute. You sign it.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'The mural is vandalised. Sad.', effects: [{ type: 'morale', delta: -2 }] },
@@ -281,7 +302,8 @@ export const MEDIA_CARDS: IncidentCard[] = [
 				label: 'You win! Best dressed athlete!',
 				effects: [
 					{ type: 'morale', delta: 2 },
-					{ type: 'bankBalance', delta: 1, scale: 'wage' }
+					{ type: 'bankBalance', delta: 1, scale: 'wage' },
+					{ type: 'deckAdd', delta: 1 }
 				]
 			},
 			{ label: 'Honoured to be nominated.', effects: [{ type: 'morale', delta: 1 }] },
@@ -322,7 +344,7 @@ export const MEDIA_CARDS: IncidentCard[] = [
 			{
 				label: 'You win the jackpot! Footballer with brains!',
 				effects: [
-					{ type: 'bankBalance', delta: 3, scale: 'wage' },
+					{ type: 'bankBalance', delta: 5, scale: 'wage' },
 					{ type: 'morale', delta: 2 }
 				]
 			},
@@ -343,7 +365,13 @@ export const MEDIA_CARDS: IncidentCard[] = [
 		title: 'Mascot Challenge',
 		description: 'The club mascot challenges you to a charity contest.',
 		outcomes: [
-			{ label: 'You destroy the mascot. Hilarious!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'You destroy the mascot. Hilarious!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'bankBalance', delta: 0.5, scale: 'wage' }
+				]
+			},
 			{ label: 'Fun contest. Crowd loves it.', effects: [{ type: 'morale', delta: 1 }] },
 			{
 				label: 'The mascot beats you. Never live it down.',

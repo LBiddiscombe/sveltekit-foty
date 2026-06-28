@@ -17,7 +17,7 @@ export const GAMBLING_CARDS: IncidentCard[] = [
 			},
 			{
 				label: 'Lose more than planned.',
-				effects: [{ type: 'bankBalance', delta: -3, scale: 'wage' }]
+				effects: [{ type: 'bankBalance', delta: -5, scale: 'wage' }]
 			},
 			{ label: 'Stick to fruit machines. Break even.', effects: [] }
 		]
@@ -75,7 +75,7 @@ export const GAMBLING_CARDS: IncidentCard[] = [
 			{
 				label: 'Fined and suspended by the club.',
 				effects: [
-					{ type: 'bankBalance', delta: -5, scale: 'wage' },
+					{ type: 'bankBalance', delta: -8, scale: 'wage' },
 					{ type: 'appearanceSkip', delta: 2 }
 				]
 			},
@@ -191,7 +191,7 @@ export const GAMBLING_CARDS: IncidentCard[] = [
 			},
 			{
 				label: 'Lose big. Expensive lesson.',
-				effects: [{ type: 'bankBalance', delta: -6, scale: 'wage' }]
+				effects: [{ type: 'bankBalance', delta: -8, scale: 'wage' }]
 			},
 			{ label: 'Decline. Stakes too high.', effects: [] }
 		]

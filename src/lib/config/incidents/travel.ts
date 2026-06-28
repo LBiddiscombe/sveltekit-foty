@@ -25,7 +25,13 @@ export const TRAVEL_CARDS: IncidentCard[] = [
 		title: 'Flight Upgrade',
 		description: "There's an upgrade available on your flight.",
 		outcomes: [
-			{ label: 'First class! Champagne and legroom!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'First class! Champagne and legroom!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Business class. Comfortable journey.', effects: [{ type: 'morale', delta: 1 }] },
 			{
 				label: 'You pay for the upgrade. Worth it.',
@@ -97,7 +103,13 @@ export const TRAVEL_CARDS: IncidentCard[] = [
 		title: 'Hotel Overbooking',
 		description: 'The hotel has overbooked and your room is gone.',
 		outcomes: [
-			{ label: 'Upgraded to the penthouse suite! Lucky!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'Upgraded to the penthouse suite! Lucky!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Moved to another hotel. Annoying but fine.', effects: [] },
 			{ label: 'No room available. Stressful night.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'You crash with a teammate. Good bonding.', effects: [{ type: 'morale', delta: 1 }] }
@@ -112,7 +124,13 @@ export const TRAVEL_CARDS: IncidentCard[] = [
 			{ label: 'Snow day! Training cancelled. Rest up.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'You train in the snow. Character building.', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Match postponed. Disrupts your rhythm.', effects: [{ type: 'morale', delta: -1 }] },
-			{ label: 'You build a snowman with the squad.', effects: [{ type: 'morale', delta: 2 }] }
+			{
+				label: 'You build a snowman with the squad.',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			}
 		]
 	},
 	{

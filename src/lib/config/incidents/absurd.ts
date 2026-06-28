@@ -50,7 +50,8 @@ export const ABSURD_CARDS: IncidentCard[] = [
 				label: 'You score a hat-trick. Curse broken!',
 				effects: [
 					{ type: 'xp', delta: 3 },
-					{ type: 'morale', delta: 2 }
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
 				]
 			},
 			{ label: 'You laugh it off. Just a shirt.', effects: [] },
@@ -74,7 +75,8 @@ export const ABSURD_CARDS: IncidentCard[] = [
 				label: 'The lucky haircut keeps working! Form of your life!',
 				effects: [
 					{ type: 'xp', delta: 3 },
-					{ type: 'morale', delta: 2 }
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
 				]
 			},
 			{ label: 'Decent form. Maybe the haircut helps.', effects: [{ type: 'morale', delta: 1 }] },
@@ -168,7 +170,10 @@ export const ABSURD_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'You herd them like a pro. Farmer impressed!',
-				effects: [{ type: 'morale', delta: 2 }]
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'bankBalance', delta: 0.5, scale: 'wage' }
+				]
 			},
 			{ label: 'Training delayed. Amusing distraction.', effects: [] },
 			{ label: 'You trip over a sheep. Injured.', effects: [{ type: 'appearanceSkip', delta: 1 }] },

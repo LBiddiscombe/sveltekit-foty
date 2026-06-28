@@ -7,7 +7,13 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		title: 'Initiation Song',
 		description: 'As a new signing, you have to sing in front of the squad.',
 		outcomes: [
-			{ label: 'You nail it! The lads go wild!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'You nail it! The lads go wild!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Solid effort. You pass the initiation.', effects: [] },
 			{ label: 'You freeze. The hazing gets worse.', effects: [{ type: 'morale', delta: -1 }] },
 			{
@@ -24,7 +30,10 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Perfect prank. Legendary status in the squad.',
-				effects: [{ type: 'morale', delta: 2 }]
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
 			},
 			{ label: 'Good laugh. Everyone enjoys it.', effects: [{ type: 'morale', delta: 1 }] },
 			{
@@ -63,7 +72,13 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'You help out. Best kit all season.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Small favour. No big deal.', effects: [] },
-			{ label: 'You forget. Kit man is upset.', effects: [{ type: 'morale', delta: -1 }] },
+			{
+				label: 'You forget. Kit man is upset.',
+				effects: [
+					{ type: 'morale', delta: -1 },
+					{ type: 'bankBalance', delta: -0.2, scale: 'wage' }
+				]
+			},
 			{ label: "You're too busy. He understands.", effects: [] }
 		]
 	},
@@ -75,7 +90,13 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'Cleared the air. Stronger bond now.', effects: [{ type: 'morale', delta: 2 }] },
 			{ label: 'Sorted it out like professionals.', effects: [] },
-			{ label: 'It escalates. Manager has to step in.', effects: [{ type: 'morale', delta: -2 }] },
+			{
+				label: 'It escalates. Manager has to step in.',
+				effects: [
+					{ type: 'morale', delta: -2 },
+					{ type: 'bankBalance', delta: -0.5, scale: 'wage' }
+				]
+			},
 			{ label: 'You walk away. Not worth it.', effects: [{ type: 'morale', delta: -1 }] }
 		]
 	},
@@ -102,7 +123,10 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: "You're the champion! Bragging rights forever!",
-				effects: [{ type: 'morale', delta: 2 }]
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
 			},
 			{ label: 'Semi-final exit. Respectable.', effects: [] },
 			{
@@ -118,7 +142,13 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		title: 'Table Tennis Rivalry',
 		description: 'A fierce table tennis rivalry has developed with a teammate.',
 		outcomes: [
-			{ label: 'You dominate. Table tennis legend!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'You dominate. Table tennis legend!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{
 				label: 'Close matches. Keeps the squad entertained.',
 				effects: [{ type: 'morale', delta: 1 }]
@@ -157,7 +187,13 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		title: 'Dressing Room DJ',
 		description: "You're in charge of the dressing room music today.",
 		outcomes: [
-			{ label: 'Bangers only! Everyone buzzing!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'Bangers only! Everyone buzzing!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Decent playlist. Nobody complains.', effects: [] },
 			{ label: 'Terrible choices. Aux cord revoked.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'You let someone else have the aux.', effects: [] }
@@ -189,7 +225,10 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Best bonding ever! Squad feels like family!',
-				effects: [{ type: 'morale', delta: 3 }]
+				effects: [
+					{ type: 'morale', delta: 3 },
+					{ type: 'deckAdd', delta: 2 }
+				]
 			},
 			{ label: 'Solid weekend. Good team spirit.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Someone goes too far. Drama ensues.', effects: [{ type: 'morale', delta: -2 }] },
@@ -206,7 +245,7 @@ export const DRESSING_ROOM_CARDS: IncidentCard[] = [
 			{ label: 'Cheap fare split. Everyone happy.', effects: [] },
 			{
 				label: 'You get stuck with the bill. Every time.',
-				effects: [{ type: 'bankBalance', delta: -0.3, scale: 'wage' }]
+				effects: [{ type: 'bankBalance', delta: -0.5, scale: 'wage' }]
 			},
 			{ label: 'You get your own taxi. Peace and quiet.', effects: [] }
 		]

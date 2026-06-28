@@ -63,7 +63,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Hit every target! Maximum bonus!',
-				effects: [{ type: 'bankBalance', delta: 3, scale: 'wage' }]
+				effects: [{ type: 'bankBalance', delta: 4, scale: 'wage' }]
 			},
 			{
 				label: 'Met most targets. Solid bonus.',
@@ -81,7 +81,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Hefty loyalty payment lands in your account!',
-				effects: [{ type: 'bankBalance', delta: 4, scale: 'wage' }]
+				effects: [{ type: 'bankBalance', delta: 6, scale: 'wage' }]
 			},
 			{
 				label: 'Modest loyalty bonus comes through.',
@@ -157,7 +157,10 @@ export const CAREER_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: '"Best player I\'ve ever worked with!" Stock rises!',
-				effects: [{ type: 'morale', delta: 3 }]
+				effects: [
+					{ type: 'morale', delta: 3 },
+					{ type: 'deckAdd', delta: 1 }
+				]
 			},
 			{ label: 'Nice mention. Feels good.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Praise puts pressure on you.', effects: [{ type: 'morale', delta: -1 }] },
@@ -431,7 +434,13 @@ export const CAREER_CARDS: IncidentCard[] = [
 		title: 'Fans Chant Your Name',
 		description: 'The away end is singing your song.',
 		outcomes: [
-			{ label: 'Acknowledge them. Unforgettable moment!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'Acknowledge them. Unforgettable moment!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Lovely feeling. Gives you goosebumps.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Pressure to perform feels immense.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Block it out and focus.', effects: [] }
@@ -478,7 +487,10 @@ export const CAREER_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Handle the press beautifully! Fans love it!',
-				effects: [{ type: 'morale', delta: 2 }]
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'bankBalance', delta: 1, scale: 'wage' }
+				]
 			},
 			{ label: 'Boring but professional interview.', effects: [] },
 			{
@@ -496,7 +508,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Kit flies off the shelves! Face of the club!',
-				effects: [{ type: 'bankBalance', delta: 2, scale: 'wage' }]
+				effects: [{ type: 'bankBalance', delta: 3, scale: 'wage' }]
 			},
 			{ label: 'Decent photos. Kit looks good.', effects: [] },
 			{ label: 'Awkward photoshoot. Memes ensue.', effects: [{ type: 'morale', delta: -1 }] },
@@ -564,7 +576,13 @@ export const CAREER_CARDS: IncidentCard[] = [
 		title: 'Fan Forum',
 		description: "You're representing the squad at a fan forum.",
 		outcomes: [
-			{ label: 'Charm the room. Fans adore you!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'Charm the room. Fans adore you!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Honest answers. Respect earned.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Get grilled by angry fans.', effects: [{ type: 'morale', delta: -2 }] },
 			{ label: 'Send a video message instead.', effects: [] }
@@ -649,7 +667,8 @@ export const CAREER_CARDS: IncidentCard[] = [
 				label: 'Star of the tour! Goals in every game!',
 				effects: [
 					{ type: 'xp', delta: 3 },
-					{ type: 'morale', delta: 2 }
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
 				]
 			},
 			{ label: 'Good minutes. Building fitness.', effects: [{ type: 'xp', delta: 1 }] },
@@ -682,7 +701,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 				label: "Clean up! Players' Player and Fans' Player!",
 				effects: [
 					{ type: 'morale', delta: 3 },
-					{ type: 'bankBalance', delta: 3, scale: 'wage' }
+					{ type: 'bankBalance', delta: 5, scale: 'wage' }
 				]
 			},
 			{ label: 'Win a minor award. Nice recognition.', effects: [{ type: 'morale', delta: 1 }] },
@@ -698,7 +717,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Charm the sponsors! New deal for the club!',
-				effects: [{ type: 'bankBalance', delta: 3, scale: 'wage' }]
+				effects: [{ type: 'bankBalance', delta: 5, scale: 'wage' }]
 			},
 			{ label: 'Professional appearance. Everyone happy.', effects: [] },
 			{ label: 'Arrive late. Sponsors unimpressed.', effects: [{ type: 'morale', delta: -1 }] },
@@ -711,7 +730,13 @@ export const CAREER_CARDS: IncidentCard[] = [
 		title: 'Player Meeting',
 		description: 'The senior players called a squad meeting.',
 		outcomes: [
-			{ label: 'Your voice is heard. Changes made!', effects: [{ type: 'morale', delta: 2 }] },
+			{
+				label: 'Your voice is heard. Changes made!',
+				effects: [
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Good to clear the air.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Turns into a blame game.', effects: [{ type: 'morale', delta: -2 }] },
 			{ label: 'Stay quiet and observe.', effects: [] }
@@ -801,7 +826,7 @@ export const CAREER_CARDS: IncidentCard[] = [
 			{
 				label: 'Lucrative multi-year deal! Big money!',
 				effects: [
-					{ type: 'bankBalance', delta: 8, scale: 'wage' },
+					{ type: 'bankBalance', delta: 12, scale: 'wage' },
 					{ type: 'deckAdd', delta: 2 }
 				]
 			},
@@ -904,7 +929,8 @@ export const CAREER_CARDS: IncidentCard[] = [
 				label: 'Come roaring back! Best performance yet!',
 				effects: [
 					{ type: 'xp', delta: 3 },
-					{ type: 'morale', delta: 2 }
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
 				]
 			},
 			{ label: 'Steady improvement. Back on track.', effects: [{ type: 'xp', delta: 1 }] },
@@ -959,11 +985,11 @@ export const CAREER_CARDS: IncidentCard[] = [
 		outcomes: [
 			{
 				label: 'Lifetime deal! Never buy boots again!',
-				effects: [{ type: 'bankBalance', delta: 5, scale: 'wage' }]
+				effects: [{ type: 'bankBalance', delta: 8, scale: 'wage' }]
 			},
 			{
 				label: 'Season-long deal. Free boots and cash.',
-				effects: [{ type: 'bankBalance', delta: 2, scale: 'wage' }]
+				effects: [{ type: 'bankBalance', delta: 3, scale: 'wage' }]
 			},
 			{
 				label: 'The boots are uncomfortable. Poor timing.',

@@ -121,7 +121,13 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Personal Trainer',
 		description: "You've hired a personal trainer.",
 		outcomes: [
-			{ label: 'Transformational! Never been fitter!', effects: [{ type: 'xp', delta: 4 }] },
+			{
+				label: 'Transformational! Never been fitter!',
+				effects: [
+					{ type: 'xp', delta: 4 },
+					{ type: 'deckAdd', delta: 2 }
+				]
+			},
 			{ label: 'Good sessions. Improvement noted.', effects: [{ type: 'xp', delta: 2 }] },
 			{
 				label: 'Pushes too hard. Pick up a knock.',
@@ -129,7 +135,7 @@ export const TRAINING_CARDS: IncidentCard[] = [
 			},
 			{
 				label: 'Cancel after one session. Expensive.',
-				effects: [{ type: 'bankBalance', delta: -0.5, scale: 'wage' }]
+				effects: [{ type: 'bankBalance', delta: -1, scale: 'wage' }]
 			}
 		]
 	},
@@ -139,7 +145,13 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Yoga Classes',
 		description: "You've started yoga to improve flexibility.",
 		outcomes: [
-			{ label: 'Flexibility improves. Fewer injuries!', effects: [{ type: 'xp', delta: 2 }] },
+			{
+				label: 'Flexibility improves. Fewer injuries!',
+				effects: [
+					{ type: 'xp', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Feeling looser. Good addition.', effects: [{ type: 'xp', delta: 1 }] },
 			{
 				label: 'Pull something in first class. Ironic.',
@@ -211,7 +223,10 @@ export const TRAINING_CARDS: IncidentCard[] = [
 			},
 			{ label: 'Healthier diet. Feeling good.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Miss your favourite foods. Grumpy.', effects: [{ type: 'morale', delta: -1 }] },
-			{ label: 'Ignore the plan. Pizza is life.', effects: [] }
+			{
+				label: 'Ignore the plan. Pizza is life.',
+				effects: [{ type: 'bankBalance', delta: -0.2, scale: 'wage' }]
+			}
 		]
 	},
 	{
@@ -232,7 +247,13 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Sports Psychologist',
 		description: 'The club recommends a sports psychologist.',
 		outcomes: [
-			{ label: 'Mental game transforms! Confidence soaring!', effects: [{ type: 'xp', delta: 3 }] },
+			{
+				label: 'Mental game transforms! Confidence soaring!',
+				effects: [
+					{ type: 'xp', delta: 3 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Helpful techniques for matchday.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: "Don't buy into it. Waste of time.", effects: [] },
 			{ label: 'Refuse. Nothing wrong with your head.', effects: [{ type: 'morale', delta: -1 }] }
@@ -259,7 +280,13 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Medical Breakthrough',
 		description: 'New recovery treatment available at the club.',
 		outcomes: [
-			{ label: 'Cutting-edge treatment works miracles!', effects: [{ type: 'xp', delta: 3 }] },
+			{
+				label: 'Cutting-edge treatment works miracles!',
+				effects: [
+					{ type: 'xp', delta: 3 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Promising results. Feel better.', effects: [] },
 			{
 				label: 'Side effects from experimental treatment.',
@@ -276,7 +303,13 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		outcomes: [
 			{ label: 'Deep tissue works wonders! Loose and ready!', effects: [{ type: 'xp', delta: 1 }] },
 			{ label: 'Tense muscles released. Feel great.', effects: [] },
-			{ label: 'Too intense. Bruised for days.', effects: [{ type: 'appearanceSkip', delta: 1 }] },
+			{
+				label: 'Too intense. Bruised for days.',
+				effects: [
+					{ type: 'appearanceSkip', delta: 1 },
+					{ type: 'bankBalance', delta: -0.3, scale: 'wage' }
+				]
+			},
 			{ label: 'Cancel. Not in the mood.', effects: [] }
 		]
 	},
@@ -316,7 +349,13 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Strength Training',
 		description: 'New strength and conditioning program.',
 		outcomes: [
-			{ label: 'New PB on every lift! Absolute unit!', effects: [{ type: 'xp', delta: 2 }] },
+			{
+				label: 'New PB on every lift! Absolute unit!',
+				effects: [
+					{ type: 'xp', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Steady gains. Getting stronger.', effects: [{ type: 'xp', delta: 1 }] },
 			{
 				label: 'Ego-lift and hurt your shoulder.',
@@ -382,7 +421,13 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Recovery Session',
 		description: 'Light recovery session after a heavy week.',
 		outcomes: [
-			{ label: 'Perfect recovery! Fresh for the match!', effects: [{ type: 'xp', delta: 1 }] },
+			{
+				label: 'Perfect recovery! Fresh for the match!',
+				effects: [
+					{ type: 'xp', delta: 1 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Gentle session. Loosened up nicely.', effects: [] },
 			{ label: 'Still feel heavy. Need more rest.', effects: [{ type: 'morale', delta: -1 }] },
 			{ label: 'Skip recovery. Extra rest instead.', effects: [] }
@@ -427,7 +472,13 @@ export const TRAINING_CARDS: IncidentCard[] = [
 		title: 'Rehabilitation',
 		description: "You've been making progress in rehab.",
 		outcomes: [
-			{ label: 'Ahead of schedule! Almost back!', effects: [{ type: 'xp', delta: 3 }] },
+			{
+				label: 'Ahead of schedule! Almost back!',
+				effects: [
+					{ type: 'xp', delta: 3 },
+					{ type: 'deckAdd', delta: 1 }
+				]
+			},
 			{ label: 'Steady progress. On track.', effects: [{ type: 'morale', delta: 1 }] },
 			{ label: 'Setback. Pain has returned.', effects: [{ type: 'appearanceSkip', delta: 2 }] },
 			{ label: 'Follow the plan. No shortcuts.', effects: [] }

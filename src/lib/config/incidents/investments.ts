@@ -377,7 +377,8 @@ export const INVESTMENTS_CARDS: IncidentCard[] = [
 				label: 'Brand is a hit! Celebrities wear it!',
 				effects: [
 					{ type: 'bankBalance', delta: 6, scale: 'wage' },
-					{ type: 'morale', delta: 2 }
+					{ type: 'morale', delta: 2 },
+					{ type: 'deckAdd', delta: 1 }
 				]
 			},
 			{
@@ -440,7 +441,8 @@ export const INVESTMENTS_CARDS: IncidentCard[] = [
 				label: 'Future star comes through! Legend!',
 				effects: [
 					{ type: 'bankBalance', delta: 5, scale: 'wage' },
-					{ type: 'morale', delta: 3 }
+					{ type: 'morale', delta: 3 },
+					{ type: 'deckAdd', delta: 2 }
 				]
 			},
 			{
