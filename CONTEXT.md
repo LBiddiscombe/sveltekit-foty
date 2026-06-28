@@ -20,6 +20,8 @@
 
 **computeKickAim** — Shared helper in `footy.js` that takes the ball's screen position, mouse position, `KICK_RADIUS`, and per-minigame `maxVx`/`maxVy`. Returns `{ vx, vy }` using the direction-unit-vector + distance-mapped magnitude formula. Covers only aim (horizontal + launch angle); `vz` is handled per-minigame.
 
+**Rebound** — Training-ground minigame. A CPU-driven shot from z=-3 (random x, random y) is aimed ¼-width in from a post so the keeper must save it. The ball rebounds fast from the keeper (initial `vz` ≈ -15 to -22, full speed) until it reaches z=8 on the way back, then switches to slow motion (×0.15 speed) with a ball trail back toward z=-3. The keeper stays down for 1000 ms then recovers to center over 600 ms. The player taps the rebounding ball (FTF-style tap within `KICK_RADIUS`) to shoot. The keeper may dive again on the player's shot. Uses the same max velocities as Penalty/FTF: `KICK_VX_MAX=16`, `KICK_VY_MAX=18`, `KICK_VZ=25`.
+
 ## Terms
 
 **Hub** — Landing page (`/hub`) with menu buttons linking to sub-pages. No persistent nav bar; each sub-page renders its own back link.

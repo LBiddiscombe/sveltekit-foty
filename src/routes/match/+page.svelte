@@ -7,13 +7,14 @@
 	import Minigame from '$lib/components/minigames/Minigame.svelte';
 	import { createPenaltySketch } from '$lib/components/minigames/PenaltySketch';
 	import { createFirstTimeFinishSketch } from '$lib/components/minigames/FirstTimeFinishSketch';
+	import { createReboundSketch } from '$lib/components/minigames/ReboundSketch';
 	import type { Outcome } from '$lib/types/game';
 	import { playGame, skipGame, getMoraleDelta, consumeDeck } from '$lib/match/engine';
 	import { XP_CONFIG } from '$lib/config/xp';
 	import { DIVISION_XP_CAPS } from '$lib/config/levels';
 	import { saveGame } from '$lib/save';
 
-	type GameType = 'penalty' | 'first-time-finish';
+	type GameType = 'penalty' | 'first-time-finish' | 'rebound';
 
 	$effect(() => {
 		season.phase = 'match';
@@ -28,7 +29,10 @@
 	const currentGame = $derived(match.pendingGames[match.currentGameIndex]);
 
 	function pickGameType(): GameType {
-		return Math.random() < 0.3 ? 'penalty' : 'first-time-finish';
+		const r = Math.random();
+		if (r < 0.33) return 'penalty';
+		if (r < 0.66) return 'first-time-finish';
+		return 'rebound';
 	}
 
 	function recordPlayerMatch(goals: number) {
@@ -179,9 +183,9 @@
 			{#key `${match.currentGameIndex}-${currentChance}`}
 				<Minigame
 					oncomplete={handleComplete}
-					createSketch={gameType === 'penalty' ? createPenaltySketch : createFirstTimeFinishSketch}
+					createSketch={gameType === 'penalty' ? createPenaltySketch : gameType === 'rebound' ? createReboundSketch : createFirstTimeFinishSketch}
 					outcomeText={currentOutcomeText}
-					gameName={gameType === 'penalty' ? 'Penalty!' : 'First-Time Finish!'}
+					gameName={gameType === 'penalty' ? 'Penalty!' : gameType === 'rebound' ? 'Rebound' : 'First-Time Finish!'}
 				/>
 			{/key}
 		</div>

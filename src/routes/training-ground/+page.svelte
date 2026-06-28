@@ -3,9 +3,10 @@
 	import Minigame from '$lib/components/minigames/Minigame.svelte';
 	import { createPenaltySketch } from '$lib/components/minigames/PenaltySketch';
 	import { createFirstTimeFinishSketch } from '$lib/components/minigames/FirstTimeFinishSketch';
+	import { createReboundSketch } from '$lib/components/minigames/ReboundSketch';
 	import type { Outcome } from '$lib/types/game';
 
-	type Drill = 'penalty' | 'first-time-finish';
+	type Drill = 'penalty' | 'first-time-finish' | 'rebound';
 
 	let selectedDrill = $state<Drill | null>(null);
 	let attempt = $state(0);
@@ -13,7 +14,11 @@
 	let awaitingRestart = $state(false);
 
 	const sketchFactory = $derived(
-		selectedDrill === 'penalty' ? createPenaltySketch : createFirstTimeFinishSketch
+		selectedDrill === 'penalty'
+			? createPenaltySketch
+			: selectedDrill === 'rebound'
+				? createReboundSketch
+				: createFirstTimeFinishSketch
 	);
 
 	function handleComplete(outcome: Outcome) {
@@ -90,6 +95,27 @@
 				</ul>
 				<button
 					onclick={() => pickDrill('penalty')}
+					class="w-full rounded bg-warning px-4 py-2 text-center font-pixel text-xs uppercase tracking-wide text-dark"
+				>
+					Practice
+				</button>
+			</div>
+
+			<div class="rounded border border-subtle bg-card p-4">
+				<img
+					src="/minigames/rebound-screenshot.jpeg"
+					alt="Rebound"
+					class="mb-3 w-full rounded object-cover"
+				/>
+				<h2 class="mb-1 text-sm text-primary">Rebound</h2>
+				<ul class="mb-3 list-inside list-disc text-[10px] text-subtle">
+					<li>A CPU shot is saved by the keeper — react to the rebound</li>
+					<li>Tap the rebounding ball to shoot it first time</li>
+					<li>Aim for the open goal while the keeper recovers</li>
+					<li>Keeper may dive again for a second save</li>
+				</ul>
+				<button
+					onclick={() => pickDrill('rebound')}
 					class="w-full rounded bg-warning px-4 py-2 text-center font-pixel text-xs uppercase tracking-wide text-dark"
 				>
 					Practice
