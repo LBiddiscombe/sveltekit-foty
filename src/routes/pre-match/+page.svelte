@@ -23,7 +23,7 @@ function ordinal(n: number): string {
 	return n + (s[(v - 20) % 10] ?? s[v] ?? s[0]);
 }
 
-function getPlayerCupMatch(): Fixture[] {
+function getPlayerCupMatches(): Fixture[] {
 	const week = season.weekNumber;
 	const cupMatches: Fixture[] = [];
 
@@ -40,13 +40,22 @@ function getPlayerCupMatch(): Fixture[] {
 		if (!round) continue;
 
 		const tie = round.ties.find((t) => t.home === player.club || t.away === player.club);
-		if (!tie || tie.result) continue;
+		if (!tie) continue;
 
-		cupMatches.push({
-			opponent: tie.home === player.club ? tie.away : tie.home,
-			isHome: tie.home === player.club,
-			weekNumber: week
-		});
+		const isComplete = tie.result && (roundInfo.isTwoLeg ? tie.result.homeGoals2 !== undefined : tie.result.winner !== '');
+		if (isComplete) continue;
+
+		const opponent = tie.home === player.club ? tie.away : tie.home;
+
+		if (roundInfo.isTwoLeg) {
+			const leg1Played = tie.result && tie.result.homeGoals2 === undefined;
+			if (!leg1Played) {
+				cupMatches.push({ opponent, isHome: tie.home === player.club, weekNumber: week });
+			}
+			cupMatches.push({ opponent, isHome: tie.away === player.club, weekNumber: week });
+		} else {
+			cupMatches.push({ opponent, isHome: tie.home === player.club, weekNumber: week });
+		}
 	}
 
 	return cupMatches;
@@ -55,7 +64,7 @@ function getPlayerCupMatch(): Fixture[] {
 const leagueFixtures = $derived(
 	season.fixtures.filter((f) => f.weekNumber === season.weekNumber && !f.result)
 );
-const cupFixtures = $derived(getPlayerCupMatch());
+const cupFixtures = $derived(getPlayerCupMatches());
 
 const unplayedFixtures = $derived([...leagueFixtures, ...cupFixtures]);
 const weekFixtureCount = $derived(
@@ -76,7 +85,7 @@ const playedCount = $derived(intents.filter((i) => !i.skipped).length);
 const remainingCards = $derived(player.deck.length - playedCount);
 
 function isCupFixture(fixture: Fixture): boolean {
-	return cupFixtures.some((cf) => cf.opponent === fixture.opponent && cf.isHome === fixture.isHome);
+	return cupFixtures.some((cf) => cf.opponent === fixture.opponent && cf.weekNumber === fixture.weekNumber);
 }
 
 function getCupRoundLabel(): string {

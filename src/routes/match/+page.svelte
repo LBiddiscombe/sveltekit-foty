@@ -118,22 +118,91 @@
 				const matchHomeGoals = isHome ? res.score[0] : res.score[1];
 				const matchAwayGoals = isHome ? res.score[1] : res.score[0];
 
-				const winner = res.score[0] > res.score[1] ? player.club : game.fixture.opponent;
-				const resolvedBy = res.score[0] === res.score[1] ? 'coin-toss' : 'match';
+				if (roundInfo.isTwoLeg && tie.result && tie.result.homeGoals2 === undefined) {
+					const leg1Home = tie.result.homeGoals;
+					const leg1Away = tie.result.awayGoals;
+					const leg2Home = matchAwayGoals;
+					const leg2Away = matchHomeGoals;
+					const aggHome = leg1Home + leg2Home;
+					const aggAway = leg1Away + leg2Away;
 
-				const updatedTies = [...round.ties];
-				updatedTies[tieIdx] = {
-					...tie,
-					result: { homeGoals: matchHomeGoals, awayGoals: matchAwayGoals, winner, resolvedBy }
-				};
+					let winner: string;
+					let resolvedBy: 'match' | 'coin-toss';
+					if (aggHome > aggAway) {
+						winner = tie.home;
+						resolvedBy = 'match';
+					} else if (aggAway > aggHome) {
+						winner = tie.away;
+						resolvedBy = 'match';
+					} else {
+						winner = Math.random() < 0.5 ? tie.home : tie.away;
+						resolvedBy = 'coin-toss';
+					}
 
-				const updatedRounds = [...bracket.rounds];
-				updatedRounds[roundInfo.round - 1] = { ...round, ties: updatedTies };
+					const updatedTies = [...round.ties];
+					updatedTies[tieIdx] = {
+						...tie,
+						result: {
+							homeGoals: leg1Home,
+							awayGoals: leg1Away,
+							homeGoals2: leg2Home,
+							awayGoals2: leg2Away,
+							aggHomeGoals: aggHome,
+							aggAwayGoals: aggAway,
+							winner,
+							resolvedBy
+						}
+					};
 
-				if (cupType === 'league-cup') {
-					season.leagueCupBracket = { ...bracket, rounds: updatedRounds };
+					const updatedRounds = [...bracket.rounds];
+					updatedRounds[roundInfo.round - 1] = { ...round, ties: updatedTies };
+
+					if (cupType === 'league-cup') {
+						season.leagueCupBracket = { ...bracket, rounds: updatedRounds };
+					} else {
+						season.faCupBracket = { ...bracket, rounds: updatedRounds };
+					}
+				} else if (roundInfo.isTwoLeg) {
+					const leg1Home = matchHomeGoals;
+					const leg1Away = matchAwayGoals;
+
+					const updatedTies = [...round.ties];
+					updatedTies[tieIdx] = {
+						...tie,
+						result: {
+							homeGoals: leg1Home,
+							awayGoals: leg1Away,
+							winner: '',
+							resolvedBy: 'match'
+						}
+					};
+
+					const updatedRounds = [...bracket.rounds];
+					updatedRounds[roundInfo.round - 1] = { ...round, ties: updatedTies };
+
+					if (cupType === 'league-cup') {
+						season.leagueCupBracket = { ...bracket, rounds: updatedRounds };
+					} else {
+						season.faCupBracket = { ...bracket, rounds: updatedRounds };
+					}
 				} else {
-					season.faCupBracket = { ...bracket, rounds: updatedRounds };
+					const winner = res.score[0] > res.score[1] ? player.club : game.fixture.opponent;
+					const resolvedBy = res.score[0] === res.score[1] ? 'coin-toss' : 'match';
+
+					const updatedTies = [...round.ties];
+					updatedTies[tieIdx] = {
+						...tie,
+						result: { homeGoals: matchHomeGoals, awayGoals: matchAwayGoals, winner, resolvedBy }
+					};
+
+					const updatedRounds = [...bracket.rounds];
+					updatedRounds[roundInfo.round - 1] = { ...round, ties: updatedTies };
+
+					if (cupType === 'league-cup') {
+						season.leagueCupBracket = { ...bracket, rounds: updatedRounds };
+					} else {
+						season.faCupBracket = { ...bracket, rounds: updatedRounds };
+					}
 				}
 			}
 		}

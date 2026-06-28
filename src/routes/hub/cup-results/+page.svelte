@@ -49,12 +49,16 @@
 											{@const isPlayerTie = isPlayerHome || isPlayerAway}
 											<div class="flex items-center gap-1 text-[10px] {isPlayerTie ? 'text-primary' : 'text-subtle'}">
 												{#if tie.result}
+													{@const onPens = tie.result.resolvedBy === 'coin-toss'}
+													{@const showAgg = tie.result.aggHomeGoals !== undefined}
+													{@const scoreDisplay = showAgg ? `${tie.result.aggHomeGoals} - ${tie.result.aggAwayGoals}` : `${tie.result.homeGoals} - ${tie.result.awayGoals}`}
 													<span class="w-3 text-center text-success">
 														{tie.result.winner === tie.home ? 'W' : ''}
 													</span>
 													<span class="flex-1 truncate {isPlayerHome ? 'font-bold' : ''}">{tie.home}</span>
-													<span class="font-mono shrink-0">
-														{tie.result.homeGoals} - {tie.result.awayGoals}
+													<span class="flex items-center gap-0.5 font-mono shrink-0">
+														{#if onPens}<span class="text-warning">p</span>{/if}
+														{scoreDisplay}
 													</span>
 													<span class="flex-1 truncate text-right {isPlayerAway ? 'font-bold' : ''}">{tie.away}</span>
 													<span class="w-3 text-center text-success">

@@ -173,6 +173,8 @@ export interface CupTie {
 	result?: {
 		homeGoals: number;
 		awayGoals: number;
+		homeGoals2?: number;
+		awayGoals2?: number;
 		winner: string;
 		resolvedBy: 'match' | 'coin-toss';
 		aggHomeGoals?: number;
