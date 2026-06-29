@@ -13,6 +13,18 @@
 		result?: Fixture['result'];
 	};
 
+	function findDivision(club: string): number {
+		for (const [div, clubs] of Object.entries(season.divisionRosters)) {
+			if (clubs.includes(club)) return Number(div);
+		}
+		return 0;
+	}
+
+	function divLabel(club: string): string {
+		const d = findDivision(club);
+		return d ? `D${d}` : 'N/L';
+	}
+
 	const CUP_ABBREV: Record<string, string> = {
 		'league-cup': 'LC',
 		'fa-cup': 'FAC'
@@ -91,7 +103,7 @@
 				const tie = round.ties.find((t) => t.home === player.club || t.away === player.club);
 				if (!tie || !tie.home || !tie.away) continue;
 
-				const opponent = tie.home === player.club ? tie.away : tie.home;
+				const opponent = (tie.home === player.club ? tie.away : tie.home).replace(/ \(N\/L\)$/, '');
 				const roundLabel = `${CUP_ABBREV[cupType]} ${ROUND_ABBREV[round.roundNumber] ?? 'R' + round.roundNumber}`;
 				const week = roundSchedule.week;
 
@@ -102,14 +114,14 @@
 					cup.push({
 						weekNumber: week,
 						isHome: leg1Home,
-						label: `${opponent} (${roundLabel})`,
+						label: `${roundLabel} ${opponent} ${divLabel(opponent)}`,
 						isCup: true,
 						result: r ? legResult(r as CupResult, 1, leg1Home) : undefined
 					});
 					cup.push({
 						weekNumber: week,
 						isHome: leg2Home,
-						label: `${opponent} (${roundLabel})`,
+						label: `${roundLabel} ${opponent} ${divLabel(opponent)}`,
 						isCup: true,
 						result: r ? legResult(r as CupResult, 2, tie.home === player.club) : undefined
 					});
@@ -119,7 +131,7 @@
 					cup.push({
 						weekNumber: week,
 						isHome,
-						label: `${opponent} (${roundLabel})`,
+						label: `${roundLabel} ${opponent} ${divLabel(opponent)}`,
 						isCup: true,
 						result: r ? legResult(r as CupResult, 1, isHome) : undefined
 					});
@@ -177,9 +189,7 @@
 					<span class="w-4 text-right tabular-nums text-subtle">{fixture.weekNumber}</span>
 					<span class="flex flex-1 items-center gap-2">
 						<span class="w-4 shrink-0 text-center text-subtle">{fixture.isHome ? 'H' : 'A'}</span>
-						<span class="truncate {fixture.isCup ? 'text-warning' : 'text-primary'}"
-							>{fixture.label}</span
-						>
+						<span class="truncate text-primary">{fixture.label}</span>
 					</span>
 					{#if fixture.result}
 						<span class="flex shrink-0 items-center gap-1">

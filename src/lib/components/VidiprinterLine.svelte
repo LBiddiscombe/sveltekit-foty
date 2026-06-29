@@ -5,13 +5,27 @@
 		homeScore: number;
 		awayScore: number;
 		playerTeam: string;
+		penalties?: boolean;
+		penaltyHomeWon?: boolean;
 	}
 
-	let { home, away, homeScore, awayScore, playerTeam }: Props = $props();
+	let {
+		home,
+		away,
+		homeScore,
+		awayScore,
+		playerTeam,
+		penalties = false,
+		penaltyHomeWon = false
+	}: Props = $props();
 </script>
 
 <div class="flex items-center justify-between gap-2 font-pixel text-xs">
 	<span class="truncate {home === playerTeam ? 'text-primary' : 'text-subtle'}">{home}</span>
-	<span class="shrink-0 text-primary">{homeScore} - {awayScore}</span>
+	<span class="shrink-0 text-primary"
+		>{penalties && penaltyHomeWon ? 'p' : ''}{homeScore} - {awayScore}{penalties && !penaltyHomeWon
+			? 'p'
+			: ''}</span
+	>
 	<span class="truncate {away === playerTeam ? 'text-primary' : 'text-subtle'}">{away}</span>
 </div>

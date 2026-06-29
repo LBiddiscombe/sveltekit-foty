@@ -45,6 +45,8 @@
 		away: string;
 		homeScore: number;
 		awayScore: number;
+		penalties?: boolean;
+		penaltyHomeWon?: boolean;
 	};
 
 	const scoreLines = new SvelteMap<number, ScoreLine>();
@@ -108,6 +110,8 @@
 			away: string;
 			homeScore: number;
 			awayScore: number;
+			penalties?: boolean;
+			penaltyHomeWon?: boolean;
 		}[];
 	} {
 		const cupInfo = getCupWeekInfo(WEEK);
@@ -138,6 +142,8 @@
 			away: string;
 			homeScore: number;
 			awayScore: number;
+			penalties?: boolean;
+			penaltyHomeWon?: boolean;
 		}[] = [];
 		const lines: string[] = [];
 
@@ -212,15 +218,17 @@
 			lines.push(hdr);
 			lines.push('-'.repeat(hdr.length));
 
+			const onPens = r.resolvedBy === 'coin-toss';
+			const homeWon = r.winner === playerTie.home;
 			scoreEntries.push({
 				index: lines.length,
 				home: playerTie.home,
 				away: playerTie.away,
 				homeScore: r.homeGoals,
-				awayScore: r.awayGoals
+				awayScore: r.awayGoals,
+				penalties: onPens,
+				penaltyHomeWon: onPens ? homeWon : undefined
 			});
-			const onPens = r.resolvedBy === 'coin-toss';
-			const homeWon = r.winner === playerTie.home;
 			const scoreLine = onPens
 				? homeWon
 					? `p ${r.homeGoals} - ${r.awayGoals}`
@@ -261,7 +269,9 @@
 					home: entry.home,
 					away: entry.away,
 					homeScore: entry.homeScore,
-					awayScore: entry.awayScore
+					awayScore: entry.awayScore,
+					penalties: entry.penalties,
+					penaltyHomeWon: entry.penaltyHomeWon
 				});
 			}
 			l.push('');
@@ -481,6 +491,8 @@
 						homeScore={sc.homeScore}
 						awayScore={sc.awayScore}
 						playerTeam={PLAYER_CLUB}
+						penalties={sc.penalties}
+						penaltyHomeWon={sc.penaltyHomeWon}
 					/>
 				{:else}
 					<div

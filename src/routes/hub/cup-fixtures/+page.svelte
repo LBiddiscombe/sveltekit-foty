@@ -64,7 +64,7 @@
 							{@const status = roundStatus(bracket, ri)}
 							{@const hasTeams = roundHasTeams(round)}
 							{@const week = CUP_SCHEDULE[cupType][ri]?.week}
-							<details class="rounded border border-subtle bg-card" open={status === 'current'}>
+							<details class="rounded bg-card" open={status === 'current'}>
 								<summary
 									class="flex cursor-pointer items-center gap-2 px-3 py-2 text-[10px] font-bold text-warning"
 								>
@@ -80,7 +80,7 @@
 										{status === 'done' ? 'Done' : status === 'current' ? 'Current' : 'Upcoming'}
 									</span>
 								</summary>
-								<div class="border-t border-subtle px-3 py-2">
+								<div class="px-3 py-2">
 									{#if !hasTeams}
 										<p class="text-[10px] text-subtle">Not reached.</p>
 									{:else}
