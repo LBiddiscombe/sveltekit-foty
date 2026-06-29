@@ -5,7 +5,7 @@ import { match } from '$lib/stores/match.svelte';
 import { standings } from '$lib/stores/standings.svelte';
 import { wageForLevel } from '$lib/config/economy';
 import { getLevelIndex } from '$lib/config/levels';
-import type { DivisionSchedule, Fixture, InboxItem, MatchResult, Standing, StatsArchiveEntry, TransferWindowState } from '$lib/types/game';
+import type { CupBracket, DivisionSchedule, Fixture, InboxItem, MatchResult, Standing, StatsArchiveEntry, TransferWindowState } from '$lib/types/game';
 
 const SAVE_KEY = 'foty-save';
 const SAVE_BACKUP_KEY = 'foty-save-backup';
@@ -93,6 +93,8 @@ interface SaveState {
 		statsSavesAtStart: number;
 		statsMissesAtStart: number;
 		appearanceSkips: number;
+		leagueCupBracket: CupBracket | null;
+		faCupBracket: CupBracket | null;
 	};
 	inboxItems: InboxItem[];
 	matchResult: MatchResult | null;
@@ -143,7 +145,13 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 			statsChancesAtStart: season.statsChancesAtStart,
 			statsSavesAtStart: season.statsSavesAtStart,
 			statsMissesAtStart: season.statsMissesAtStart,
-			appearanceSkips: season.appearanceSkips
+			appearanceSkips: season.appearanceSkips,
+			leagueCupBracket: season.leagueCupBracket
+				? JSON.parse(JSON.stringify(season.leagueCupBracket))
+				: null,
+			faCupBracket: season.faCupBracket
+				? JSON.parse(JSON.stringify(season.faCupBracket))
+				: null
 		},
 		inboxItems: JSON.parse(JSON.stringify(inbox.items)),
 		matchResult: match.result ? JSON.parse(JSON.stringify(match.result)) : null,
@@ -217,6 +225,8 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		season.statsSavesAtStart = state.season.statsSavesAtStart ?? 0;
 		season.statsMissesAtStart = state.season.statsMissesAtStart ?? 0;
 		season.appearanceSkips = state.season.appearanceSkips ?? 0;
+		season.leagueCupBracket = state.season.leagueCupBracket ?? null;
+		season.faCupBracket = state.season.faCupBracket ?? null;
 
 		inbox.items = state.inboxItems;
 

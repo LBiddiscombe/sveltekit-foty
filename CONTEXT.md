@@ -46,6 +46,8 @@
 
 **Club strength** — A fixed rating (1-10) assigned to each of the 92 parody clubs. Man Untied is the strongest (9). Dictates AI match outcomes in the Poisson model. Re-rolled with slight ±1 variance each season to prevent deterministic outcomes.
 
+**Strength normalisation** — Before any match, the two clubs' strengths are remapped so the stronger team becomes 10 and the weaker is scaled proportionally (e.g. Gillingham 1 vs Newport 2 → [5, 10] rather than [1, 2]). This ensures all same-division matches produce ~2.2–2.6 average total goals while preserving cross-division gaps in cup fixtures. Applied via `remapPair()` in both `engine.ts` (league matches) and `cups.ts` (cup matches).
+
 **Type file** — `src/lib/types/game.ts` defines all TypeScript interfaces used by stores and components. Single source of truth, avoids circular imports.
 
 **Incident cards (hybrid)** — Two sources: (1) automatic ~20-30% of weeks, rolled at vidiprinter completion, and (2) purchasable incident cards in the shop for a pay-to-gamble option anytime. Both paths deliver the card to the inbox as an unactioned message. Cards are mixed-theme: a single story can produce positive, negative, or neutral outcomes across different levers. No fixed card-level theme.

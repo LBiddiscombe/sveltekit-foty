@@ -1,20 +1,79 @@
 import type { CupBracket, CupRound, CupTie, CupType } from '$lib/types/game';
 import { CLUB_STRENGTHS } from './club-strengths';
 import { ALL_CLUBS } from './clubs';
+import { remapPair } from '$lib/match/engine';
 
 export const NON_LEAGUE_POOL = [
-	'Aldershot', 'Altringum', 'Barro', 'Boram Wood', 'Boston', 'Carlisle',
-	'Eastlee', 'Hallifax', 'Forest Green', 'Gateshed', 'Harrogit', 'Hartlepool',
-	'Hornchurch', 'Scunthorp', 'Solihul', 'Southend', 'Sutton', 'Tamwuth',
-	'Weeldstone', 'Woakin', 'Worthin', 'Yovil', 'Bedfud', 'Bracklee',
-	'Buxtun', 'Chestur', 'Chorlee', 'Darlinton', 'Harbura', 'Hebburn',
-	'Hednesfud', 'Herefud', 'Kings Linn', 'Macklesfeeld', 'Mareen', 'Murthur',
-	'Morekum', 'Oxfud City', 'Radcliff', 'Scarbura', 'Southport', 'South Sheelds',
-	'Spaulding', 'Spennymoor', 'Worksup', 'Telfud', 'Tottun', 'Bath',
-	'BraynTree', 'Chelmsfud', 'Cheshum', 'Chipnum', 'Dagenum', 'Dovur',
-	'Dorkin', 'Eastburn', 'Ebbsfleet', 'Enfeeld', 'Farnbura', 'Hampton Richmund',
-	'Hemel Hempsted', 'Horshum', 'Maydenhed', 'Maydstun', 'Saulsbury', 'Slou',
-	'Tunbridge Angels', 'Torkee', 'Truro', 'Weston Super Mare'
+	'Aldershot',
+	'Altringum',
+	'Barro',
+	'Boram Wood',
+	'Boston',
+	'Carlisle',
+	'Eastlee',
+	'Hallifax',
+	'Forest Green',
+	'Gateshed',
+	'Harrogit',
+	'Hartlepool',
+	'Hornchurch',
+	'Scunthorp',
+	'Solihul',
+	'Southend',
+	'Sutton',
+	'Tamwuth',
+	'Weeldstone',
+	'Woakin',
+	'Worthin',
+	'Yovil',
+	'Bedfud',
+	'Bracklee',
+	'Buxtun',
+	'Chestur',
+	'Chorlee',
+	'Darlinton',
+	'Harbura',
+	'Hebburn',
+	'Hednesfud',
+	'Herefud',
+	'Kings Linn',
+	'Macklesfeeld',
+	'Mareen',
+	'Murthur',
+	'Morekum',
+	'Oxfud City',
+	'Radcliff',
+	'Scarbura',
+	'Southport',
+	'South Sheelds',
+	'Spaulding',
+	'Spennymoor',
+	'Worksup',
+	'Telfud',
+	'Tottun',
+	'Bath',
+	'BraynTree',
+	'Chelmsfud',
+	'Cheshum',
+	'Chipnum',
+	'Dagenum',
+	'Dovur',
+	'Dorkin',
+	'Eastburn',
+	'Ebbsfleet',
+	'Enfeeld',
+	'Farnbura',
+	'Hampton Richmund',
+	'Hemel Hempsted',
+	'Horshum',
+	'Maydenhed',
+	'Maydstun',
+	'Saulsbury',
+	'Slou',
+	'Tunbridge Angels',
+	'Torkee',
+	'Truro',
+	'Weston Super Mare'
 ];
 
 export const CUP_SCHEDULE: Record<CupType, { round: number; week: number; isTwoLeg: boolean }[]> = {
@@ -183,11 +242,16 @@ export function getLeagueWeeks(): number[] {
 }
 
 function simulateMatch(home: string, away: string): { homeGoals: number; awayGoals: number } {
-	const homeStrength = home.endsWith('(N/L)') ? NON_LEAGUE_STRENGTH : (CLUB_STRENGTHS[home] ?? NON_LEAGUE_STRENGTH);
-	const awayStrength = away.endsWith('(N/L)') ? NON_LEAGUE_STRENGTH : (CLUB_STRENGTHS[away] ?? NON_LEAGUE_STRENGTH);
+	const homeStrength = home.endsWith('(N/L)')
+		? NON_LEAGUE_STRENGTH
+		: (CLUB_STRENGTHS[home] ?? NON_LEAGUE_STRENGTH);
+	const awayStrength = away.endsWith('(N/L)')
+		? NON_LEAGUE_STRENGTH
+		: (CLUB_STRENGTHS[away] ?? NON_LEAGUE_STRENGTH);
+	const [homeStr, awayStr] = remapPair(homeStrength, awayStrength);
 	const homeAdv = 0.5;
-	const homeRate = Math.max(0.1, homeStrength * 0.15 + homeAdv);
-	const awayRate = Math.max(0.1, awayStrength * 0.15);
+	const homeRate = Math.max(0.1, homeStr * 0.15 + homeAdv);
+	const awayRate = Math.max(0.1, awayStr * 0.15);
 
 	return { homeGoals: poissonRandom(homeRate), awayGoals: poissonRandom(awayRate) };
 }
@@ -203,7 +267,11 @@ function poissonRandom(lambda: number): number {
 	return k - 1;
 }
 
-export function simulateCupTie(home: string, away: string, isTwoLeg: boolean): {
+export function simulateCupTie(
+	home: string,
+	away: string,
+	isTwoLeg: boolean
+): {
 	homeGoals: number;
 	awayGoals: number;
 	winner: string;
@@ -218,12 +286,33 @@ export function simulateCupTie(home: string, away: string, isTwoLeg: boolean): {
 		const aggAway = leg1.awayGoals + leg2.homeGoals;
 
 		if (aggHome > aggAway) {
-			return { homeGoals: leg1.homeGoals, awayGoals: leg1.awayGoals, winner: home, resolvedBy: 'match', aggHomeGoals: aggHome, aggAwayGoals: aggAway };
+			return {
+				homeGoals: leg1.homeGoals,
+				awayGoals: leg1.awayGoals,
+				winner: home,
+				resolvedBy: 'match',
+				aggHomeGoals: aggHome,
+				aggAwayGoals: aggAway
+			};
 		} else if (aggAway > aggHome) {
-			return { homeGoals: leg1.homeGoals, awayGoals: leg1.awayGoals, winner: away, resolvedBy: 'match', aggHomeGoals: aggHome, aggAwayGoals: aggAway };
+			return {
+				homeGoals: leg1.homeGoals,
+				awayGoals: leg1.awayGoals,
+				winner: away,
+				resolvedBy: 'match',
+				aggHomeGoals: aggHome,
+				aggAwayGoals: aggAway
+			};
 		} else {
 			const winner = Math.random() < 0.5 ? home : away;
-			return { homeGoals: leg1.homeGoals, awayGoals: leg1.awayGoals, winner, resolvedBy: 'coin-toss', aggHomeGoals: aggHome, aggAwayGoals: aggAway };
+			return {
+				homeGoals: leg1.homeGoals,
+				awayGoals: leg1.awayGoals,
+				winner,
+				resolvedBy: 'coin-toss',
+				aggHomeGoals: aggHome,
+				aggAwayGoals: aggAway
+			};
 		}
 	} else {
 		const match = simulateMatch(home, away);
@@ -280,7 +369,7 @@ export function simulateCupRound(bracket: CupBracket): CupBracket {
 	const filledTies = nextRound.ties.map((tie, i) => ({
 		home: winnersSorted[i * 2],
 		away: winnersSorted[i * 2 + 1],
-		result: undefined as (CupTie['result'])
+		result: undefined as CupTie['result']
 	}));
 
 	updatedRounds[nextRoundIdx] = { ...nextRound, ties: filledTies };

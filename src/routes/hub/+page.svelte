@@ -4,24 +4,48 @@
 	import { player } from '$lib/stores/player.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
 	import { saveGame } from '$lib/save';
-	import { CUP_DISPLAY_NAMES, CUP_ROUND_NAMES, CUP_SCHEDULE } from '$lib/config/cups';
-	import type { CupBracket, CupType } from '$lib/types/game';
+	import { CUP_ROUND_NAMES } from '$lib/config/cups';
+	import type { CupType } from '$lib/types/game';
 	import Button from '$lib/components/Button.svelte';
 
-	function getCupStatus(type: CupType): { alive: boolean; text: string } | null {
+	const ROUND_ABBREV: Record<string, string> = {
+		'Round 1': 'R1',
+		'Round 2': 'R2',
+		'Round 3': 'R3',
+		'Round 4': 'R4',
+		'Quarter Final': 'QF',
+		'Semi Final': 'SF',
+		Final: 'F'
+	};
+
+	function getCupStatus(type: CupType): { alive: boolean; label: string; stat: string } | null {
 		const bracket = type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
 		if (!bracket) return null;
 
+		const label = type === 'league-cup' ? 'LEAGUE CUP' : 'FA CUP';
+
 		const eliminatedRound = bracket.eliminated[player.club];
 		if (eliminatedRound !== undefined) {
-			return { alive: false, text: `Out in ${CUP_ROUND_NAMES[type][eliminatedRound]}` };
+			return {
+				alive: false,
+				label,
+				stat: `Out ${ROUND_ABBREV[CUP_ROUND_NAMES[type][eliminatedRound]] ?? 'OUT'}`
+			};
 		}
 		if (bracket.winner) {
 			const won = bracket.winner === player.club;
-			return { alive: true, text: won ? 'Winner!' : `Runner-up` };
+			return {
+				alive: won,
+				label,
+				stat: won ? 'WON' : 'OUT'
+			};
 		}
 
-		return { alive: true, text: `In ${CUP_ROUND_NAMES[type][bracket.currentRound]}` };
+		return {
+			alive: true,
+			label,
+			stat: `In ${ROUND_ABBREV[CUP_ROUND_NAMES[type][bracket.currentRound]] ?? 'IN'}`
+		};
 	}
 
 	$effect(() => {
@@ -106,7 +130,7 @@
 			class="relative rounded border border-transparent bg-card p-3 text-center hover:border-primary"
 		>
 			<p class="text-sm text-primary">Div {player.division}</p>
-			<p class="mt-0.5 text-[9px] text-subtle">DIVISION</p>
+			<p class="mt-0.5 text-[9px] text-subtle">FIXTURES</p>
 			<span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-subtle">&gt;</span>
 		</button>
 	</div>
@@ -114,31 +138,35 @@
 	<div class="mb-3 mt-4 grid grid-cols-2 gap-3">
 		<button
 			onclick={async () => await goto('/hub/cup-results')}
-			class="rounded border border-transparent bg-card p-3 text-center hover:border-primary"
+			class="relative rounded border border-transparent bg-card p-3 text-center hover:border-primary"
 		>
-			<p class="text-[10px] text-subtle">League Cup</p>
 			{#if true}
-				{@const status = getCupStatus('league-cup')}
-				{#if status}
-					<p class="mt-0.5 text-[10px] {status.alive ? 'text-success' : 'text-danger'}">{status.text}</p>
+				{@const s = getCupStatus('league-cup')}
+				{#if s}
+					<p class="text-sm {s.alive ? 'text-success' : 'text-danger'}">{s.stat}</p>
+					<p class="mt-0.5 text-[9px] text-subtle">{s.label}</p>
 				{:else}
-					<p class="mt-0.5 text-[10px] text-subtle">Not started</p>
+					<p class="text-sm text-subtle">-</p>
+					<p class="mt-0.5 text-[9px] text-subtle">LEAGUE CUP</p>
 				{/if}
 			{/if}
+			<span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-subtle">&gt;</span>
 		</button>
 		<button
 			onclick={async () => await goto('/hub/cup-results')}
-			class="rounded border border-transparent bg-card p-3 text-center hover:border-primary"
+			class="relative rounded border border-transparent bg-card p-3 text-center hover:border-primary"
 		>
-			<p class="text-[10px] text-subtle">FA Cup</p>
 			{#if true}
-				{@const status = getCupStatus('fa-cup')}
-				{#if status}
-					<p class="mt-0.5 text-[10px] {status.alive ? 'text-success' : 'text-danger'}">{status.text}</p>
+				{@const s = getCupStatus('fa-cup')}
+				{#if s}
+					<p class="text-sm {s.alive ? 'text-success' : 'text-danger'}">{s.stat}</p>
+					<p class="mt-0.5 text-[9px] text-subtle">{s.label}</p>
 				{:else}
-					<p class="mt-0.5 text-[10px] text-subtle">Not started</p>
+					<p class="text-sm text-subtle">-</p>
+					<p class="mt-0.5 text-[9px] text-subtle">FA CUP</p>
 				{/if}
 			{/if}
+			<span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-subtle">&gt;</span>
 		</button>
 	</div>
 

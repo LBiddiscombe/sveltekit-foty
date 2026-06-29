@@ -156,13 +156,13 @@
 			});
 			lines.push(`  ${leg1Result}`);
 
-			const pGoals1 =
-				r.playerLeg1Goals ?? (PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals);
+			const teamGoals1 = PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals;
 			const oppGoals1 = PLAYER_CLUB === playerTie.home ? r.awayGoals : r.homeGoals;
-			const leg1ResultText = pGoals1 > oppGoals1 ? 'WIN' : pGoals1 === oppGoals1 ? 'DRAW' : 'LOSE';
+			const leg1ResultText = teamGoals1 > oppGoals1 ? 'WIN' : teamGoals1 === oppGoals1 ? 'DRAW' : 'LOSE';
+			const pGoals1 = r.playerLeg1Goals ?? teamGoals1;
 			const leg1Line =
 				r.playerLeg1Goals !== undefined &&
-				pGoals1 === 0 &&
+				r.playerLeg1Goals === 0 &&
 				(!r.playerLeg1Outcomes || r.playerLeg1Outcomes.length === 0)
 					? `  RESULT - ${leg1ResultText} : YOU DIDN'T PLAY`
 					: `  RESULT - ${leg1ResultText} : YOU SCORED ${pGoals1}`;
@@ -183,18 +183,18 @@
 			});
 			lines.push(`  ${leg2Result}`);
 
-			const pGoals2 =
-				r.playerLeg2Goals ?? (PLAYER_CLUB === playerTie.home ? r.homeGoals2 : r.awayGoals2);
+			const teamGoals2 = PLAYER_CLUB === playerTie.home ? r.homeGoals2 : r.awayGoals2;
 			const oppGoals2 = PLAYER_CLUB === playerTie.home ? r.awayGoals2 : r.homeGoals2;
 			const leg2ResultText =
-				(pGoals2 ?? 0) > (oppGoals2 ?? 0)
+				(teamGoals2 ?? 0) > (oppGoals2 ?? 0)
 					? 'WIN'
-					: (pGoals2 ?? 0) === (oppGoals2 ?? 0)
+					: (teamGoals2 ?? 0) === (oppGoals2 ?? 0)
 						? 'DRAW'
 						: 'LOSE';
+			const pGoals2 = r.playerLeg2Goals ?? teamGoals2;
 			const leg2Line =
 				r.playerLeg2Goals !== undefined &&
-				pGoals2 === 0 &&
+				r.playerLeg2Goals === 0 &&
 				(!r.playerLeg2Outcomes || r.playerLeg2Outcomes.length === 0)
 					? `  RESULT - ${leg2ResultText} : YOU DIDN'T PLAY`
 					: `  RESULT - ${leg2ResultText} : YOU SCORED ${pGoals2 ?? 0}`;
@@ -222,16 +222,15 @@
 				`  ${playerTie.home.padEnd(14)} ${r.homeGoals} - ${r.awayGoals}    ${playerTie.away}`
 			);
 
+			const teamGoals1 = PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals;
 			const playerWon = r.winner === PLAYER_CLUB;
-			const pGoals =
-				r.playerLeg1Goals ?? (PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals);
-			const resultText = playerWon ? 'WIN' : 'LOSE';
+			const pGoals = r.playerLeg1Goals ?? teamGoals1;
 			const line =
 				r.playerLeg1Goals !== undefined &&
-				pGoals === 0 &&
+				r.playerLeg1Goals === 0 &&
 				(!r.playerLeg1Outcomes || r.playerLeg1Outcomes.length === 0)
-					? `  RESULT - ${resultText} : YOU DIDN'T PLAY`
-					: `  RESULT - ${resultText} : YOU SCORED ${pGoals}`;
+					? `  RESULT - ${playerWon ? 'WIN' : 'LOSE'} : YOU DIDN'T PLAY`
+					: `  RESULT - ${playerWon ? 'WIN' : 'LOSE'} : YOU SCORED ${pGoals}`;
 			lines.push(line);
 		}
 

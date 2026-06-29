@@ -17,6 +17,12 @@ function poisson(lambda: number): number {
 
 const DEFAULT_STRENGTH = 3;
 
+function remapPair(a: number, b: number): [number, number] {
+	const max = Math.max(a, b);
+	const scale = 10 / max;
+	return [Math.round(a * scale), Math.round(b * scale)];
+}
+
 function calcTeamGoals(strength: number, morale: number): number {
 	return poisson(0.3 + strength * 0.1 + morale * 0.01);
 }
@@ -36,9 +42,10 @@ export function playGame(
 	playerClub: string,
 	opponentClub: string
 ): MatchResult {
+	const [teamStr, oppStr] = remapPair(strength(playerClub), strength(opponentClub));
 	const playerGoals = outcomes.filter((o) => o === 'goal').length;
-	const teamBase = calcTeamGoals(strength(playerClub), morale);
-	const opponent = calcOpponentGoals(strength(opponentClub), morale);
+	const teamBase = calcTeamGoals(teamStr, morale);
+	const opponent = calcOpponentGoals(oppStr, morale);
 	return {
 		played: true,
 		chances,
@@ -54,11 +61,12 @@ export function skipGame(
 	playerClub: string,
 	opponentClub: string
 ): MatchResult {
+	const [teamStr, oppStr] = remapPair(strength(playerClub), strength(opponentClub));
 	return {
 		played: false,
 		chances,
 		outcomes: [],
-		score: [calcTeamGoals(strength(playerClub), morale), calcOpponentGoals(strength(opponentClub), morale)],
+		score: [calcTeamGoals(teamStr, morale), calcOpponentGoals(oppStr, morale)],
 		rating: 4
 	};
 }
@@ -80,8 +88,9 @@ export function consumeDeck(deck: number[], skipped: boolean) {
 export const AI_DRAW_BREAKER = 0.35;
 
 export function simAiMatch(homeStrength: number, awayStrength: number): AiMatchResult {
-	const homeLambda = 0.3 + homeStrength * 0.1;
-	const awayLambda = 0.3 + awayStrength * 0.1;
+	const [homeStr, awayStr] = remapPair(homeStrength, awayStrength);
+	const homeLambda = 0.3 + homeStr * 0.1;
+	const awayLambda = 0.3 + awayStr * 0.1;
 	let homeGoals = poisson(homeLambda);
 	const awayGoals = poisson(awayLambda);
 	if (homeGoals === awayGoals && Math.random() < AI_DRAW_BREAKER) {
@@ -89,3 +98,5 @@ export function simAiMatch(homeStrength: number, awayStrength: number): AiMatchR
 	}
 	return { homeGoals, awayGoals };
 }
+
+export { remapPair };

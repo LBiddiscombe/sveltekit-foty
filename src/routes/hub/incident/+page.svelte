@@ -144,14 +144,7 @@
 </script>
 
 <div class="mx-auto flex min-h-dvh max-w-md flex-col bg-dark px-4 py-6 font-pixel text-primary">
-	<div class="mb-6 flex shrink-0 items-center justify-between">
-		<button
-			onclick={async () => await goto('/hub/inbox')}
-			disabled={tickerState !== 'stopped'}
-			class="flex items-center gap-1 text-[10px] text-subtle hover:text-primary disabled:opacity-40"
-		>
-			<span class="text-xs leading-none">&lt;</span> Inbox
-		</button>
+	<div class="mb-6 flex shrink-0 items-center justify-end">
 		<span class="text-[10px] font-bold uppercase tracking-wider text-success">Incident</span>
 	</div>
 
