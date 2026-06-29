@@ -80,7 +80,6 @@
 		for (const cupType of ['league-cup', 'fa-cup'] as const) {
 			const bracket = cupType === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
 			if (!bracket || bracket.winner) continue;
-			if (player.club in bracket.eliminated) continue;
 
 			const schedule = CUP_SCHEDULE[cupType];
 

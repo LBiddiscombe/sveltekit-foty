@@ -158,7 +158,8 @@
 
 			const teamGoals1 = PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals;
 			const oppGoals1 = PLAYER_CLUB === playerTie.home ? r.awayGoals : r.homeGoals;
-			const leg1ResultText = teamGoals1 > oppGoals1 ? 'WIN' : teamGoals1 === oppGoals1 ? 'DRAW' : 'LOSE';
+			const leg1ResultText =
+				teamGoals1 > oppGoals1 ? 'WIN' : teamGoals1 === oppGoals1 ? 'DRAW' : 'LOSE';
 			const pGoals1 = r.playerLeg1Goals ?? teamGoals1;
 			const leg1Line =
 				r.playerLeg1Goals !== undefined &&
@@ -218,9 +219,14 @@
 				homeScore: r.homeGoals,
 				awayScore: r.awayGoals
 			});
-			lines.push(
-				`  ${playerTie.home.padEnd(14)} ${r.homeGoals} - ${r.awayGoals}    ${playerTie.away}`
-			);
+			const onPens = r.resolvedBy === 'coin-toss';
+			const homeWon = r.winner === playerTie.home;
+			const scoreLine = onPens
+				? homeWon
+					? `p ${r.homeGoals} - ${r.awayGoals}`
+					: `${r.homeGoals} - ${r.awayGoals} p`
+				: `${r.homeGoals} - ${r.awayGoals}`;
+			lines.push(`  ${playerTie.home.padEnd(14)} ${scoreLine}    ${playerTie.away}`);
 
 			const teamGoals1 = PLAYER_CLUB === playerTie.home ? r.homeGoals : r.awayGoals;
 			const playerWon = r.winner === PLAYER_CLUB;

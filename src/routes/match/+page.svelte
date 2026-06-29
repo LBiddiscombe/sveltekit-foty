@@ -8,7 +8,7 @@
 	import { createPenaltySketch } from '$lib/components/minigames/PenaltySketch';
 	import { createFirstTimeFinishSketch } from '$lib/components/minigames/FirstTimeFinishSketch';
 	import { createReboundSketch } from '$lib/components/minigames/ReboundSketch';
-	import type { Outcome } from '$lib/types/game';
+	import type { DivisionMatch, Outcome } from '$lib/types/game';
 	import { playGame, skipGame, getMoraleDelta, consumeDeck } from '$lib/match/engine';
 	import { XP_CONFIG } from '$lib/config/xp';
 	import { DIVISION_XP_CAPS } from '$lib/config/levels';
@@ -84,8 +84,9 @@
 		const weekSchedule = season.divisionSchedule.weeks.find(
 			(w) => w.weekNumber === game.fixture.weekNumber
 		);
+		let divMatch: DivisionMatch | undefined;
 		if (weekSchedule) {
-			const divMatch = weekSchedule.matches.find(
+			divMatch = weekSchedule.matches.find(
 				(m) =>
 					(m.home === player.club && m.away === game.fixture.opponent) ||
 					(m.away === player.club && m.home === game.fixture.opponent)
@@ -98,12 +99,7 @@
 			}
 		}
 
-		if (
-			!weekSchedule ||
-			!weekSchedule.matches.some(
-				(m) => m.home === game.fixture.opponent || m.away === game.fixture.opponent
-			)
-		) {
+		if (!divMatch) {
 			for (const cupType of ['league-cup', 'fa-cup'] as const) {
 				const bracket = cupType === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
 				if (!bracket || bracket.winner) continue;
