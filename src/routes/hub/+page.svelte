@@ -137,7 +137,7 @@
 
 	<div class="mb-3 mt-4 grid grid-cols-2 gap-3">
 		<button
-			onclick={async () => await goto('/hub/cup-results')}
+			onclick={async () => await goto('/hub/cup-fixtures?cup=league-cup')}
 			class="relative rounded border border-transparent bg-card p-3 text-center hover:border-primary"
 		>
 			{#if true}
@@ -153,7 +153,7 @@
 			<span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-subtle">&gt;</span>
 		</button>
 		<button
-			onclick={async () => await goto('/hub/cup-results')}
+			onclick={async () => await goto('/hub/cup-fixtures?cup=fa-cup')}
 			class="relative rounded border border-transparent bg-card p-3 text-center hover:border-primary"
 		>
 			{#if true}

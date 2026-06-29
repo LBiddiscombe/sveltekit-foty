@@ -185,7 +185,11 @@
 
 **Cup tie resolution** — Drawn cup matches decided by coin toss (no extra time). A future penalties minigame will replace the coin toss.
 
-**Cup draw** — Random pairing per round, including home/away assignment. Seeded at season start for round 1; subsequent rounds drawn after the previous round completes.
+**Cup draw** — Random pairing per round, including home/away assignment. Seeded at season start for round 1; subsequent rounds drawn during vidiprinter when the previous round's results are resolved. Pairings are available on the hub immediately after the previous round completes.
+
+**Cup fixtures page** — Hub sub-page (`/hub/cup-fixtures`) showing bracket pairings and results for one or both cups. Accepts an optional `?cup=league-cup|fa-cup` query param to filter to a single competition. Completed rounds are shown as collapsible accordions (collapsed by default, "Done" tag). The current round is expanded ("Current" tag). Future undrawn rounds are collapsed ("Upcoming" tag). Drawn but unplayed ties display as "Team A v Team B" rather than being hidden.
+
+**Cup fixtures on fixture list** — The `/hub/fixtures` page interleaves cup fixtures chronologically with league fixtures when the player is still participating and the tie has been drawn. League Cup two-leg ties produce two entries (H and A) for the same week. Displayed in warning colour with the cup round label, e.g. "Liverpoool (LC Round 1)". Cup results are not shown on the main fixture list — they are visible on the cup-fixtures page. Once a cup tie is resolved (played), it is removed from the fixture list.
 
 **Cup rewards** — Per-match XP identical to league (played +1, goal +1, miss -1, result bonus). Flat XP bonus per round survived (+1 to +5). Prize money per round (£500 to £20,000 for League Cup, £1,000 to £50,000 for FA Cup). Morale changes same as league.
 

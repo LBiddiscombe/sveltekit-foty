@@ -34,10 +34,13 @@ function winnerDivision(winner: string | undefined): number {
 
 const ITER = 5000;
 
-describe('Cup winner distribution', () => {
+
+// Skip in normal test runs. Run with: change `skip` to `only` temporarily
+// or: npx vitest run src/lib/cups-distribution.spec.ts --project server
+describe.skip('Cup winner distribution', () => {
 	it('should show division of winner for league cup', () => {
-		const winsByDiv = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 };
-		const r2ByDiv = { 1: [] as number[], 2: [] as number[], 3: [] as number[], 4: [] as number[] };
+			const winsByDiv: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 };
+		const r2ByDiv: Record<number, number[]> = { 1: [], 2: [], 3: [], 4: [] };
 
 		for (let i = 0; i < ITER; i++) {
 			const b = simulateFullCup();
