@@ -46,7 +46,7 @@
 
 **Club strength** — A fixed rating (1-10) assigned to each of the 92 parody clubs. Man Untied is the strongest (9). Dictates AI match outcomes in the Poisson model. Re-rolled with slight ±1 variance each season to prevent deterministic outcomes.
 
-**Strength normalisation** — Before any match, the two clubs' strengths are remapped so the stronger team becomes 10 and the weaker is scaled proportionally (e.g. Gillingham 1 vs Newport 2 → [5, 10] rather than [1, 2]). This ensures all same-division matches produce ~2.2–2.6 average total goals while preserving cross-division gaps in cup fixtures. Applied via `remapPair()` in both `engine.ts` (league matches) and `cups.ts` (cup matches).
+**Strength normalisation** — Before any match, the two clubs' strengths are remapped so the stronger team becomes 10 and the weaker is scaled proportionally (e.g. Gillingham 1 vs Newport 2 → [5, 10] rather than [1, 2]). This ensures all same-division matches produce ~2.2–2.6 average total goals while preserving cross-division gaps in cup fixtures. Applied via `remapPair()` in both `engine.ts` (league matches) and `cups.ts` (cup matches). In cup matches only, a division multiplier is applied to each club's base strength before normalisation (Div 1: ×2.0, Div 2: ×1.2, Div 3: ×1.0, Div 4: ×0.8) to widen the gap between tiers and prevent top-division teams from being eliminated too early by random draws.
 
 **Type file** — `src/lib/types/game.ts` defines all TypeScript interfaces used by stores and components. Single source of truth, avoids circular imports.
 
@@ -180,6 +180,8 @@
 **League Cup week** — Dedicated weeks (no league games) where both legs of rounds 1-5 are played (Tue 1st leg, Sat 2nd leg): weeks 1, 5, 9, 13, 17. Semi Final is week 21 (alongside league). Final is week 25 (alongside league).
 
 **FA Cup week** — A week where an FA Cup round (1 leg) is added alongside regular league games. Occurs weeks 3, 7, 11, 15, 19, 23. Final is week 31 (after league season ends).
+
+**Cup division multiplier** — Each club's base strength is multiplied by a division factor before cup match simulation: Div 1 ×2.0, Div 2 ×1.2, Div 3 ×1.0, Div 4 ×0.8. Non-league clubs are treated as Div 4 with a further reduction (effective ×0.5). This ensures top-division clubs dominate cross-division ties more realistically, preventing excessive early elimination from random draws.
 
 **Cup tie resolution** — Drawn cup matches decided by coin toss (no extra time). A future penalties minigame will replace the coin toss.
 

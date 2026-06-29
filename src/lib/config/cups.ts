@@ -150,6 +150,13 @@ export const LEAGUE_CUP_DEDICATED_WEEKS = [1, 5, 9, 13, 17];
 
 export const NON_LEAGUE_STRENGTH = 1;
 
+export const CUP_DIVISION_MULTIPLIERS: Record<number, number> = {
+	1: 2.0,
+	2: 1.2,
+	3: 1.0,
+	4: 0.8
+};
+
 function shuffle<T>(arr: T[]): T[] {
 	const a = [...arr];
 	for (let i = a.length - 1; i > 0; i--) {
@@ -241,14 +248,17 @@ export function getLeagueWeeks(): number[] {
 	return weeks;
 }
 
+function getCupStrength(club: string): number {
+	if (club.endsWith('(N/L)')) return 0.5;
+	const base = CLUB_STRENGTHS[club] ?? NON_LEAGUE_STRENGTH;
+	const clubData = ALL_CLUBS.find((c) => c.name === club);
+	const div = clubData?.division;
+	const mult = div ? (CUP_DIVISION_MULTIPLIERS[div] ?? 1.0) : 0.5;
+	return base * mult;
+}
+
 function simulateMatch(home: string, away: string): { homeGoals: number; awayGoals: number } {
-	const homeStrength = home.endsWith('(N/L)')
-		? NON_LEAGUE_STRENGTH
-		: (CLUB_STRENGTHS[home] ?? NON_LEAGUE_STRENGTH);
-	const awayStrength = away.endsWith('(N/L)')
-		? NON_LEAGUE_STRENGTH
-		: (CLUB_STRENGTHS[away] ?? NON_LEAGUE_STRENGTH);
-	const [homeStr, awayStr] = remapPair(homeStrength, awayStrength);
+	const [homeStr, awayStr] = remapPair(getCupStrength(home), getCupStrength(away));
 	const homeAdv = 0.5;
 	const homeRate = Math.max(0.1, homeStr * 0.15 + homeAdv);
 	const awayRate = Math.max(0.1, awayStr * 0.15);
