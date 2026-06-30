@@ -5,9 +5,11 @@
 	import { player } from '$lib/stores/player.svelte';
 	import { saveGame } from '$lib/save';
 	import { resolveWeek } from '$lib/week-resolve/resolveWeek';
-	import { createTeletype, type TeletypeConfig } from './teletype.svelte';
+	import { createTeletype } from './teletype.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import VidiprinterLine from '$lib/components/VidiprinterLine.svelte';
+
+	const LINE_HEIGHT = 18;
 
 	$effect(() => {
 		season.phase = 'vidiprinter';
@@ -16,6 +18,8 @@
 	const resolution = resolveWeek();
 
 	let autoContinued = $state(false);
+	let scrollContainer: HTMLDivElement | undefined = $state();
+	let userScrolledUp = $state(false);
 
 	onMount(() => {
 		if (resolution.status === 'auto-continue' && !autoContinued) {
@@ -33,6 +37,23 @@
 		tty.currentLine < resolution.lines.length ? tty.textForLine(tty.currentLine) : ''
 	);
 
+	$effect(() => {
+		pastLines;
+		if (!scrollContainer || userScrolledUp) return;
+		const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+		const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+		if (distanceFromBottom <= LINE_HEIGHT * 2) {
+			scrollContainer.scrollTop = scrollContainer.scrollTop + LINE_HEIGHT;
+		}
+	});
+
+	function onScroll() {
+		if (!scrollContainer) return;
+		const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+		const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+		userScrolledUp = distanceFromBottom > LINE_HEIGHT * 3;
+	}
+
 	function handleContinue() {
 		const dest = resolution.onContinue();
 		saveGame();
@@ -47,12 +68,18 @@
 />
 
 {#if resolution.status === 'display'}
-	<div class="mx-auto flex min-h-dvh max-w-md flex-col bg-dark px-4 py-6 font-pixel text-primary">
-		<div class="mb-6 flex items-center justify-end">
-			<span class="text-[10px] font-bold uppercase tracking-wider text-success">Vidiprinter</span>
+	<div class="mx-auto flex h-dvh max-w-md flex-col bg-dark px-4 py-6 font-pixel text-primary">
+		<div class="shrink-0">
+			<div class="mb-6 flex items-center justify-end">
+				<span class="text-[10px] font-bold uppercase tracking-wider text-success">Vidiprinter</span>
+			</div>
 		</div>
 
-		<div class="flex min-h-0 flex-1 flex-col justify-end overflow-hidden">
+		<div
+			class="flex min-h-0 flex-1 flex-col justify-end overflow-y-auto"
+			bind:this={scrollContainer}
+			onscroll={onScroll}
+		>
 			<div class="flex flex-col gap-0.5 font-pixel text-[10px] leading-relaxed">
 				{#each pastLines as line, i (i)}
 					{@const sc = resolution.scoreLines.get(i)}
@@ -60,6 +87,15 @@
 					{@const isScoreLine = sc !== undefined}
 					{@const isHeader = line === 'INCOMING RESULTS' || line.startsWith(' LEAGUE')}
 					{@const isTableLine = line.includes('pts')}
+					{@const isElimination = resolution.eliminationLines.includes(i)}
+					{@const isPlayerWin = resolution.playerWinLines.includes(i)}
+					{@const isDrawFixture = resolution.playerDrawLines.includes(i)}
+					{@const isWinnerAnnounce = resolution.winnerAnnounceLines.includes(i)}
+					{@const specialClass = isElimination
+						? 'text-error'
+						: isPlayerWin
+							? 'text-success'
+							: ''}
 
 					{#if line === ''}
 						<div class="h-2"></div>
@@ -75,13 +111,15 @@
 						/>
 					{:else}
 						<div
-							class="whitespace-pre {isResultLine
+							class="whitespace-pre {specialClass || (isResultLine
 								? 'text-subtle'
 								: isHeader
 									? 'text-warning'
-									: isTableLine
+									: isTableLine || isDrawFixture
 										? 'text-primary'
-										: 'text-subtle'}"
+										: isWinnerAnnounce
+											? 'text-primary'
+											: 'text-subtle')}"
 						>
 							{line}
 						</div>
@@ -99,7 +137,7 @@
 			</div>
 		</div>
 
-		<div class="mt-auto pt-4 {tty.done ? '' : 'invisible'}">
+		<div class="shrink-0 pt-4 {tty.done ? '' : 'invisible'}">
 			<Button onclick={handleContinue}>Continue</Button>
 		</div>
 	</div>

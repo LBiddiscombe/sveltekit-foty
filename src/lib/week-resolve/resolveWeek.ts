@@ -8,7 +8,8 @@ import {
 	CUP_SCHEDULE,
 	CUP_DISPLAY_NAMES,
 	CUP_ROUND_NAMES,
-	isFaCupFinalWeek
+	isFaCupFinalWeek,
+	FA_CUP_FINAL_WEEK
 } from '$lib/config/cups';
 import { simulateMatch } from '$lib/match/engine';
 import {
@@ -21,7 +22,7 @@ import {
 	processDivisionUpTransfer
 } from '$lib/transfer/evaluate';
 import { pickRandomIncident } from '$lib/config/incidents';
-import type { CupType, Fixture } from '$lib/types/game';
+import type { CupBracket, CupType, Fixture } from '$lib/types/game';
 
 export type ScoreLine = {
 	home: string;
@@ -46,6 +47,10 @@ export type WeekResolution = {
 	status: 'display' | 'auto-continue';
 	lines: string[];
 	scoreLines: Map<number, ScoreLine>;
+	playerDrawLines: number[];
+	eliminationLines: number[];
+	playerWinLines: number[];
+	winnerAnnounceLines: number[];
 	onContinue: () => string;
 };
 
@@ -59,29 +64,47 @@ function getCupWeekInfo(week: number): { type: CupType; round: number } | null {
 	return null;
 }
 
+function getLastScheduleRound(type: CupType): number {
+	const schedule = CUP_SCHEDULE[type];
+	return schedule[schedule.length - 1].round;
+}
+
+function getWeekForRound(type: CupType, round: number): number | undefined {
+	return CUP_SCHEDULE[type].find((s) => s.round === round)?.week;
+}
+
+function isFinal(bracket: CupBracket, roundNumber: number): boolean {
+	return bracket.winner !== undefined || roundNumber === getLastScheduleRound(bracket.type);
+}
+
 function buildCupLines(
 	club: string,
 	cupInfo: { type: CupType; round: number }
 ): {
 	lines: string[];
 	scoreEntries: CupEntry[];
+	eliminated: boolean;
+	wonCup: boolean;
+	cupName: string;
 } {
 	const bracket = cupInfo.type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
-	if (!bracket) return { lines: [], scoreEntries: [] };
+	if (!bracket) return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
 
 	const round = bracket.rounds[cupInfo.round - 1];
-	if (!round) return { lines: [], scoreEntries: [] };
+	if (!round) return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
 
 	const hasResults = round.ties.some((t) => t.result);
-	if (!hasResults) return { lines: [], scoreEntries: [] };
+	if (!hasResults) return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
 
 	const playerTie = round.ties.find((t) => (t.home === club || t.away === club) && t.result);
-	if (!playerTie) return { lines: [], scoreEntries: [] };
+	if (!playerTie) return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
 
 	const r = playerTie.result!;
 	const isTwoLeg = r.homeGoals2 !== undefined;
 	const cupName = CUP_DISPLAY_NAMES[cupInfo.type].toUpperCase();
 	const roundName = CUP_ROUND_NAMES[cupInfo.type][cupInfo.round].toUpperCase();
+	const playerWon = r.winner === club;
+	const isFinalRound = isFinal(bracket, cupInfo.round);
 
 	const scoreEntries: CupEntry[] = [];
 	const lines: string[] = [];
@@ -148,7 +171,6 @@ function buildCupLines(
 		lines.push('');
 
 		const pens = r.resolvedBy === 'coin-toss' ? ' p' : '';
-		const playerWon = r.winner === club;
 		lines.push(
 			`  Agg: ${r.aggHomeGoals} - ${r.aggAwayGoals}${pens}  ${playerWon ? 'WIN' : 'LOSE'}`
 		);
@@ -176,7 +198,6 @@ function buildCupLines(
 		lines.push(`  ${playerTie.home.padEnd(14)} ${scoreLine}    ${playerTie.away}`);
 
 		const teamGoals1 = club === playerTie.home ? r.homeGoals : r.awayGoals;
-		const playerWon = r.winner === club;
 		const pGoals = r.playerLeg1Goals ?? teamGoals1;
 		const line =
 			r.playerLeg1Goals !== undefined &&
@@ -187,25 +208,134 @@ function buildCupLines(
 		lines.push(line);
 	}
 
-	return { lines, scoreEntries };
+	return { lines, scoreEntries, eliminated: !playerWon, wonCup: playerWon && isFinalRound, cupName };
+}
+
+function buildFinalResultLines(
+	club: string,
+	cupInfo: { type: CupType; round: number }
+): { lines: string[]; scoreEntries: CupEntry[]; winnerAnnounce: string; cupName: string } {
+	const bracket = cupInfo.type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
+	if (!bracket || !bracket.winner) return { lines: [], scoreEntries: [], winnerAnnounce: '', cupName: '' };
+
+	const round = bracket.rounds[cupInfo.round - 1];
+	if (!round) return { lines: [], scoreEntries: [], winnerAnnounce: '', cupName: '' };
+
+	const cupName = CUP_DISPLAY_NAMES[cupInfo.type].toUpperCase();
+	const roundName = CUP_ROUND_NAMES[cupInfo.type][cupInfo.round].toUpperCase();
+
+	const hdr = ` ${cupName} ${roundName}`;
+	const lines: string[] = [hdr, '-'.repeat(hdr.length)];
+
+	const scoreEntries: CupEntry[] = [];
+
+	for (const tie of round.ties) {
+		if (!tie.result) continue;
+		const r = tie.result;
+		const onPens = r.resolvedBy === 'coin-toss';
+		const homeWon = r.winner === tie.home;
+
+		scoreEntries.push({
+			index: lines.length,
+			home: tie.home,
+			away: tie.away,
+			homeScore: r.homeGoals,
+			awayScore: r.awayGoals,
+			penalties: onPens,
+			penaltyHomeWon: onPens ? homeWon : undefined
+		});
+
+		const scoreLine = onPens
+			? homeWon
+				? `p ${r.homeGoals} - ${r.awayGoals}`
+				: `${r.homeGoals} - ${r.awayGoals} p`
+			: `${r.homeGoals} - ${r.awayGoals}`;
+		lines.push(`  ${tie.home.padEnd(14)} ${scoreLine}    ${tie.away}`);
+	}
+
+	const winnerAnnounce = `${bracket.winner} WON THE ${cupName}!`;
+	lines.push('');
+	lines.push(`  ${winnerAnnounce}`);
+
+	return { lines, scoreEntries, winnerAnnounce, cupName };
+}
+
+function buildCupDrawLines(
+	club: string,
+	cupInfo: { type: CupType; round: number }
+): { lines: string[]; playerDrawLines: number[] } {
+	const bracket = cupInfo.type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
+	if (!bracket) return { lines: [], playerDrawLines: [] };
+
+	if (isFinal(bracket, cupInfo.round)) return { lines: [], playerDrawLines: [] };
+
+	const nextRoundIdx = bracket.currentRound - 1;
+	const nextRound = bracket.rounds[nextRoundIdx];
+	if (!nextRound) return { lines: [], playerDrawLines: [] };
+
+	const drawnTies = nextRound.ties.filter((t) => t.home !== '' && t.away !== '');
+	if (drawnTies.length === 0) return { lines: [], playerDrawLines: [] };
+
+	const cupName = CUP_DISPLAY_NAMES[cupInfo.type].toUpperCase();
+	const roundName = CUP_ROUND_NAMES[cupInfo.type][nextRound.roundNumber];
+	const nextWeek = getWeekForRound(cupInfo.type, nextRound.roundNumber);
+
+	const lines: string[] = [];
+	const playerDrawLines: number[] = [];
+
+	const hdr = ` ${cupName} DRAW`;
+	lines.push(hdr);
+	lines.push('-'.repeat(hdr.length));
+
+	const isInDraw = drawnTies.some((t) => t.home === club || t.away === club);
+	if (isInDraw) {
+		lines.push(`  You're in the draw for ${roundName}`);
+	}
+
+	for (const tie of drawnTies) {
+		const isPlayerTie = tie.home === club || tie.away === club;
+		const drawLine = `  ${tie.home.padEnd(14)} v ${tie.away}`;
+		if (isPlayerTie) {
+			playerDrawLines.push(lines.length);
+		}
+		lines.push(drawLine);
+	}
+
+	lines.push(`That concludes today's ${CUP_DISPLAY_NAMES[cupInfo.type]} draw.`);
+	if (nextWeek) {
+		lines.push(`All matches to be played in week ${nextWeek}.`);
+	}
+
+	return { lines, playerDrawLines };
 }
 
 function buildLines(
 	club: string,
 	week: number,
 	weekFixtures: Fixture[],
-	cupLines: { lines: string[]; scoreEntries: CupEntry[] },
-	scoreLines: Map<number, ScoreLine>
+	cupResult: { lines: string[]; scoreEntries: CupEntry[]; eliminated: boolean; wonCup: boolean; cupName: string },
+	finalResult: { lines: string[]; scoreEntries: CupEntry[]; winnerAnnounce: string; cupName: string },
+	cupDraw: { lines: string[]; playerDrawLines: number[] },
+	scoreLines: Map<number, ScoreLine>,
+	playerDrawLines: number[],
+	eliminationLines: number[],
+	playerWinLines: number[],
+	winnerAnnounceLines: number[]
 ): string[] {
 	const l: string[] = [];
 	l.push('INCOMING RESULTS');
 	l.push('----------------');
 	l.push('');
 
-	if (cupLines.lines.length > 0) {
+	const hasCupResult = cupResult.lines.length > 0;
+	const hasFinalResult = finalResult.lines.length > 0;
+	const hasCupDraw = cupDraw.lines.length > 0;
+
+	if (hasCupResult) {
 		const cupBase = l.length;
-		l.push(...cupLines.lines);
-		for (const entry of cupLines.scoreEntries) {
+		l.push(...cupResult.lines);
+
+		for (const entry of cupResult.scoreEntries) {
 			scoreLines.set(cupBase + entry.index, {
 				home: entry.home,
 				away: entry.away,
@@ -214,6 +344,50 @@ function buildLines(
 				penalties: entry.penalties,
 				penaltyHomeWon: entry.penaltyHomeWon
 			});
+		}
+
+		if (cupResult.eliminated) {
+			const elimLine = `YOU'RE OUT OF THE ${cupResult.cupName}!`;
+			eliminationLines.push(l.length);
+			l.push(`  ${elimLine}`);
+		}
+
+		if (cupResult.wonCup) {
+			const winLine = `YOU WON THE ${cupResult.cupName}!`;
+			playerWinLines.push(l.length);
+			l.push(`  ${winLine}`);
+		}
+
+		l.push('');
+	}
+
+	if (hasFinalResult) {
+		const finalBase = l.length;
+		l.push(...finalResult.lines);
+
+		for (const entry of finalResult.scoreEntries) {
+			scoreLines.set(finalBase + entry.index, {
+				home: entry.home,
+				away: entry.away,
+				homeScore: entry.homeScore,
+				awayScore: entry.awayScore,
+				penalties: entry.penalties,
+				penaltyHomeWon: entry.penaltyHomeWon
+			});
+		}
+
+		if (finalResult.winnerAnnounce) {
+			winnerAnnounceLines.push(l.length - 1);
+		}
+
+		l.push('');
+	}
+
+	if (hasCupDraw) {
+		const drawBase = l.length;
+		l.push(...cupDraw.lines);
+		for (const idx of cupDraw.playerDrawLines) {
+			playerDrawLines.push(drawBase + idx);
 		}
 		l.push('');
 	}
@@ -296,8 +470,10 @@ function buildLines(
 
 function determineStatus(
 	week: number,
-	scoreLines: Map<number, ScoreLine>
+	scoreLines: Map<number, ScoreLine>,
+	hasCupInfo: boolean
 ): 'display' | 'auto-continue' {
+	if (hasCupInfo) return 'display';
 	const hasLeague = season.divisionSchedule.weeks.some(
 		(w) => w.weekNumber === week && w.matches.length > 0
 	);
@@ -424,13 +600,45 @@ export function resolveWeek(): WeekResolution {
 	}
 
 	const cupInfo = getCupWeekInfo(week);
-	const cupResult = cupInfo ? buildCupLines(club, cupInfo) : { lines: [], scoreEntries: [] };
 
 	const scoreLines = new Map<number, ScoreLine>();
-	const lines = buildLines(club, week, weekFixtures, cupResult, scoreLines);
+	const playerDrawLines: number[] = [];
+	const eliminationLines: number[] = [];
+	const playerWinLines: number[] = [];
+	const winnerAnnounceLines: number[] = [];
 
-	const status = determineStatus(week, scoreLines);
+	let cupResult = { lines: [] as string[], scoreEntries: [] as CupEntry[], eliminated: false, wonCup: false, cupName: '' };
+	let finalResult = { lines: [] as string[], scoreEntries: [] as CupEntry[], winnerAnnounce: '', cupName: '' };
+	let cupDraw = { lines: [] as string[], playerDrawLines: [] as number[] };
+
+	if (cupInfo) {
+		const bracket = cupInfo.type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
+		const isFinalRound = bracket ? isFinal(bracket, cupInfo.round) : false;
+
+		if (isFinalRound) {
+			const playerTieInFinal = bracket?.rounds[cupInfo.round - 1]?.ties.some(
+				(t) => (t.home === club || t.away === club) && t.result
+			);
+
+			if (playerTieInFinal) {
+				cupResult = buildCupLines(club, cupInfo);
+			} else {
+				finalResult = buildFinalResultLines(club, cupInfo);
+			}
+		} else {
+			cupResult = buildCupLines(club, cupInfo);
+			cupDraw = buildCupDrawLines(club, cupInfo);
+		}
+	}
+
+	const lines = buildLines(
+		club, week, weekFixtures,
+		cupResult, finalResult, cupDraw,
+		scoreLines, playerDrawLines, eliminationLines, playerWinLines, winnerAnnounceLines
+	);
+
+	const status = determineStatus(week, scoreLines, cupInfo !== null);
 	const onContinue = createContinuation(club, week, weekFixtures);
 
-	return { status, lines, scoreLines, onContinue };
+	return { status, lines, scoreLines, playerDrawLines, eliminationLines, playerWinLines, winnerAnnounceLines, onContinue };
 }

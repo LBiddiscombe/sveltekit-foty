@@ -4,7 +4,7 @@ import { player } from '$lib/stores/player.svelte';
 import { standings } from '$lib/stores/standings.svelte';
 import { inbox } from '$lib/stores/inbox.svelte';
 import { generateDivisionSchedule } from '$lib/config/schedule';
-import { getLeagueWeeks } from '$lib/config/cups';
+import { getLeagueWeeks, CUP_SCHEDULE } from '$lib/config/cups';
 import { getClubsByDivision } from '$lib/config/clubs';
 import { resolveWeek } from './resolveWeek';
 
@@ -50,46 +50,28 @@ describe('resolveWeek', () => {
 		expect(result.lines[0]).toBe('INCOMING RESULTS');
 	});
 
-	it('returns auto-continue on a cup-only week when player is eliminated from the active cup, even if still in another cup', () => {
+	it('returns display status on a cup-only week (no auto-continue)', () => {
 		season.weekNumber = 1;
 		season.leagueCupBracket = {
 			type: 'league-cup',
 			currentRound: 1,
-			rounds: [
-				{
-					roundNumber: 1,
-					ties: [
-						{ home: 'Barnett', away: 'Croo' },
-						{ home: 'Eton', away: 'Oxbridge' }
-					]
-				}
-			],
+			rounds: CUP_SCHEDULE['league-cup'].map((sr) => ({
+				roundNumber: sr.round,
+				ties: []
+			})),
 			eliminated: { Exetur: 1 }
 		};
-		season.faCupBracket = {
-			type: 'fa-cup',
-			currentRound: 1,
-			rounds: [
-				{
-					roundNumber: 1,
-					ties: [
-						{ home: 'Barnett', away: 'Croo' },
-						{ home: 'Eton', away: 'Oxbridge' }
-					]
-				}
-			],
-			eliminated: {}
-		};
+		season.faCupBracket = null;
 
 		const leagueWeeks = getLeagueWeeks();
 		const cupOnlyWeek1 = leagueWeeks.filter((w) => w !== 1);
 		season.divisionSchedule = generateDivisionSchedule(4, CLUBS, cupOnlyWeek1);
 
 		const result = resolveWeek();
-		expect(result.status).toBe('auto-continue');
+		expect(result.status).toBe('display');
 	});
 
-	it('onContinue returns /hub for a normal week with no transfer or incident', () => {
+	it('onContinue returns a string', () => {
 		const result = resolveWeek();
 		const dest = result.onContinue();
 		expect(typeof dest).toBe('string');

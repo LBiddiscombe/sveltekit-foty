@@ -198,3 +198,9 @@
 **Cup rewards** — Per-match XP identical to league (played +1, goal +1, miss -1, result bonus). Flat XP bonus per round survived (+1 to +5). Prize money per round (£500 to £20,000 for League Cup, £1,000 to £50,000 for FA Cup). Morale changes same as league.
 
 **Cup elimination taunt** — When the player's club is eliminated from a cup, subsequent pre-match views in cup weeks show a reminder that they're out.
+
+**Cup draw on vidiprinter** — After every cup week's results, the vidiprinter shows the next round's draw. Structure: cup name title (e.g. `LEAGUE CUP DRAW`), dash separator, optionally "You're in the draw for {Round Name}" if the player is still alive, then all pairings listed as `Team A v Team B` (player's tie in `text-primary`, others in `text-subtle`), "That concludes today's {Cup Name} draw.", and "All matches to be played in week {X}." No draw shown for finals.
+
+**Cup elimination on vidiprinter** — On the week the player is eliminated from a cup, a `YOU'RE OUT OF THE {CUP NAME}!` line in `text-error` appears immediately after the cup result and before the draw section. Not shown on subsequent cup weeks.
+
+**Cup final on vidiprinter** — The final result is shown on the vidiprinter even if the player is not involved. Always show the score line. If the player played: show "RESULT - WIN/LOSE : YOU SCORED X" commentary, then "YOU WON THE {CUP NAME}!" in `text-success` (win) or "YOU'RE OUT OF THE {CUP NAME}!" in `text-error` (loss). If the player didn't play: just the score line and "`{Club}` WON THE {CUP NAME}!" in standard text — no result commentary. No draw section after a final.
