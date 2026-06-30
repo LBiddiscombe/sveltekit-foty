@@ -160,9 +160,9 @@ export const NON_LEAGUE_STRENGTH = 1;
 
 export const CUP_DIVISION_MULTIPLIERS: Record<number, number> = {
 	1: 2.0,
-	2: 1.2,
-	3: 1.0,
-	4: 0.8
+	2: 1.0,
+	3: 0.75,
+	4: 0.5
 };
 
 function selectNonLeagueTeams(): string[] {
@@ -248,7 +248,7 @@ export function getLeagueWeeks(): number[] {
 }
 
 function getCupStrength(club: string): number {
-	if (club.endsWith('(N/L)')) return 0.5;
+	if (club.endsWith('(N/L)')) return 0.3;
 	const base = CLUB_STRENGTHS[club] ?? NON_LEAGUE_STRENGTH;
 	const clubData = ALL_CLUBS.find((c) => c.name === club);
 	const div = clubData?.division;
