@@ -1,13 +1,5 @@
 import type { DivisionSchedule, Fixture } from '$lib/types/game';
-
-function shuffle<T>(arr: T[]): T[] {
-	const a = [...arr];
-	for (let i = a.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[a[i], a[j]] = [a[j], a[i]];
-	}
-	return a;
-}
+import { shuffle, range } from '$lib/utils';
 
 export function generatePlayerFixtures(playerClub: string, divisionClubs: string[]): Fixture[] {
 	const opponents = divisionClubs.filter((c) => c !== playerClub);
@@ -29,9 +21,9 @@ export function generatePlayerFixtures(playerClub: string, divisionClubs: string
 	const isDiv1 = n <= 20;
 	const doubleCount = isDiv1 ? 8 : 16;
 
-	const doubleGameWeeks = shuffle(Array.from({ length: 30 }, (_, i) => i)).slice(0, doubleCount);
+	const doubleGameWeeks = shuffle(range(30)).slice(0, doubleCount);
 
-	const gameCounts = Array.from({ length: 30 }, (_, i) => (doubleGameWeeks.includes(i) ? 2 : 1));
+	const gameCounts = range(30).map((i) => (doubleGameWeeks.includes(i) ? 2 : 1));
 
 	const fixtures: Fixture[] = [];
 	let gameIndex = 0;

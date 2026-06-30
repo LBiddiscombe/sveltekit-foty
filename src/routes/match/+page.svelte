@@ -15,6 +15,7 @@
 	import { saveGame } from '$lib/save';
 	import { CUP_SCHEDULE, CUP_PRIZES, CUP_DISPLAY_NAMES, CUP_ROUND_NAMES } from '$lib/config/cups';
 	import { inbox } from '$lib/stores/inbox.svelte';
+	import { coinToss } from '$lib/utils';
 
 	type GameType = 'penalty' | 'first-time-finish' | 'rebound';
 
@@ -169,19 +170,14 @@
 					if (winner === player.club) {
 						const prize = CUP_PRIZES[cupType][roundInfo.round];
 						player.bankBalance += prize.prize;
-						player.addXp(prize.xp);
-						const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
-						inbox.items = [
-							...inbox.items,
-							{
-								id: nextId,
-								type: 'news',
-								subject: `${CUP_DISPLAY_NAMES[cupType]} ${CUP_ROUND_NAMES[cupType][roundInfo.round]} Win!`,
-								body: `Prize money: £${prize.prize} +${prize.xp}XP`,
-								actionRequired: false,
-								actioned: false
-							}
-						];
+						if (prize.xp > 0) player.addXp(prize.xp);
+						const xpText = prize.xp > 0 ? ` +${prize.xp}XP` : '';
+						inbox.addMessage({
+							type: 'news',
+							subject: `${CUP_DISPLAY_NAMES[cupType]} ${CUP_ROUND_NAMES[cupType][roundInfo.round]} Win!`,
+							body: `Prize money: £${prize.prize}${xpText}`,
+							actionRequired: false
+						});
 					}
 				} else if (roundInfo.isTwoLeg) {
 					const updatedTies = [...round.ties];
@@ -215,7 +211,7 @@
 						winner = game.fixture.opponent;
 						resolvedBy = 'match';
 					} else {
-						winner = Math.random() < 0.5 ? player.club : game.fixture.opponent;
+						winner = coinToss() ? player.club : game.fixture.opponent;
 						resolvedBy = 'coin-toss';
 					}
 
@@ -244,19 +240,14 @@
 					if (winner === player.club) {
 						const prize = CUP_PRIZES[cupType][roundInfo.round];
 						player.bankBalance += prize.prize;
-						player.addXp(prize.xp);
-						const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
-						inbox.items = [
-							...inbox.items,
-							{
-								id: nextId,
-								type: 'news',
-								subject: `${CUP_DISPLAY_NAMES[cupType]} ${CUP_ROUND_NAMES[cupType][roundInfo.round]} Win!`,
-								body: `Prize money: £${prize.prize} +${prize.xp}XP`,
-								actionRequired: false,
-								actioned: false
-							}
-						];
+						if (prize.xp > 0) player.addXp(prize.xp);
+						const xpText = prize.xp > 0 ? ` +${prize.xp}XP` : '';
+						inbox.addMessage({
+							type: 'news',
+							subject: `${CUP_DISPLAY_NAMES[cupType]} ${CUP_ROUND_NAMES[cupType][roundInfo.round]} Win!`,
+							body: `Prize money: £${prize.prize}${xpText}`,
+							actionRequired: false
+						});
 					}
 				}
 			}
@@ -285,7 +276,7 @@
 
 		if (game.skipped) {
 			consumeDeck(player.deck, true);
-			match.setResult(skipGame(chances, season.morale, player.club, currentGame.fixture.opponent));
+			match.setResult(skipGame(chances, season.morale, player.club, currentGame.fixture.opponent, currentGame.fixture.isHome, currentGame.fixture.isCup ?? false));
 			finishCurrentGame();
 		} else {
 			match.start(chances);
@@ -320,7 +311,7 @@
 				const outcomes = match.pendingOutcomes;
 				consumeDeck(player.deck, false);
 				match.setResult(
-					playGame(chances, season.morale, outcomes, player.club, currentGame.fixture.opponent)
+					playGame(chances, season.morale, outcomes, player.club, currentGame.fixture.opponent, currentGame.fixture.isHome, currentGame.fixture.isCup ?? false)
 				);
 				finishCurrentGame();
 			}

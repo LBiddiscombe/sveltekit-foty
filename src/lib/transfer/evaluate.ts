@@ -7,6 +7,7 @@ import { generateDivisionSchedule } from '$lib/config/schedule';
 import { getLeagueWeeks } from '$lib/config/cups';
 import { simulateMatch } from '$lib/match/engine';
 import { standings } from '$lib/stores/standings.svelte';
+import { randomElement, coinToss } from '$lib/utils';
 
 export function getTransferWindow(weekNumber: number): 1 | 2 | null {
 	if (weekNumber >= 1 && weekNumber <= 4) return 1;
@@ -33,7 +34,7 @@ export function rollPassiveScout(): boolean {
 
 export function pickScoutDivision(playerDivision: number): number {
 	if (playerDivision === 1) return 1;
-	return Math.random() < 0.5 ? playerDivision : playerDivision - 1;
+	return coinToss() ? playerDivision : playerDivision - 1;
 }
 
 export function pickScoutClub(
@@ -45,13 +46,13 @@ export function pickScoutClub(
 		divisionRosters[scoutDivision] ?? getClubsByDivision(scoutDivision).map((c) => c.name)
 	).filter((c) => c !== playerClub);
 	if (clubs.length === 0) return null;
-	return clubs[Math.floor(Math.random() * clubs.length)];
+	return randomElement(clubs);
 }
 
 export function pickTargetBand(scoutDivision: number, playerDivision: number) {
 	const bands = getTargetBandsForScout(scoutDivision, playerDivision);
 	if (bands.length === 0) return null;
-	return bands[Math.floor(Math.random() * bands.length)];
+	return randomElement(bands);
 }
 
 export function evaluateScout(

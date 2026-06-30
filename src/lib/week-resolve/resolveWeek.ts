@@ -59,13 +59,10 @@ function getCupWeekInfo(week: number): { type: CupType; round: number } | null {
 	return null;
 }
 
-function playerIsInCup(cupType: CupType, club: string): boolean {
-	const bracket = cupType === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
-	if (!bracket || bracket.winner) return false;
-	return !(club in bracket.eliminated);
-}
-
-function buildCupLines(club: string, cupInfo: { type: CupType; round: number }): {
+function buildCupLines(
+	club: string,
+	cupInfo: { type: CupType; round: number }
+): {
 	lines: string[];
 	scoreEntries: CupEntry[];
 } {
@@ -78,9 +75,7 @@ function buildCupLines(club: string, cupInfo: { type: CupType; round: number }):
 	const hasResults = round.ties.some((t) => t.result);
 	if (!hasResults) return { lines: [], scoreEntries: [] };
 
-	const playerTie = round.ties.find(
-		(t) => (t.home === club || t.away === club) && t.result
-	);
+	const playerTie = round.ties.find((t) => (t.home === club || t.away === club) && t.result);
 	if (!playerTie) return { lines: [], scoreEntries: [] };
 
 	const r = playerTie.result!;
@@ -240,8 +235,7 @@ function buildLines(
 			const away = f.isHome ? f.opponent : club;
 			const homeScore = f.isHome ? goalsFor : goalsAgainst;
 			const awayScore = f.isHome ? goalsAgainst : goalsFor;
-			const result =
-				goalsFor > goalsAgainst ? 'WIN' : goalsFor === goalsAgainst ? 'DRAW' : 'LOSE';
+			const result = goalsFor > goalsAgainst ? 'WIN' : goalsFor === goalsAgainst ? 'DRAW' : 'LOSE';
 
 			scoreLines.set(l.length, { home, away, homeScore, awayScore });
 			l.push(`  ${home.padEnd(14)} ${homeScore} - ${awayScore}    ${away}`);
@@ -300,25 +294,18 @@ function buildLines(
 	return l;
 }
 
-function determineStatus(week: number): 'display' | 'auto-continue' {
+function determineStatus(
+	week: number,
+	scoreLines: Map<number, ScoreLine>
+): 'display' | 'auto-continue' {
 	const hasLeague = season.divisionSchedule.weeks.some(
 		(w) => w.weekNumber === week && w.matches.length > 0
 	);
 	if (hasLeague) return 'display';
-
-	const playerClub = player.club !== 'Free Agent' ? player.club : 'Exetur';
-
-	const cupInfo = getCupWeekInfo(week);
-	if (cupInfo && playerIsInCup(cupInfo.type, playerClub)) return 'display';
-
-	return 'auto-continue';
+	return scoreLines.size > 0 ? 'display' : 'auto-continue';
 }
 
-function createContinuation(
-	club: string,
-	week: number,
-	weekFixtures: Fixture[]
-): () => string {
+function createContinuation(club: string, week: number, weekFixtures: Fixture[]): () => string {
 	return () => {
 		if (isFaCupFinalWeek(week)) {
 			season.recordGamesPlayed(weekFixtures.length);
@@ -442,7 +429,7 @@ export function resolveWeek(): WeekResolution {
 	const scoreLines = new Map<number, ScoreLine>();
 	const lines = buildLines(club, week, weekFixtures, cupResult, scoreLines);
 
-	const status = determineStatus(week);
+	const status = determineStatus(week, scoreLines);
 	const onContinue = createContinuation(club, week, weekFixtures);
 
 	return { status, lines, scoreLines, onContinue };

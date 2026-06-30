@@ -3,6 +3,7 @@ import { MORALE_CONFIG } from '$lib/config/morale';
 import { getClubsByDivision } from '$lib/config/clubs';
 import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
 import { generateDivisionSchedule } from '$lib/config/schedule';
+import { clamp } from '$lib/utils';
 import { deriveFixturesFromSchedule } from '$lib/config/fixtures';
 import { standings } from './standings.svelte';
 import {
@@ -189,7 +190,7 @@ function createSeason() {
 				newDivision = playerDivision - 1;
 			}
 		}
-		newDivision = Math.max(1, Math.min(4, newDivision));
+		newDivision = clamp(newDivision, 1, 4);
 
 		const playerInPromoted = newDivision < playerDivision;
 		const playerInRelegated = newDivision > playerDivision;

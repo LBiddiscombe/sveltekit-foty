@@ -2,6 +2,7 @@ import type { CupBracket, CupRound, CupTie, CupType } from '$lib/types/game';
 import { CLUB_STRENGTHS } from './club-strengths';
 import { ALL_CLUBS } from './clubs';
 import { simulateMatch } from '$lib/match/engine';
+import { shuffle, coinToss } from '$lib/utils';
 
 export const NON_LEAGUE_POOL = [
 	'Aldershot',
@@ -99,22 +100,22 @@ export const CUP_SCHEDULE: Record<CupType, { round: number; week: number; isTwoL
 
 export const CUP_PRIZES: Record<CupType, Record<number, { prize: number; xp: number }>> = {
 	'league-cup': {
+		1: { prize: 250, xp: 0 },
+		2: { prize: 500, xp: 1 },
+		3: { prize: 1000, xp: 1 },
+		4: { prize: 2500, xp: 1 },
+		5: { prize: 5000, xp: 2 },
+		6: { prize: 7500, xp: 2 },
+		7: { prize: 10000, xp: 2 }
+	},
+	'fa-cup': {
 		1: { prize: 500, xp: 1 },
 		2: { prize: 1000, xp: 2 },
 		3: { prize: 2000, xp: 3 },
-		4: { prize: 5000, xp: 3 },
-		5: { prize: 10000, xp: 4 },
-		6: { prize: 15000, xp: 5 },
-		7: { prize: 20000, xp: 5 }
-	},
-	'fa-cup': {
-		1: { prize: 1000, xp: 2 },
-		2: { prize: 2000, xp: 4 },
-		3: { prize: 4000, xp: 6 },
-		4: { prize: 8000, xp: 6 },
-		5: { prize: 16000, xp: 8 },
-		6: { prize: 25000, xp: 10 },
-		7: { prize: 50000, xp: 10 }
+		4: { prize: 4000, xp: 3 },
+		5: { prize: 8000, xp: 4 },
+		6: { prize: 12500, xp: 5 },
+		7: { prize: 25000, xp: 5 }
 	}
 };
 
@@ -156,15 +157,6 @@ export const CUP_DIVISION_MULTIPLIERS: Record<number, number> = {
 	3: 1.0,
 	4: 0.8
 };
-
-function shuffle<T>(arr: T[]): T[] {
-	const a = [...arr];
-	for (let i = a.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[a[i], a[j]] = [a[j], a[i]];
-	}
-	return a;
-}
 
 function selectNonLeagueTeams(): string[] {
 	return shuffle(NON_LEAGUE_POOL).slice(0, 36);
@@ -294,7 +286,7 @@ export function simulateCupTie(
 				aggAwayGoals: aggAway
 			};
 		} else {
-			const winner = Math.random() < 0.5 ? home : away;
+			const winner = coinToss() ? home : away;
 			return {
 				homeGoals: leg1.homeGoals,
 				awayGoals: leg1.awayGoals,
@@ -312,7 +304,7 @@ export function simulateCupTie(
 		} else if (match.awayGoals > match.homeGoals) {
 			return { ...match, winner: away, resolvedBy: 'match' };
 		} else {
-			const winner = Math.random() < 0.5 ? home : away;
+			const winner = coinToss() ? home : away;
 			return { ...match, winner, resolvedBy: 'coin-toss' };
 		}
 	}

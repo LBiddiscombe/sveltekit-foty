@@ -1,16 +1,8 @@
 import type { DivisionMatch, DivisionSchedule, WeekFixtures } from '$lib/types/game';
-
-function shuffle<T>(arr: T[]): T[] {
-	const a = [...arr];
-	for (let i = a.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[a[i], a[j]] = [a[j], a[i]];
-	}
-	return a;
-}
+import { shuffle, range } from '$lib/utils';
 
 function getDoubleGameWeeks(totalWeeks: number, count: number): Set<number> {
-	const weeks = shuffle(Array.from({ length: totalWeeks }, (_, i) => i));
+	const weeks = shuffle(range(totalWeeks));
 	return new Set(weeks.slice(0, count));
 }
 
@@ -49,7 +41,7 @@ export function generateDivisionSchedule(
 	clubs: string[],
 	leagueWeekNumbers?: number[]
 ): DivisionSchedule {
-	const leagueWeeks = leagueWeekNumbers ?? Array.from({ length: 30 }, (_, i) => i + 1);
+	const leagueWeeks = leagueWeekNumbers ?? range(1, 31);
 	const totalWeeks = leagueWeeks.length;
 
 	const totalRounds = (clubs.length - 1) * 2;

@@ -3,9 +3,10 @@ import { wageForLevel } from '$lib/config/economy';
 import { getLevel, getLevelIndex, LEVEL_UP_MESSAGES } from '$lib/config/levels';
 import { inbox } from './inbox.svelte';
 import { season } from './season.svelte';
+import { range, randomInt } from '$lib/utils';
 
 function randomDeck(size: number): number[] {
-	return Array.from({ length: size }, () => Math.floor(Math.random() * 3) + 1);
+	return range(size).map(() => randomInt(1, 4));
 }
 
 function createPlayer() {
@@ -72,18 +73,12 @@ function createPlayer() {
 		const newLevel = getLevelIndex(careerXp);
 		wage = wageForLevel(newLevel);
 		if (newLevel > oldLevel && LEVEL_UP_MESSAGES[newLevel]) {
-			const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
-			inbox.items = [
-				...inbox.items,
-				{
-					id: nextId,
-					type: 'news',
-					subject: `Level Up: ${getLevel(careerXp).title}`,
-					body: LEVEL_UP_MESSAGES[newLevel].replace('{wage}', String(wage)),
-					actionRequired: false,
-					actioned: false
-				}
-			];
+			inbox.addMessage({
+				type: 'news',
+				subject: `Level Up: ${getLevel(careerXp).title}`,
+				body: LEVEL_UP_MESSAGES[newLevel].replace('{wage}', String(wage)),
+				actionRequired: false
+			});
 		}
 	}
 

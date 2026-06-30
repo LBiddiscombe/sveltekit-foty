@@ -1,4 +1,5 @@
 import type { IncidentCard, IncidentCategory } from '$lib/types/game';
+import { randomElement } from '$lib/utils';
 import { CAREER_CARDS } from './career';
 import { TRAINING_CARDS } from './training';
 import { GAMBLING_CARDS } from './gambling';
@@ -52,9 +53,9 @@ export function pickRandomIncident(): IncidentCard {
 	const selectedCategory = weightedRandomPick(categories, (c) => CATEGORY_WEIGHTS[c]);
 	const pool = INCIDENT_CARDS.filter((c) => c.category === selectedCategory);
 	if (pool.length === 0) {
-		return INCIDENT_CARDS[Math.floor(Math.random() * INCIDENT_CARDS.length)];
+		return randomElement(INCIDENT_CARDS);
 	}
-	return pool[Math.floor(Math.random() * pool.length)];
+	return randomElement(pool);
 }
 
 export function incidentCardById(id: string): IncidentCard | undefined {

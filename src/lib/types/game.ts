@@ -28,6 +28,7 @@ export interface Fixture {
 	opponent: string;
 	isHome: boolean;
 	weekNumber: number;
+	isCup?: boolean;
 	result?: FixtureResult;
 }
 

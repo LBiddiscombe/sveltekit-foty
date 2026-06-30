@@ -1,4 +1,5 @@
 import type { InboxItem } from '$lib/types/game';
+import { nextId } from '$lib/utils';
 
 function createInbox() {
 	let items = $state<InboxItem[]>([]);
@@ -14,7 +15,13 @@ function createInbox() {
 	const unreadCount = $derived(items.filter((i) => !i.actioned).length);
 
 	function addIncident(card: { subject: string; body: string; incidentCardId: string }) {
-		addMessage({ type: 'incident', subject: card.subject, body: card.body, actionRequired: true, incidentCardId: card.incidentCardId });
+		addMessage({
+			type: 'incident',
+			subject: card.subject,
+			body: card.body,
+			actionRequired: true,
+			incidentCardId: card.incidentCardId
+		});
 	}
 
 	function addMessage(msg: {
@@ -24,8 +31,7 @@ function createInbox() {
 		actionRequired: boolean;
 		incidentCardId?: string;
 	}) {
-		const nextId = Math.max(0, ...items.map((i) => i.id)) + 1;
-		items = [...items, { id: nextId, ...msg, actioned: false }];
+		items = [...items, { id: nextId(items), ...msg, actioned: false }];
 	}
 
 	function init(club: string) {
@@ -56,10 +62,10 @@ function createInbox() {
 		wasPromoted: boolean,
 		wasRelegated: boolean
 	) {
-		const nextId = Math.max(0, ...items.map((i) => i.id)) + 1;
+		const firstId = nextId(items);
 		const newItems: InboxItem[] = [
 			{
-				id: nextId,
+				id: firstId,
 				type: 'news',
 				subject: `Season ${seasonNumber} Preview`,
 				body: `You're at ${club} in Division ${division} for the new season. Good luck!`,
@@ -69,7 +75,7 @@ function createInbox() {
 		];
 		if (wasPromoted) {
 			newItems.push({
-				id: nextId + 1,
+				id: firstId + 1,
 				type: 'news',
 				subject: 'Promotion!',
 				body: `Congratulations! ${club} have been promoted. You'll be playing in a higher division this season.`,
@@ -79,7 +85,7 @@ function createInbox() {
 		}
 		if (wasRelegated) {
 			newItems.push({
-				id: nextId + 1,
+				id: firstId + 1,
 				type: 'news',
 				subject: 'Relegation',
 				body: `${club} were relegated last season. You'll be playing in a lower division this season.`,

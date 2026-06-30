@@ -1,3 +1,5 @@
+import { clamp } from '$lib/utils';
+
 export const MORALE_CONFIG = {
 	scale: { min: 1, max: 10, start: 5 },
 
@@ -8,11 +10,7 @@ export const MORALE_CONFIG = {
 	},
 
 	adjustMorale(current: number, delta: number): number {
-		const clamped = Math.max(
-			MORALE_CONFIG.scale.min,
-			Math.min(MORALE_CONFIG.scale.max, current + delta)
-		);
-		return clamped;
+		return clamp(current + delta, MORALE_CONFIG.scale.min, MORALE_CONFIG.scale.max);
 	}
 };
 

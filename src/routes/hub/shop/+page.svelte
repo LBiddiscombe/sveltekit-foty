@@ -6,13 +6,9 @@
 	import { standings } from '$lib/stores/standings.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
 	import { pickRandomIncident } from '$lib/config/incidents';
+	import { goalCardPrice, incidentCardPrice, transferCardPrice } from '$lib/config/economy';
 	import {
-		goalCardPrice,
-		incidentCardPrice,
-		transferCardPrice,
-		getTransferWindow
-	} from '$lib/config/economy';
-	import {
+		getTransferWindow,
 		evaluateScout,
 		processSameDivisionTransfer,
 		processDivisionUpTransfer,
@@ -20,6 +16,7 @@
 		isPassiveScoutingBlocked
 	} from '$lib/transfer/evaluate';
 	import { setScoutReport } from '$lib/stores/scout-report.svelte';
+	import { randomInt } from '$lib/utils';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 
@@ -57,7 +54,7 @@
 	function buyGoalCard() {
 		if (player.bankBalance < cardPrice) return;
 		player.adjustBalance(-cardPrice);
-		player.addToDeck(Math.floor(Math.random() * 3) + 1);
+		player.addToDeck(randomInt(1, 4));
 		showFlash('Card added!');
 	}
 
@@ -114,18 +111,12 @@
 			player.lastTransferWindow = { season: season.seasonNumber, window: transferWindow };
 			player.queuedTransferCard = false;
 
-			const nextId = Math.max(0, ...inbox.items.map((i) => i.id)) + 1;
-			inbox.items = [
-				...inbox.items,
-				{
-					id: nextId,
-					type: 'news',
-					subject: 'New Club!',
-					body: `You've signed for ${report.scoutClub} in Division ${report.scoutDivision}. A fresh start — make it count!`,
-					actionRequired: true,
-					actioned: false
-				}
-			];
+			inbox.addMessage({
+				type: 'news',
+				subject: 'New Club!',
+				body: `You've signed for ${report.scoutClub} in Division ${report.scoutDivision}. A fresh start — make it count!`,
+				actionRequired: true
+			});
 
 			await goto(resolveRoute('/scout-report'));
 		} else {

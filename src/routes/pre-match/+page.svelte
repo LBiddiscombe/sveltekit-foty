@@ -57,11 +57,11 @@
 			if (roundInfo.isTwoLeg) {
 				const leg1Played = tie.result && tie.result.homeGoals2 === undefined;
 				if (!leg1Played) {
-					cupMatches.push({ opponent, isHome: tie.home === player.club, weekNumber: week });
+					cupMatches.push({ opponent, isHome: tie.home === player.club, weekNumber: week, isCup: true });
 				}
-				cupMatches.push({ opponent, isHome: tie.away === player.club, weekNumber: week });
+				cupMatches.push({ opponent, isHome: tie.away === player.club, weekNumber: week, isCup: true });
 			} else {
-				cupMatches.push({ opponent, isHome: tie.home === player.club, weekNumber: week });
+				cupMatches.push({ opponent, isHome: tie.home === player.club, weekNumber: week, isCup: true });
 			}
 		}
 
@@ -110,9 +110,10 @@
 	}
 
 	function handleForcedSkipChoice() {
-		if (!currentFixture) return;
-		const result = skipGame(0, season.morale, player.club, currentFixture.opponent);
-		currentFixture.result = {
+		const fixture = currentFixture;
+		if (!fixture) return;
+		const result = skipGame(0, season.morale, player.club, fixture.opponent, fixture.isHome, fixture.isCup ?? false);
+		fixture.result = {
 			goalsFor: result.score[0],
 			goalsAgainst: result.score[1],
 			playerGoals: 0,
@@ -120,6 +121,10 @@
 		};
 		season.adjustMorale(getMoraleDelta(result.score));
 		season.consumeAppearanceSkip();
+		intents = [...intents, { fixture, skipped: true }];
+		if (currentIndex < unplayedFixtures.length - 1) {
+			currentIndex++;
+		}
 	}
 
 	function handleChoice(skipped: boolean) {

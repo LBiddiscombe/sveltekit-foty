@@ -79,9 +79,3 @@ export function transferSigningFee(
 			: TRANSFER_SIGNING_MULTIPLIERS.sameDivision;
 	return currentWage * multiplier;
 }
-
-export function getTransferWindow(weekNumber: number): 1 | 2 | null {
-	if (weekNumber >= 1 && weekNumber <= 4) return 1;
-	if (weekNumber >= 16 && weekNumber <= 19) return 2;
-	return null;
-}
