@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import { season } from '$lib/stores/season.svelte';
 	import { player } from '$lib/stores/player.svelte';
-	import { CUP_DISPLAY_NAMES, CUP_ROUND_NAMES, CUP_SCHEDULE } from '$lib/config/cups';
+	import { CUP_DISPLAY_NAMES, CUP_ROUND_NAMES } from '$lib/config/cups';
 	import type { CupBracket, CupType } from '$lib/types/game';
 
 	const cupTypes: CupType[] = ['league-cup', 'fa-cup'];
@@ -63,14 +63,11 @@
 						{#each bracket.rounds as round, ri (round.roundNumber)}
 							{@const status = roundStatus(bracket, ri)}
 							{@const hasTeams = roundHasTeams(round)}
-							{@const week = CUP_SCHEDULE[cupType][ri]?.week}
 							<details class="rounded bg-card" open={status === 'current'}>
 								<summary
 									class="flex cursor-pointer items-center gap-2 px-3 py-2 text-[10px] font-bold text-warning"
 								>
-									<span
-										>{CUP_ROUND_NAMES[cupType][round.roundNumber]}{week ? ' Wk ' + week : ''}</span
-									>
+									<span>{CUP_ROUND_NAMES[cupType][round.roundNumber]}</span>
 									<span
 										class="ml-auto rounded px-1.5 py-0.5 text-[8px] uppercase tracking-wider
 											{status === 'done' ? 'bg-success/20 text-success' : ''}
