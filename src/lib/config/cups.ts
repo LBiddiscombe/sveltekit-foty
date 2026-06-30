@@ -1,8 +1,15 @@
-import type { CupBracket, CupRound, CupTie, CupType } from '$lib/types/game';
+import type { CupBracket, CupRound, CupTie, CupType, Outcome } from '$lib/types/game';
 import { CLUB_STRENGTHS } from './club-strengths';
 import { ALL_CLUBS } from './clubs';
 import { simulateMatch } from '$lib/match/engine';
 import { shuffle, coinToss } from '$lib/utils';
+
+export type PlayerLegResult = {
+	ourScore: number;
+	theirScore: number;
+	playerGoals: number;
+	outcomes: Outcome[];
+};
 
 export const NON_LEAGUE_POOL = [
 	'Aldershot',
@@ -249,10 +256,33 @@ function getCupStrength(club: string): number {
 	return base * mult;
 }
 
+function toTiePerspective(
+	leg: PlayerLegResult,
+	host: string,
+	guest: string,
+	playerClub: string
+): { homeGoals: number; awayGoals: number } {
+	if (playerClub === host) return { homeGoals: leg.ourScore, awayGoals: leg.theirScore };
+	return { homeGoals: leg.theirScore, awayGoals: leg.ourScore };
+}
+
+function determineWinner(
+	hScore: number,
+	aScore: number,
+	hClub: string,
+	aClub: string
+): { winner: string; resolvedBy: 'match' | 'coin-toss' } {
+	if (hScore > aScore) return { winner: hClub, resolvedBy: 'match' };
+	if (aScore > hScore) return { winner: aClub, resolvedBy: 'match' };
+	return { winner: coinToss() ? hClub : aClub, resolvedBy: 'coin-toss' };
+}
+
 export function simulateCupTie(
 	home: string,
 	away: string,
-	isTwoLeg: boolean
+	isTwoLeg: boolean,
+	playerClub?: string,
+	playerLegs?: { leg1?: PlayerLegResult; leg2?: PlayerLegResult }
 ): {
 	homeGoals: number;
 	awayGoals: number;
@@ -260,54 +290,75 @@ export function simulateCupTie(
 	resolvedBy: 'match' | 'coin-toss';
 	aggHomeGoals?: number;
 	aggAwayGoals?: number;
+	homeGoals2?: number;
+	awayGoals2?: number;
+	playerLeg1Goals?: number;
+	playerLeg1Outcomes?: Outcome[];
+	playerLeg2Goals?: number;
+	playerLeg2Outcomes?: Outcome[];
 } {
 	if (isTwoLeg) {
+		if (playerClub && playerLegs?.leg1 && playerLegs?.leg2) {
+			const leg1Res = toTiePerspective(playerLegs.leg1, home, away, playerClub);
+			const leg2Player = toTiePerspective(playerLegs.leg2, home, away, playerClub);
+			const leg2Opp = toTiePerspective(playerLegs.leg2, away, home, playerClub);
+
+			const aggHome = leg1Res.homeGoals + leg2Opp.homeGoals;
+			const aggAway = leg1Res.awayGoals + leg2Opp.awayGoals;
+
+			const { winner, resolvedBy } = determineWinner(aggHome, aggAway, home, away);
+
+			return {
+				homeGoals: leg1Res.homeGoals,
+				awayGoals: leg1Res.awayGoals,
+				homeGoals2: leg2Player.homeGoals,
+				awayGoals2: leg2Player.awayGoals,
+				aggHomeGoals: aggHome,
+				aggAwayGoals: aggAway,
+				winner,
+				resolvedBy,
+				playerLeg1Goals: playerLegs.leg1.playerGoals,
+				playerLeg1Outcomes: playerLegs.leg1.outcomes,
+				playerLeg2Goals: playerLegs.leg2.playerGoals,
+				playerLeg2Outcomes: playerLegs.leg2.outcomes
+			};
+		}
+
 		const leg1 = simulateMatch(getCupStrength(home), getCupStrength(away));
 		const leg2 = simulateMatch(getCupStrength(away), getCupStrength(home));
 		const aggHome = leg1.homeGoals + leg2.awayGoals;
 		const aggAway = leg1.awayGoals + leg2.homeGoals;
 
-		if (aggHome > aggAway) {
-			return {
-				homeGoals: leg1.homeGoals,
-				awayGoals: leg1.awayGoals,
-				winner: home,
-				resolvedBy: 'match',
-				aggHomeGoals: aggHome,
-				aggAwayGoals: aggAway
-			};
-		} else if (aggAway > aggHome) {
-			return {
-				homeGoals: leg1.homeGoals,
-				awayGoals: leg1.awayGoals,
-				winner: away,
-				resolvedBy: 'match',
-				aggHomeGoals: aggHome,
-				aggAwayGoals: aggAway
-			};
-		} else {
-			const winner = coinToss() ? home : away;
-			return {
-				homeGoals: leg1.homeGoals,
-				awayGoals: leg1.awayGoals,
-				winner,
-				resolvedBy: 'coin-toss',
-				aggHomeGoals: aggHome,
-				aggAwayGoals: aggAway
-			};
-		}
-	} else {
-		const match = simulateMatch(getCupStrength(home), getCupStrength(away));
+		const { winner, resolvedBy } = determineWinner(aggHome, aggAway, home, away);
 
-		if (match.homeGoals > match.awayGoals) {
-			return { ...match, winner: home, resolvedBy: 'match' };
-		} else if (match.awayGoals > match.homeGoals) {
-			return { ...match, winner: away, resolvedBy: 'match' };
-		} else {
-			const winner = coinToss() ? home : away;
-			return { ...match, winner, resolvedBy: 'coin-toss' };
-		}
+		return {
+			homeGoals: leg1.homeGoals,
+			awayGoals: leg1.awayGoals,
+			winner,
+			resolvedBy,
+			aggHomeGoals: aggHome,
+			aggAwayGoals: aggAway
+		};
 	}
+
+	if (playerClub && playerLegs?.leg1) {
+		const { homeGoals: hG, awayGoals: aG } = toTiePerspective(playerLegs.leg1, home, away, playerClub);
+		const { winner, resolvedBy } = determineWinner(hG, aG, home, away);
+
+		return {
+			homeGoals: hG,
+			awayGoals: aG,
+			winner,
+			resolvedBy,
+			playerLeg1Goals: playerLegs.leg1.playerGoals,
+			playerLeg1Outcomes: playerLegs.leg1.outcomes
+		};
+	}
+
+	const match = simulateMatch(getCupStrength(home), getCupStrength(away));
+	const { winner, resolvedBy } = determineWinner(match.homeGoals, match.awayGoals, home, away);
+
+	return { ...match, winner, resolvedBy };
 }
 
 export function simulateCupRound(bracket: CupBracket): CupBracket {

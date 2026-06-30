@@ -13,9 +13,9 @@
 	import { XP_CONFIG } from '$lib/config/xp';
 	import { DIVISION_XP_CAPS } from '$lib/config/levels';
 	import { saveGame } from '$lib/save';
-	import { CUP_SCHEDULE, CUP_PRIZES, CUP_DISPLAY_NAMES, CUP_ROUND_NAMES } from '$lib/config/cups';
+	import { CUP_SCHEDULE, CUP_PRIZES, CUP_DISPLAY_NAMES, CUP_ROUND_NAMES, simulateCupTie } from '$lib/config/cups';
+	import type { PlayerLegResult } from '$lib/config/cups';
 	import { inbox } from '$lib/stores/inbox.svelte';
-	import { coinToss } from '$lib/utils';
 
 	type GameType = 'penalty' | 'first-time-finish' | 'rebound';
 
@@ -117,47 +117,34 @@
 				if (tieIdx === -1) continue;
 
 				const tie = round.ties[tieIdx];
-				const playerIsTieHome = tie.home === player.club;
+				const isTwoLeg = roundInfo.isTwoLeg;
 
-				const shootHome = playerIsTieHome ? res.score[0] : res.score[1];
-				const shootAway = playerIsTieHome ? res.score[1] : res.score[0];
+				if (isTwoLeg && tie.result && tie.result.homeGoals2 !== undefined) continue;
 
-				if (roundInfo.isTwoLeg && tie.result && tie.result.homeGoals2 === undefined) {
-					const aggHome = tie.result.homeGoals + shootHome;
-					const aggAway = tie.result.awayGoals + shootAway;
+				const currentLeg = game.fixture.result!;
+				const legResult: PlayerLegResult = {
+					ourScore: currentLeg.goalsFor,
+					theirScore: currentLeg.goalsAgainst,
+					playerGoals: currentLeg.playerGoals,
+					outcomes: currentLeg.outcomes
+				};
 
-					let winner: string;
-					let resolvedBy: 'match' | 'coin-toss';
-					if (aggHome > aggAway) {
-						winner = tie.home;
-						resolvedBy = 'match';
-					} else if (aggAway > aggHome) {
-						winner = tie.away;
-						resolvedBy = 'match';
-					} else {
-						winner = Math.random() < 0.5 ? tie.home : tie.away;
-						resolvedBy = 'coin-toss';
-					}
-
-					const updatedTies = [...round.ties];
-					updatedTies[tieIdx] = {
-						...tie,
-						result: {
-							homeGoals: tie.result.homeGoals,
-							awayGoals: tie.result.awayGoals,
-							homeGoals2: shootHome,
-							awayGoals2: shootAway,
-							aggHomeGoals: aggHome,
-							aggAwayGoals: aggAway,
-							winner,
-							resolvedBy,
-							playerLeg1Goals: tie.result.playerLeg1Goals,
-							playerLeg1Outcomes: tie.result.playerLeg1Outcomes,
-							playerLeg2Goals: playerGoals,
-							playerLeg2Outcomes: [...res.outcomes]
-						}
+				if (isTwoLeg && tie.result && tie.result.homeGoals2 === undefined) {
+					const playerIsTieHome = tie.home === player.club;
+					const prevLeg: PlayerLegResult = {
+						ourScore: playerIsTieHome ? tie.result.homeGoals : tie.result.awayGoals,
+						theirScore: playerIsTieHome ? tie.result.awayGoals : tie.result.homeGoals,
+						playerGoals: tie.result.playerLeg1Goals ?? 0,
+						outcomes: tie.result.playerLeg1Outcomes ?? []
 					};
 
+					const result = simulateCupTie(
+						tie.home, tie.away, true, player.club,
+						{ leg1: prevLeg, leg2: legResult }
+					);
+
+					const updatedTies = [...round.ties];
+					updatedTies[tieIdx] = { ...tie, result };
 					const updatedRounds = [...bracket.rounds];
 					updatedRounds[roundInfo.round - 1] = { ...round, ties: updatedTies };
 
@@ -167,7 +154,7 @@
 						season.faCupBracket = { ...bracket, rounds: updatedRounds };
 					}
 
-					if (winner === player.club) {
+					if (result.winner === player.club) {
 						const prize = CUP_PRIZES[cupType][roundInfo.round];
 						player.bankBalance += prize.prize;
 						if (prize.xp > 0) player.addXp(prize.xp);
@@ -179,20 +166,23 @@
 							actionRequired: false
 						});
 					}
-				} else if (roundInfo.isTwoLeg) {
+				} else if (isTwoLeg) {
+					const playerIsTieHome = tie.home === player.club;
+					const tieHomeGoals = playerIsTieHome ? legResult.ourScore : legResult.theirScore;
+					const tieAwayGoals = playerIsTieHome ? legResult.theirScore : legResult.ourScore;
+
 					const updatedTies = [...round.ties];
 					updatedTies[tieIdx] = {
 						...tie,
 						result: {
-							homeGoals: shootHome,
-							awayGoals: shootAway,
+							homeGoals: tieHomeGoals,
+							awayGoals: tieAwayGoals,
 							winner: '',
 							resolvedBy: 'match',
-							playerLeg1Goals: playerGoals,
-							playerLeg1Outcomes: [...res.outcomes]
+							playerLeg1Goals: legResult.playerGoals,
+							playerLeg1Outcomes: legResult.outcomes
 						}
 					};
-
 					const updatedRounds = [...bracket.rounds];
 					updatedRounds[roundInfo.round - 1] = { ...round, ties: updatedTies };
 
@@ -202,32 +192,13 @@
 						season.faCupBracket = { ...bracket, rounds: updatedRounds };
 					}
 				} else {
-					let winner: string;
-					let resolvedBy: 'match' | 'coin-toss';
-					if (res.score[0] > res.score[1]) {
-						winner = player.club;
-						resolvedBy = 'match';
-					} else if (res.score[1] > res.score[0]) {
-						winner = game.fixture.opponent;
-						resolvedBy = 'match';
-					} else {
-						winner = coinToss() ? player.club : game.fixture.opponent;
-						resolvedBy = 'coin-toss';
-					}
+					const result = simulateCupTie(
+						tie.home, tie.away, false, player.club,
+						{ leg1: legResult }
+					);
 
 					const updatedTies = [...round.ties];
-					updatedTies[tieIdx] = {
-						...tie,
-						result: {
-							homeGoals: shootHome,
-							awayGoals: shootAway,
-							winner,
-							resolvedBy,
-							playerLeg1Goals: playerGoals,
-							playerLeg1Outcomes: [...res.outcomes]
-						}
-					};
-
+					updatedTies[tieIdx] = { ...tie, result };
 					const updatedRounds = [...bracket.rounds];
 					updatedRounds[roundInfo.round - 1] = { ...round, ties: updatedTies };
 
@@ -237,7 +208,7 @@
 						season.faCupBracket = { ...bracket, rounds: updatedRounds };
 					}
 
-					if (winner === player.club) {
+					if (result.winner === player.club) {
 						const prize = CUP_PRIZES[cupType][roundInfo.round];
 						player.bankBalance += prize.prize;
 						if (prize.xp > 0) player.addXp(prize.xp);
