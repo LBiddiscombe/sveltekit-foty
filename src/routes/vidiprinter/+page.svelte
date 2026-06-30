@@ -7,7 +7,7 @@
 	import { standings } from '$lib/stores/standings.svelte';
 	import { pickRandomIncident } from '$lib/config/incidents';
 	import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
-	import { simAiMatch } from '$lib/match/engine';
+	import { simulateMatch } from '$lib/match/engine';
 	import { saveGame } from '$lib/save';
 	import { getTransferWindow } from '$lib/config/economy';
 	import {
@@ -27,11 +27,9 @@
 		CUP_SCHEDULE,
 		CUP_DISPLAY_NAMES,
 		CUP_ROUND_NAMES,
-		simulateCupTie,
-		isLeagueCupDedicatedWeek,
 		isFaCupFinalWeek
 	} from '$lib/config/cups';
-	import type { CupTie, CupType } from '$lib/types/game';
+	import type { CupType } from '$lib/types/game';
 
 	$effect(() => {
 		season.phase = 'vidiprinter';
@@ -82,7 +80,7 @@
 				if (!m.result) {
 					const homeStrength = CLUB_STRENGTHS[m.home] ?? 5;
 					const awayStrength = CLUB_STRENGTHS[m.away] ?? 5;
-					m.result = simAiMatch(homeStrength, awayStrength);
+					m.result = simulateMatch(homeStrength, awayStrength);
 				}
 				results.push({ home: m.home, away: m.away, result: m.result });
 			}

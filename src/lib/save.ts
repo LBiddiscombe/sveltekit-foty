@@ -5,7 +5,16 @@ import { match } from '$lib/stores/match.svelte';
 import { standings } from '$lib/stores/standings.svelte';
 import { wageForLevel } from '$lib/config/economy';
 import { getLevelIndex } from '$lib/config/levels';
-import type { CupBracket, DivisionSchedule, Fixture, InboxItem, MatchResult, Standing, StatsArchiveEntry, TransferWindowState } from '$lib/types/game';
+import type {
+	CupBracket,
+	DivisionSchedule,
+	Fixture,
+	InboxItem,
+	MatchResult,
+	Standing,
+	StatsArchiveEntry,
+	TransferWindowState
+} from '$lib/types/game';
 
 const SAVE_KEY = 'foty-save';
 const SAVE_BACKUP_KEY = 'foty-save-backup';
@@ -149,9 +158,7 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 			leagueCupBracket: season.leagueCupBracket
 				? JSON.parse(JSON.stringify(season.leagueCupBracket))
 				: null,
-			faCupBracket: season.faCupBracket
-				? JSON.parse(JSON.stringify(season.faCupBracket))
-				: null
+			faCupBracket: season.faCupBracket ? JSON.parse(JSON.stringify(season.faCupBracket)) : null
 		},
 		inboxItems: JSON.parse(JSON.stringify(inbox.items)),
 		matchResult: match.result ? JSON.parse(JSON.stringify(match.result)) : null,

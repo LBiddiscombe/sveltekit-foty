@@ -26,31 +26,97 @@ function makePoisson(lambda: number): number {
 }
 
 const CLUB_STRENGTHS: Record<string, number> = {
-	'Man Citeh': 10, 'Man Untied': 9, Liverpoool: 9,
-	Chelsee: 8, Arsenul: 8, Spurs: 8,
-	Viller: 7, Newcassel: 7, Forrist: 7,
-	Bryton: 6, Lestur: 6, Rexham: 6, 'West Ham': 6,
-	Boro: 5, Woolvz: 5, Saynts: 5, 'West Brom': 5,
-	Blackbirn: 5, 'Sheff Yoonited': 5, York: 5,
-	Bornmuth: 5, Brentfurd: 5, Coventry: 5, Pallace: 5,
-	Evarton: 5, Fullum: 5, Hull: 5, Ipswitch: 5,
-	Leeds: 5, Sunderlun: 5, Norrich: 5, 'Cue Pee Arr': 5,
-	Stoak: 5, 'Bristol City': 5, Swanzee: 5, Wattfud: 5,
-	Cardif: 5, 'Sheff Wensday': 5, Wickham: 5,
-	Birmingum: 4, Burnlee: 4, Darbee: 4, Millwol: 4,
-	Pompee: 4, Prestun: 4, Boltun: 4, Charltun: 4,
-	Linkun: 4, Chesterfeeld: 4, Rotherum: 4, Blackpool: 4,
-	Huddersfeeld: 4, Stockport: 4, Wimbledon: 4, Peterbura: 4,
+	'Man Citeh': 10,
+	'Man Untied': 9,
+	Liverpoool: 9,
+	Chelsee: 8,
+	Arsenul: 8,
+	Spurs: 8,
+	Viller: 7,
+	Newcassel: 7,
+	Forrist: 7,
+	Bryton: 6,
+	Lestur: 6,
+	Rexham: 6,
+	'West Ham': 6,
+	Boro: 5,
+	Woolvz: 5,
+	Saynts: 5,
+	'West Brom': 5,
+	Blackbirn: 5,
+	'Sheff Yoonited': 5,
+	York: 5,
+	Bornmuth: 5,
+	Brentfurd: 5,
+	Coventry: 5,
+	Pallace: 5,
+	Evarton: 5,
+	Fullum: 5,
+	Hull: 5,
+	Ipswitch: 5,
+	Leeds: 5,
+	Sunderlun: 5,
+	Norrich: 5,
+	'Cue Pee Arr': 5,
+	Stoak: 5,
+	'Bristol City': 5,
+	Swanzee: 5,
+	Wattfud: 5,
+	Cardif: 5,
+	'Sheff Wensday': 5,
+	Wickham: 5,
+	Birmingum: 4,
+	Burnlee: 4,
+	Darbee: 4,
+	Millwol: 4,
+	Pompee: 4,
+	Prestun: 4,
+	Boltun: 4,
+	Charltun: 4,
+	Linkun: 4,
+	Chesterfeeld: 4,
+	Rotherum: 4,
+	Blackpool: 4,
+	Huddersfeeld: 4,
+	Stockport: 4,
+	Wimbledon: 4,
+	Peterbura: 4,
 	Redding: 4,
-	Bradfud: 3, Barnslee: 3, Burtun: 3, Doncaster: 3,
-	Oxfud: 3, Plimuth: 3, Wiggun: 3, Looton: 3,
-	Mansfeeld: 3, 'Notts County': 3, Orient: 3, 'Em Kay Dons': 3,
-	Stevenij: 3, Bromlee: 3, Caimbridge: 3, 'Port Vayle': 3,
-	Walsawl: 3, Grimzbee: 3, Tranmere: 3, Shroosbury: 3,
-	Northamptun: 3, 'Bristol Rovers': 3, Fleetwud: 3, Swindun: 3,
-	Salfud: 3, Colchestur: 3, Oldum: 3,
-	Newport: 2, Rochdayle: 2, Croo: 2, Barnett: 2,
-	Cheltnum: 2, Ackrington: 2, Crawlee: 2, Exetur: 2,
+	Bradfud: 3,
+	Barnslee: 3,
+	Burtun: 3,
+	Doncaster: 3,
+	Oxfud: 3,
+	Plimuth: 3,
+	Wiggun: 3,
+	Looton: 3,
+	Mansfeeld: 3,
+	'Notts County': 3,
+	Orient: 3,
+	'Em Kay Dons': 3,
+	Stevenij: 3,
+	Bromlee: 3,
+	Caimbridge: 3,
+	'Port Vayle': 3,
+	Walsawl: 3,
+	Grimzbee: 3,
+	Tranmere: 3,
+	Shroosbury: 3,
+	Northamptun: 3,
+	'Bristol Rovers': 3,
+	Fleetwud: 3,
+	Swindun: 3,
+	Salfud: 3,
+	Colchestur: 3,
+	Oldum: 3,
+	Newport: 2,
+	Rochdayle: 2,
+	Croo: 2,
+	Barnett: 2,
+	Cheltnum: 2,
+	Ackrington: 2,
+	Crawlee: 2,
+	Exetur: 2,
 	Gillingham: 1
 };
 
@@ -85,22 +151,22 @@ const FORMULAS: FormulaConfig[] = [
 	{
 		name: 'm0.02-team-only',
 		teamLambda: (s, m) => 0.3 + s * 0.1 + m * 0.02,
-		oppLambda: (s, m) => 0.3 + s * 0.1
+		oppLambda: (_s, _m) => 0.3 + _s * 0.1
 	},
 	{
 		name: 'm0.015-team-only',
 		teamLambda: (s, m) => 0.3 + s * 0.1 + m * 0.015,
-		oppLambda: (s, m) => 0.3 + s * 0.1
+		oppLambda: (_s, _m) => 0.3 + _s * 0.1
 	},
 	{
 		name: 'm0.01-team-only',
 		teamLambda: (s, m) => 0.3 + s * 0.1 + m * 0.01,
-		oppLambda: (s, m) => 0.3 + s * 0.1
+		oppLambda: (_s, _m) => 0.3 + _s * 0.1
 	},
 	{
 		name: 'm0.02-team-start3',
 		teamLambda: (s, m) => 0.3 + s * 0.1 + m * 0.02,
-		oppLambda: (s, m) => 0.3 + s * 0.1,
+		oppLambda: (_s, _m) => 0.3 + _s * 0.1,
 		startMorale: 3
 	},
 	{
@@ -135,17 +201,20 @@ const FORMULAS: FormulaConfig[] = [
 	{
 		name: 'lower-base-m0.01-team',
 		teamLambda: (s, m) => 0.2 + s * 0.1 + m * 0.01,
-		oppLambda: (s, m) => 0.2 + s * 0.1
+		oppLambda: (_s, _m) => 0.2 + _s * 0.1
 	},
 	{
 		name: 'base-0.5-m0.01-team-only',
 		teamLambda: (s, m) => 0.5 + s * 0.1 + m * 0.01,
-		oppLambda: (s, m) => 0.5 + s * 0.1,
+		oppLambda: (_s, _m) => 0.5 + _s * 0.1,
 		aiBase: 0.5
 	}
 ];
 
-const SEEDS = [42, 99, 7, 13, 888, 1234, 555, 7777, 9001, 2024, 111, 222, 333, 444, 666, 789, 4321, 8888, 9999, 5555];
+const SEEDS = [
+	42, 99, 7, 13, 888, 1234, 555, 7777, 9001, 2024, 111, 222, 333, 444, 666, 789, 4321, 8888, 9999,
+	5555
+];
 
 interface SimResult {
 	position: number;
@@ -160,10 +229,7 @@ interface SimResult {
 	drawPct: number;
 }
 
-function simulateSeason(
-	seed: number,
-	formula: FormulaConfig
-): SimResult {
+function simulateSeason(seed: number, formula: FormulaConfig): SimResult {
 	const rng = mulberry32(seed);
 	vi.spyOn(Math, 'random').mockImplementation(rng);
 
@@ -194,7 +260,11 @@ function simulateSeason(
 	}
 
 	for (const week of schedule.weeks) {
-		const results: { home: string; away: string; result: { homeGoals: number; awayGoals: number } }[] = [];
+		const results: {
+			home: string;
+			away: string;
+			result: { homeGoals: number; awayGoals: number };
+		}[] = [];
 
 		for (const m of week.matches) {
 			if (m.home === playerClub || m.away === playerClub) {
@@ -211,17 +281,21 @@ function simulateSeason(
 					const playerGoals = dist[Math.floor(Math.random() * dist.length)];
 					playerGoalsTotal += playerGoals;
 					if (m.home === playerClub) {
-						gf = teamGoals + playerGoals; ga = oppGoals;
+						gf = teamGoals + playerGoals;
+						ga = oppGoals;
 					} else {
-						gf = oppGoals; ga = teamGoals + playerGoals;
+						gf = oppGoals;
+						ga = teamGoals + playerGoals;
 					}
 					const result = gf > ga ? 'win' : gf === ga ? 'draw' : 'loss';
 					morale = MORALE_CONFIG.adjustMorale(morale, MORALE_CONFIG.deltas[result]);
 				} else {
 					if (m.home === playerClub) {
-						gf = teamGoals; ga = oppGoals;
+						gf = teamGoals;
+						ga = oppGoals;
 					} else {
-						gf = oppGoals; ga = teamGoals;
+						gf = oppGoals;
+						ga = teamGoals;
 					}
 					const result = gf > ga ? 'win' : gf === ga ? 'draw' : 'loss';
 					morale = MORALE_CONFIG.adjustMorale(morale, MORALE_CONFIG.deltas[result]);
@@ -275,9 +349,17 @@ function simulatePureAi(seed: number): { position: number; points: number } {
 	standings.init(clubs);
 
 	for (const week of schedule.weeks) {
-		const results: { home: string; away: string; result: { homeGoals: number; awayGoals: number } }[] = [];
+		const results: {
+			home: string;
+			away: string;
+			result: { homeGoals: number; awayGoals: number };
+		}[] = [];
 		for (const m of week.matches) {
-			results.push({ home: m.home, away: m.away, result: simAi(strengthOf(m.home), strengthOf(m.away)) });
+			results.push({
+				home: m.home,
+				away: m.away,
+				result: simAi(strengthOf(m.home), strengthOf(m.away))
+			});
 		}
 		standings.processWeekResults(results, week.weekNumber);
 	}
@@ -320,18 +402,22 @@ describe.skip('formula comparison', () => {
 
 			const avgDraw = r.reduce((s, x) => s + x.drawPct, 0) / r.length;
 			console.log(`\n── ${table.name} ───────────────────────────────────────`);
-			console.log(`  Wins:    ${wins}/${SEEDS.length}  (${(wins/SEEDS.length*100).toFixed(0)}%)`);
+			console.log(
+				`  Wins:    ${wins}/${SEEDS.length}  (${((wins / SEEDS.length) * 100).toFixed(0)}%)`
+			);
 			console.log(`  AvgPos:  ${avgPos.toFixed(1)}`);
 			console.log(`  AvgPts:  ${avgPts.toFixed(0)}`);
 			console.log(`  AvgGD:   ${avgGd.toFixed(0)}`);
-			console.log(`  Draws:   ${(avgDraw*100).toFixed(0)}% of matches`);
+			console.log(`  Draws:   ${(avgDraw * 100).toFixed(0)}% of matches`);
 			console.log(`  Morale:  ${avgMoraleMin.toFixed(0)} → ${avgMoraleMax.toFixed(0)}`);
 			console.log(`  PlayerG: ${avgPlayerGoals.toFixed(0)}/season`);
 			console.log(`  ── Per-seed ──`);
 			for (let i = 0; i < r.length; i++) {
 				const x = r[i];
 				const mark = x.won ? '🏆' : '  ';
-				console.log(`  ${mark} Seed ${String(SEEDS[i]).padStart(4)}: pos=${x.position} pts=${x.points} gd=${x.gd} morale=${x.moraleMin}→${x.moraleMax} pG=${x.playerGoalsTotal}`);
+				console.log(
+					`  ${mark} Seed ${String(SEEDS[i]).padStart(4)}: pos=${x.position} pts=${x.points} gd=${x.gd} morale=${x.moraleMin}→${x.moraleMax} pG=${x.playerGoalsTotal}`
+				);
 			}
 		}
 
@@ -340,7 +426,9 @@ describe.skip('formula comparison', () => {
 		console.log(`  Avg Croo points:   ${pureAiAvgPts.toFixed(0)}`);
 		console.log(`  ── Per-seed ──`);
 		for (let i = 0; i < pureAi.length; i++) {
-			console.log(`  Seed ${String(SEEDS[i]).padStart(4)}: pos=${pureAi[i].position} pts=${pureAi[i].points}`);
+			console.log(
+				`  Seed ${String(SEEDS[i]).padStart(4)}: pos=${pureAi[i].position} pts=${pureAi[i].points}`
+			);
 		}
 
 		const baselineWins = tables[0].results.filter((x) => x.won).length;
@@ -374,7 +462,11 @@ describe.skip('formula comparison', () => {
 		}
 
 		for (const week of schedule.weeks) {
-			const results: { home: string; away: string; result: { homeGoals: number; awayGoals: number } }[] = [];
+			const results: {
+				home: string;
+				away: string;
+				result: { homeGoals: number; awayGoals: number };
+			}[] = [];
 			for (const m of week.matches) {
 				if (m.home === playerClub || m.away === playerClub) {
 					const opp = m.home === playerClub ? m.away : m.home;
@@ -386,32 +478,61 @@ describe.skip('formula comparison', () => {
 					if (playing) {
 						const pg = [0, 0, 0, 1, 1, 2][Math.floor(Math.random() * 6)];
 						playerGoalsTotal += pg;
-						if (m.home === playerClub) { gf = tg + pg; ga = og; }
-						else { gf = og; ga = tg + pg; }
+						if (m.home === playerClub) {
+							gf = tg + pg;
+							ga = og;
+						} else {
+							gf = og;
+							ga = tg + pg;
+						}
 						const r = gf > ga ? 'win' : gf === ga ? 'draw' : 'loss';
 						morale = MORALE_CONFIG.adjustMorale(morale, MORALE_CONFIG.deltas[r]);
 					} else {
-						if (m.home === playerClub) { gf = tg; ga = og; }
-						else { gf = og; ga = tg; }
-						morale = MORALE_CONFIG.adjustMorale(morale, MORALE_CONFIG.deltas[gf > ga ? 'win' : gf === ga ? 'draw' : 'loss']);
+						if (m.home === playerClub) {
+							gf = tg;
+							ga = og;
+						} else {
+							gf = og;
+							ga = tg;
+						}
+						morale = MORALE_CONFIG.adjustMorale(
+							morale,
+							MORALE_CONFIG.deltas[gf > ga ? 'win' : gf === ga ? 'draw' : 'loss']
+						);
 					}
 					results.push({ home: m.home, away: m.away, result: { homeGoals: gf, awayGoals: ga } });
 				} else {
-					results.push({ home: m.home, away: m.away, result: simAi(strengthOf(m.home), strengthOf(m.away), formula.aiBase) });
+					results.push({
+						home: m.home,
+						away: m.away,
+						result: simAi(strengthOf(m.home), strengthOf(m.away), formula.aiBase)
+					});
 				}
 			}
 			standings.processWeekResults(results, week.weekNumber);
 		}
 
-		const s1Sorted = [...standings.entries].sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference || b.goalsFor - a.goalsFor || a.club.localeCompare(b.club));
+		const s1Sorted = [...standings.entries].sort(
+			(a, b) =>
+				b.points - a.points ||
+				b.goalDifference - a.goalDifference ||
+				b.goalsFor - a.goalsFor ||
+				a.club.localeCompare(b.club)
+		);
 		const s1Idx = s1Sorted.findIndex((s) => s.club === playerClub);
 		const s1Pos = s1Idx + 1;
 		const promoted = s1Pos <= 3;
 
 		const promotedFromDiv4 = s1Sorted.slice(0, 3).map((s) => s.club);
-		const relegatedFromDiv3 = [...div3Clubs].sort((a, b) => (CLUB_STRENGTHS[a] ?? 3) - (CLUB_STRENGTHS[b] ?? 3)).slice(0, 3);
-		const newDiv3 = div3Clubs.filter((c) => !relegatedFromDiv3.includes(c)).concat(promotedFromDiv4);
-		const newDiv4 = div4Clubs.filter((c) => !promotedFromDiv4.includes(c)).concat(relegatedFromDiv3);
+		const relegatedFromDiv3 = [...div3Clubs]
+			.sort((a, b) => (CLUB_STRENGTHS[a] ?? 3) - (CLUB_STRENGTHS[b] ?? 3))
+			.slice(0, 3);
+		const newDiv3 = div3Clubs
+			.filter((c) => !relegatedFromDiv3.includes(c))
+			.concat(promotedFromDiv4);
+		const newDiv4 = div4Clubs
+			.filter((c) => !promotedFromDiv4.includes(c))
+			.concat(relegatedFromDiv3);
 
 		const s2Division = promoted ? 3 : 4;
 		const s2Clubs = promoted ? newDiv3 : newDiv4;
@@ -433,7 +554,11 @@ describe.skip('formula comparison', () => {
 		}
 
 		for (const week of schedule.weeks) {
-			const results: { home: string; away: string; result: { homeGoals: number; awayGoals: number } }[] = [];
+			const results: {
+				home: string;
+				away: string;
+				result: { homeGoals: number; awayGoals: number };
+			}[] = [];
 			for (const m of week.matches) {
 				if (m.home === playerClub || m.away === playerClub) {
 					const opp = m.home === playerClub ? m.away : m.home;
@@ -445,27 +570,49 @@ describe.skip('formula comparison', () => {
 					if (playing) {
 						const pg = [0, 0, 0, 1, 1, 2][Math.floor(Math.random() * 6)];
 						s2PlayerGoals += pg;
-						if (m.home === playerClub) { gf = tg + pg; ga = og; }
-						else { gf = og; ga = tg + pg; }
+						if (m.home === playerClub) {
+							gf = tg + pg;
+							ga = og;
+						} else {
+							gf = og;
+							ga = tg + pg;
+						}
 						const r = gf > ga ? 'win' : gf === ga ? 'draw' : 'loss';
 						morale = MORALE_CONFIG.adjustMorale(morale, MORALE_CONFIG.deltas[r]);
 					} else {
-						if (m.home === playerClub) { gf = tg; ga = og; }
-						else { gf = og; ga = tg; }
-						morale = MORALE_CONFIG.adjustMorale(morale, MORALE_CONFIG.deltas[gf > ga ? 'win' : gf === ga ? 'draw' : 'loss']);
+						if (m.home === playerClub) {
+							gf = tg;
+							ga = og;
+						} else {
+							gf = og;
+							ga = tg;
+						}
+						morale = MORALE_CONFIG.adjustMorale(
+							morale,
+							MORALE_CONFIG.deltas[gf > ga ? 'win' : gf === ga ? 'draw' : 'loss']
+						);
 					}
 					results.push({ home: m.home, away: m.away, result: { homeGoals: gf, awayGoals: ga } });
 				} else {
-					results.push({ home: m.home, away: m.away, result: simAi(strengthOf(m.home), strengthOf(m.away), formula.aiBase) });
+					results.push({
+						home: m.home,
+						away: m.away,
+						result: simAi(strengthOf(m.home), strengthOf(m.away), formula.aiBase)
+					});
 				}
 			}
 			standings.processWeekResults(results, week.weekNumber);
 		}
 
-		const s2Sorted = [...standings.entries].sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference || b.goalsFor - a.goalsFor || a.club.localeCompare(b.club));
+		const s2Sorted = [...standings.entries].sort(
+			(a, b) =>
+				b.points - a.points ||
+				b.goalDifference - a.goalDifference ||
+				b.goalsFor - a.goalsFor ||
+				a.club.localeCompare(b.club)
+		);
 		const s2Idx = s2Sorted.findIndex((s) => s.club === playerClub);
 		const s2Pos = s2Idx + 1;
-		const s2Entry = s2Sorted[s2Idx];
 
 		const divLabel = promoted ? 'Div3' : 'Div4 (not promoted)';
 		return `  Seed ${String(seed).padStart(4)}: S1 pos=${s1Pos} ${promoted ? '↑PROMOTED' : 'stayed'} → S2 in ${divLabel} pos=${s2Pos} pG1=${playerGoalsTotal} pG2=${s2PlayerGoals}`;
@@ -475,17 +622,17 @@ describe.skip('formula comparison', () => {
 		const f02: FormulaConfig = {
 			name: 'm0.02-team-only',
 			teamLambda: (s, m) => 0.3 + s * 0.1 + m * 0.02,
-			oppLambda: (s, m) => 0.3 + s * 0.1
+			oppLambda: (_s, _m) => 0.3 + _s * 0.1
 		};
 		const f01: FormulaConfig = {
 			name: 'm0.01-team-only',
 			teamLambda: (s, m) => 0.3 + s * 0.1 + m * 0.01,
-			oppLambda: (s, m) => 0.3 + s * 0.1
+			oppLambda: (_s, _m) => 0.3 + _s * 0.1
 		};
 		const f05: FormulaConfig = {
 			name: 'base-0.5-m0.01-team-only',
 			teamLambda: (s, m) => 0.5 + s * 0.1 + m * 0.01,
-			oppLambda: (s, m) => 0.5 + s * 0.1,
+			oppLambda: (_s, _m) => 0.5 + _s * 0.1,
 			aiBase: 0.5
 		};
 
@@ -494,7 +641,9 @@ describe.skip('formula comparison', () => {
 			const results = SEEDS.map((s) => runTwoSeasons(s, formula));
 			const promoted = results.filter((l) => l.includes('↑PROMOTED')).length;
 			console.log(`\n── ${formula.name} ───────────────────────────────────────`);
-			console.log(`  Promoted from Div4: ${promoted}/${SEEDS.length} (${(promoted/SEEDS.length*100).toFixed(0)}%)`);
+			console.log(
+				`  Promoted from Div4: ${promoted}/${SEEDS.length} (${((promoted / SEEDS.length) * 100).toFixed(0)}%)`
+			);
 			console.log(`  ── Per-seed ──`);
 			results.forEach((l) => console.log(l));
 		}

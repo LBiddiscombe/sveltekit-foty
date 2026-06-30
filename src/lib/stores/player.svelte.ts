@@ -103,8 +103,19 @@ function createPlayer() {
 		}
 	}
 
-	function archiveCurrentStats(seasonNumber: number, division: number, finalPosition: number | null) {
-		const period = season.getStatsSinceSnapshot(goals, appearances, careerXp, chances, saves, misses);
+	function archiveCurrentStats(
+		seasonNumber: number,
+		division: number,
+		finalPosition: number | null
+	) {
+		const period = season.getStatsSinceSnapshot(
+			goals,
+			appearances,
+			careerXp,
+			chances,
+			saves,
+			misses
+		);
 		statsArchive = [
 			...statsArchive,
 			{

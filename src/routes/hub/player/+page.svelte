@@ -158,9 +158,21 @@
 			<span class="text-warning">+{currentSeason.xp}</span>
 			<span></span>
 			<span></span>
-			<span class="text-success">{currentSeason.chances > 0 ? Math.round(currentSeason.goals / currentSeason.chances * 100) + '%' : ''}</span>
-			<span class="text-warning">{currentSeason.chances > 0 ? Math.round(currentSeason.saves / currentSeason.chances * 100) + '%' : ''}</span>
-			<span class="text-danger">{currentSeason.chances > 0 ? Math.round(currentSeason.misses / currentSeason.chances * 100) + '%' : ''}</span>
+			<span class="text-success"
+				>{currentSeason.chances > 0
+					? Math.round((currentSeason.goals / currentSeason.chances) * 100) + '%'
+					: ''}</span
+			>
+			<span class="text-warning"
+				>{currentSeason.chances > 0
+					? Math.round((currentSeason.saves / currentSeason.chances) * 100) + '%'
+					: ''}</span
+			>
+			<span class="text-danger"
+				>{currentSeason.chances > 0
+					? Math.round((currentSeason.misses / currentSeason.chances) * 100) + '%'
+					: ''}</span
+			>
 			<span></span>
 		</div>
 
@@ -174,7 +186,15 @@
 							<span class="text-primary">{entry.club}</span>
 							<span class="text-subtle">Div {entry.division}</span>
 							{#if entry.finalPosition !== null}
-								<span class="ml-auto text-subtle">{entry.finalPosition}{entry.finalPosition === 1 ? 'st' : entry.finalPosition === 2 ? 'nd' : entry.finalPosition === 3 ? 'rd' : 'th'}</span>
+								<span class="ml-auto text-subtle"
+									>{entry.finalPosition}{entry.finalPosition === 1
+										? 'st'
+										: entry.finalPosition === 2
+											? 'nd'
+											: entry.finalPosition === 3
+												? 'rd'
+												: 'th'}</span
+								>
 							{:else}
 								<span class="ml-auto text-subtle">-</span>
 							{/if}
@@ -194,9 +214,21 @@
 							<span class="text-warning">+{entry.xpEarned}</span>
 							<span></span>
 							<span></span>
-							<span class="text-success">{entry.chances > 0 ? Math.round(entry.goals / entry.chances * 100) + '%' : ''}</span>
-							<span class="text-warning">{entry.chances > 0 ? Math.round(entry.saves / entry.chances * 100) + '%' : ''}</span>
-							<span class="text-danger">{entry.chances > 0 ? Math.round(entry.misses / entry.chances * 100) + '%' : ''}</span>
+							<span class="text-success"
+								>{entry.chances > 0
+									? Math.round((entry.goals / entry.chances) * 100) + '%'
+									: ''}</span
+							>
+							<span class="text-warning"
+								>{entry.chances > 0
+									? Math.round((entry.saves / entry.chances) * 100) + '%'
+									: ''}</span
+							>
+							<span class="text-danger"
+								>{entry.chances > 0
+									? Math.round((entry.misses / entry.chances) * 100) + '%'
+									: ''}</span
+							>
 							<span></span>
 						</div>
 					</div>
@@ -220,9 +252,21 @@
 			<span class="text-warning">+{careerTotal.xp}</span>
 			<span></span>
 			<span></span>
-			<span class="text-success">{careerTotal.chances > 0 ? Math.round(careerTotal.goals / careerTotal.chances * 100) + '%' : ''}</span>
-			<span class="text-warning">{careerTotal.chances > 0 ? Math.round(careerTotal.saves / careerTotal.chances * 100) + '%' : ''}</span>
-			<span class="text-danger">{careerTotal.chances > 0 ? Math.round(careerTotal.misses / careerTotal.chances * 100) + '%' : ''}</span>
+			<span class="text-success"
+				>{careerTotal.chances > 0
+					? Math.round((careerTotal.goals / careerTotal.chances) * 100) + '%'
+					: ''}</span
+			>
+			<span class="text-warning"
+				>{careerTotal.chances > 0
+					? Math.round((careerTotal.saves / careerTotal.chances) * 100) + '%'
+					: ''}</span
+			>
+			<span class="text-danger"
+				>{careerTotal.chances > 0
+					? Math.round((careerTotal.misses / careerTotal.chances) * 100) + '%'
+					: ''}</span
+			>
 			<span></span>
 		</div>
 	</div>

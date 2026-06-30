@@ -5,7 +5,12 @@ import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
 import { generateDivisionSchedule } from '$lib/config/schedule';
 import { deriveFixturesFromSchedule } from '$lib/config/fixtures';
 import { standings } from './standings.svelte';
-import { generateAllCupBrackets, getLeagueWeeks, CUP_SCHEDULE, simulateCupRound } from '$lib/config/cups';
+import {
+	generateAllCupBrackets,
+	getLeagueWeeks,
+	CUP_SCHEDULE,
+	simulateCupRound
+} from '$lib/config/cups';
 
 export type BoundaryResult = {
 	upper: number;
@@ -69,12 +74,22 @@ function createSeason() {
 
 	function simulateCupWeek() {
 		const lcRound = getCupRound('league-cup', weekNumber);
-		if (lcRound !== null && leagueCupBracket && !leagueCupBracket.winner && leagueCupBracket.currentRound === lcRound) {
+		if (
+			lcRound !== null &&
+			leagueCupBracket &&
+			!leagueCupBracket.winner &&
+			leagueCupBracket.currentRound === lcRound
+		) {
 			leagueCupBracket = simulateCupRound(leagueCupBracket);
 		}
 
 		const faRound = getCupRound('fa-cup', weekNumber);
-		if (faRound !== null && faCupBracket && !faCupBracket.winner && faCupBracket.currentRound === faRound) {
+		if (
+			faRound !== null &&
+			faCupBracket &&
+			!faCupBracket.winner &&
+			faCupBracket.currentRound === faRound
+		) {
 			faCupBracket = simulateCupRound(faCupBracket);
 		}
 	}

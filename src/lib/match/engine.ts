@@ -27,7 +27,7 @@ function calcTeamGoals(strength: number, morale: number): number {
 	return poisson(0.3 + strength * 0.1 + morale * 0.01);
 }
 
-function calcOpponentGoals(strength: number, morale: number): number {
+function calcOpponentGoals(strength: number, _morale: number): number {
 	return poisson(0.3 + strength * 0.1);
 }
 
@@ -87,12 +87,13 @@ export function consumeDeck(deck: number[], skipped: boolean) {
 
 export const AI_DRAW_BREAKER = 0.35;
 
-export function simAiMatch(homeStrength: number, awayStrength: number): AiMatchResult {
+export function simulateMatch(homeStrength: number, awayStrength: number): AiMatchResult {
 	const [homeStr, awayStr] = remapPair(homeStrength, awayStrength);
-	const homeLambda = 0.3 + homeStr * 0.1;
-	const awayLambda = 0.3 + awayStr * 0.1;
-	let homeGoals = poisson(homeLambda);
-	const awayGoals = poisson(awayLambda);
+	const homeAdv = 0.5;
+	const homeRate = Math.max(0.1, homeStr * 0.15 + homeAdv);
+	const awayRate = Math.max(0.1, awayStr * 0.15);
+	let homeGoals = poisson(homeRate);
+	const awayGoals = poisson(awayRate);
 	if (homeGoals === awayGoals && Math.random() < AI_DRAW_BREAKER) {
 		homeGoals += 1;
 	}

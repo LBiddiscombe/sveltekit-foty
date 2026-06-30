@@ -86,7 +86,7 @@
 		</div>
 	</Card>
 
-	{#each (['league-cup', 'fa-cup'] as const) as cupType (cupType)}
+	{#each ['league-cup', 'fa-cup'] as const as cupType (cupType)}
 		{@const bracket = cupType === 'league-cup' ? season.leagueCupBracket : season.faCupBracket}
 		{#if bracket?.winner}
 			<Card>
@@ -98,7 +98,9 @@
 						{@const eliminatedRound = bracket.eliminated[player.club]}
 						{#if eliminatedRound !== undefined}
 							<p>
-								Your club: <span class="text-danger">eliminated in {CUP_ROUND_NAMES[cupType][eliminatedRound]}</span>
+								Your club: <span class="text-danger"
+									>eliminated in {CUP_ROUND_NAMES[cupType][eliminatedRound]}</span
+								>
 							</p>
 						{:else if bracket.winner === player.club}
 							<p>Your club: <span class="text-success">CHAMPIONS!</span></p>

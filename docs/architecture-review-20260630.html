@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Architecture review — FotY Reboot</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script type="module">
+			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+			mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+		</script>
+		<style>
+			.seam {
+				stroke-dasharray: 6 4;
+			}
+			.leak {
+				stroke: #dc2626;
+				stroke-width: 2.5;
+			}
+			.deep-fill {
+				fill: #0f172a;
+			}
+			.card-mermaid svg {
+				max-width: 100%;
+				height: auto;
+			}
+		</style>
+	</head>
+	<body class="bg-stone-50 font-sans text-slate-900 antialiased">
+		<main class="mx-auto max-w-5xl space-y-12 px-6 py-12">
+			<!-- Header -->
+			<header class="border-b border-slate-200 pb-6">
+				<div class="flex items-baseline justify-between">
+					<h1 class="text-2xl font-bold tracking-tight">FotY Reboot</h1>
+					<time class="text-sm text-slate-500">2026-06-30</time>
+				</div>
+				<div class="mt-3 flex flex-wrap gap-3 text-xs">
+					<span class="inline-flex items-center gap-1"
+						><span class="inline-block h-3 w-3 border-2 border-slate-600 bg-white"></span>
+						module</span
+					>
+					<span class="inline-flex items-center gap-1"
+						><span class="inline-block h-0 w-6 border-t-2 border-dashed border-slate-400"></span>
+						seam</span
+					>
+					<span class="inline-flex items-center gap-1"
+						><span class="inline-block h-0.5 w-3 bg-red-500"></span> leakage</span
+					>
+					<span class="inline-flex items-center gap-1"
+						><span class="inline-block h-4 w-3 rounded bg-slate-800"></span> deep module</span
+					>
+				</div>
+			</header>
+
+			<!-- Candidates -->
+			<section id="candidates" class="space-y-10">
+				<!-- Candidate 1: Duplicate Poisson -->
+				<article class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+					<div class="flex items-start justify-between">
+						<h2 class="text-lg font-bold">Consolidate AI match simulation</h2>
+						<div class="flex gap-2">
+							<span
+								class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800"
+								>Strong</span
+							>
+							<span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600"
+								>in-process</span
+							>
+						</div>
+					</div>
+
+					<div class="space-y-0.5 font-mono text-sm text-slate-500">
+						<div>
+							<span class="text-slate-700">src/lib/match/engine.ts</span> — <code>poisson()</code>,
+							<code>simAiMatch()</code>
+						</div>
+						<div>
+							<span class="text-slate-700">src/lib/config/cups.ts</span> —
+							<code>poissonRandom()</code>, <code>simulateMatch()</code>
+						</div>
+						<div>
+							<span class="text-slate-700">src/lib/transfer/evaluate.ts</span> — imports
+							<code>simAiMatch</code> from engine
+						</div>
+					</div>
+
+					<div class="grid grid-cols-2 gap-4">
+						<!-- Before -->
+						<div class="rounded-lg border border-slate-200 bg-white p-3">
+							<div class="mb-2 text-xs tracking-wider text-slate-400 uppercase">Before</div>
+							<div class="card-mermaid">
+								<pre class="mermaid">
+                  flowchart TD
+                    A["engine.ts<br/>poisson()<br/>λ = 0.3 + str×0.1"] --> B["simAiMatch()"]
+                    A --> C["remapPair()"]
+                    D["cups.ts<br/>poissonRandom()<br/>λ = max(0.1, str×0.15+adv)"] --> E["simulateMatch()"]
+                    D --> F["simulateCupTie()"]
+                    G["transfer/evaluate.ts"] --> B
+                    C -.-> D
+                    classDef leak stroke:#dc2626,stroke-width:2px;
+                    class C,D leak
+                </pre>
+							</div>
+						</div>
+						<!-- After -->
+						<div class="rounded-lg border border-slate-200 bg-white p-3">
+							<div class="mb-2 text-xs tracking-wider text-slate-400 uppercase">After</div>
+							<div class="card-mermaid">
+								<pre class="mermaid">
+                  flowchart TD
+                    A["engine.ts<br/>poisson()<br/>remapPair()"] --> B["simAiMatch()"]
+                    A --> C["simulateCupTie()"]
+                    A --> D["simulateCupMatch()"]
+                    style A fill:#0f172a,color:#fff,stroke:#0f172a
+                </pre>
+							</div>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-3 gap-4 text-sm">
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Problem
+							</div>
+							<p class="text-slate-700">
+								Two independent Poisson implementations with different lambda formulae simulate AI
+								match results — league and cup models diverge without a shared seam to configure
+								them.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Solution
+							</div>
+							<p class="text-slate-700">
+								Collapse into one <code>engine.ts</code> that exposes parameterised Poisson +
+								remapPair. Cup simulation becomes an adapter that passes cup-specific lambdas
+								through the same seam.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Wins
+							</div>
+							<ul class="list-inside list-disc space-y-0.5 text-slate-700">
+								<li>locality: one Poisson, one place to fix</li>
+								<li>interface shrinks from 2 Poisson impls to 1</li>
+								<li>leverage: 3 call sites via one seam</li>
+							</ul>
+						</div>
+					</div>
+				</article>
+
+				<!-- Candidate 2: Vidiprinter god component -->
+				<article class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+					<div class="flex items-start justify-between">
+						<h2 class="text-lg font-bold">Extract week-resolution pipeline from vidiprinter</h2>
+						<div class="flex gap-2">
+							<span
+								class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800"
+								>Strong</span
+							>
+							<span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600"
+								>ports &amp; adapters</span
+							>
+						</div>
+					</div>
+
+					<div class="space-y-0.5 font-mono text-sm text-slate-500">
+						<div>
+							<span class="text-slate-700">src/routes/vidiprinter/+page.svelte</span> — 526 lines
+						</div>
+						<div>
+							<span class="text-slate-700">src/lib/stores/season.svelte.ts</span> —
+							<code>simulateCupWeek()</code>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div class="rounded-lg border border-slate-200 bg-white p-3">
+							<div class="mb-2 text-xs tracking-wider text-slate-400 uppercase">Before</div>
+							<div class="flex flex-col gap-1 rounded bg-stone-50 p-2 font-mono text-[10px]">
+								<div class="rounded border border-slate-300 bg-white px-2 py-1 text-[10px]">
+									vidiprinter/+page.svelte
+								</div>
+								<div class="ml-3 space-y-0.5 border-l-2 border-slate-200 pl-2">
+									<div class="rounded border border-red-200 bg-red-50 px-2 py-0.5 text-[10px]">
+										phase = 'vidiprinter'
+									</div>
+									<div class="rounded border border-red-200 bg-red-50 px-2 py-0.5 text-[10px]">
+										simulateCupWeek()
+									</div>
+									<div class="rounded border border-red-200 bg-red-50 px-2 py-0.5 text-[10px]">
+										process league results
+									</div>
+									<div class="rounded border border-red-200 bg-red-50 px-2 py-0.5 text-[10px]">
+										standings.processWeekResults()
+									</div>
+									<div class="rounded border border-red-200 bg-red-50 px-2 py-0.5 text-[10px]">
+										saveGame()
+									</div>
+									<div class="rounded border border-red-200 bg-red-50 px-2 py-0.5 text-[10px]">
+										transfer scouting
+									</div>
+									<div class="rounded border border-red-200 bg-red-50 px-2 py-0.5 text-[10px]">
+										incident generation
+									</div>
+									<div class="rounded border border-slate-300 bg-white px-2 py-0.5 text-[10px]">
+										teletype rendering
+									</div>
+									<div class="rounded border border-slate-300 bg-white px-2 py-0.5 text-[10px]">
+										navigation (onContinue)
+									</div>
+								</div>
+								<div class="mt-1 text-[9px] text-red-500">5 leaking concerns</div>
+							</div>
+						</div>
+						<div class="rounded-lg border border-slate-200 bg-white p-3">
+							<div class="mb-2 text-xs tracking-wider text-slate-400 uppercase">After</div>
+							<div class="flex flex-col gap-1 rounded bg-stone-50 p-2 font-mono text-[10px]">
+								<div class="rounded border-2 border-slate-800 bg-slate-50 px-2 py-1 text-[10px]">
+									week-resolution module
+								</div>
+								<div class="ml-3 space-y-0.5 border-l-2 border-slate-200 pl-2">
+									<div
+										class="rounded border border-slate-300 bg-white px-2 py-0.5 text-[10px] text-slate-400 italic"
+									>
+										simulate cup week (moved in)
+									</div>
+									<div
+										class="rounded border border-slate-300 bg-white px-2 py-0.5 text-[10px] text-slate-400 italic"
+									>
+										process league week (moved in)
+									</div>
+									<div
+										class="rounded border border-slate-300 bg-white px-2 py-0.5 text-[10px] text-slate-400 italic"
+									>
+										scout resolution (moved in)
+									</div>
+									<div
+										class="rounded border border-slate-300 bg-white px-2 py-0.5 text-[10px] text-slate-400 italic"
+									>
+										incident roll (moved in)
+									</div>
+								</div>
+								<div class="mt-1 rounded border border-slate-300 bg-white px-2 py-1 text-[10px]">
+									vidiprinter/+page.svelte
+								</div>
+								<div class="ml-3 space-y-0.5 border-l-2 border-slate-200 pl-2">
+									<div class="rounded border border-slate-300 bg-white px-2 py-0.5 text-[10px]">
+										teletype rendering
+									</div>
+									<div class="rounded border border-slate-300 bg-white px-2 py-0.5 text-[10px]">
+										navigation
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-3 gap-4 text-sm">
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Problem
+							</div>
+							<p class="text-slate-700">
+								7 distinct responsibilities in one route module. Transfer scouting, incident
+								rolling, cup simulation, standings processing all leak across the seam into the view
+								layer.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Solution
+							</div>
+							<p class="text-slate-700">
+								Extract a week-resolution pipeline module behind one
+								<code>resolveWeek()</code> call. The route imports and calls it — the pipeline owns
+								the orchestration.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Wins
+							</div>
+							<ul class="list-inside list-disc space-y-0.5 text-slate-700">
+								<li>locality: week logic concentrations in one module</li>
+								<li>testability: pipe in state, assert state out</li>
+								<li>depth: interface is 1 call, impl is N steps</li>
+								<li>route becomes a thin presenter</li>
+							</ul>
+						</div>
+					</div>
+				</article>
+
+				<!-- Candidate 3: Shallow shuffle -->
+				<article class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+					<div class="flex items-start justify-between">
+						<h2 class="text-lg font-bold">Unify duplicated shuffle utility</h2>
+						<div class="flex gap-2">
+							<span
+								class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800"
+								>Strong</span
+							>
+							<span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600"
+								>in-process</span
+							>
+						</div>
+					</div>
+
+					<div class="space-y-0.5 font-mono text-sm text-slate-500">
+						<div><span class="text-slate-700">src/lib/config/cups.ts:161</span></div>
+						<div><span class="text-slate-700">src/lib/config/fixtures.ts:4</span></div>
+						<div><span class="text-slate-700">src/lib/config/schedule.ts:4</span></div>
+					</div>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div class="rounded-lg border border-slate-200 bg-white p-4">
+							<div class="mb-3 text-xs tracking-wider text-slate-400 uppercase">
+								Before — 3 identical copies
+							</div>
+							<div class="flex items-center justify-center gap-2">
+								<div class="rounded border border-slate-300 bg-white px-3 py-2 font-mono text-xs">
+									cups.ts<br />shuffle()
+								</div>
+								<div class="text-lg text-slate-300">=</div>
+								<div class="rounded border border-slate-300 bg-white px-3 py-2 font-mono text-xs">
+									fixtures.ts<br />shuffle()
+								</div>
+								<div class="text-lg text-slate-300">=</div>
+								<div class="rounded border border-slate-300 bg-white px-3 py-2 font-mono text-xs">
+									schedule.ts<br />shuffle()
+								</div>
+							</div>
+							<div class="mt-3 text-center text-xs text-red-500">
+								Deletion test: complexity just moves to N callers
+							</div>
+						</div>
+						<div class="rounded-lg border border-slate-200 bg-white p-4">
+							<div class="mb-3 text-xs tracking-wider text-slate-400 uppercase">After</div>
+							<div class="flex items-center justify-center gap-2">
+								<div
+									class="rounded border-2 border-slate-800 bg-slate-800 px-3 py-2 font-mono text-xs text-white"
+								>
+									$lib/utils/<br />shuffle.ts
+								</div>
+								<svg width="30" height="20" viewBox="0 0 30 20">
+									<path d="M5,10 L25,10" stroke="#94a3b8" stroke-width="1.5" />
+									<polygon points="25,6 30,10 25,14" fill="#94a3b8" />
+								</svg>
+								<div class="rounded border border-slate-300 bg-white px-3 py-2 font-mono text-xs">
+									cups.ts
+								</div>
+								<svg width="30" height="20" viewBox="0 0 30 20">
+									<path d="M5,10 L25,10" stroke="#94a3b8" stroke-width="1.5" />
+									<polygon points="25,6 30,10 25,14" fill="#94a3b8" />
+								</svg>
+								<div class="rounded border border-slate-300 bg-white px-3 py-2 font-mono text-xs">
+									fixtures.ts
+								</div>
+								<svg width="30" height="20" viewBox="0 0 30 20">
+									<path d="M5,10 L25,10" stroke="#94a3b8" stroke-width="1.5" />
+									<polygon points="25,6 30,10 25,14" fill="#94a3b8" />
+								</svg>
+								<div class="rounded border border-slate-300 bg-white px-3 py-2 font-mono text-xs">
+									schedule.ts
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-3 gap-4 text-sm">
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Problem
+							</div>
+							<p class="text-slate-700">
+								Identical Fisher-Yates shuffle in 3 files — it's a first-weekend extraction that
+								never happened. Survives because it's small enough to re-type.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Solution
+							</div>
+							<p class="text-slate-700">
+								Extract to a shared <code>$lib/utils/shuffle.ts</code>. Three imports replace three
+								implementations.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Wins
+							</div>
+							<ul class="list-inside list-disc space-y-0.5 text-slate-700">
+								<li>locality: fix shuffle once</li>
+								<li>depth: one interface vs 3 shallow wrappers</li>
+								<li>test: one test covers all call sites</li>
+							</ul>
+						</div>
+					</div>
+				</article>
+
+				<!-- Candidate 4: Cup resolution scattered -->
+				<article class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+					<div class="flex items-start justify-between">
+						<h2 class="text-lg font-bold">Deepen cup resolution behind one seam</h2>
+						<div class="flex gap-2">
+							<span
+								class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800"
+								>Strong</span
+							>
+							<span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600"
+								>in-process</span
+							>
+						</div>
+					</div>
+
+					<div class="space-y-0.5 font-mono text-sm text-slate-500">
+						<div>
+							<span class="text-slate-700">src/lib/config/cups.ts</span> —
+							<code>simulateCupTie()</code>, <code>simulateCupRound()</code>
+						</div>
+						<div>
+							<span class="text-slate-700">src/lib/stores/season.svelte.ts</span> —
+							<code>simulateCupWeek()</code>
+						</div>
+						<div>
+							<span class="text-slate-700">src/routes/match/+page.svelte:102-263</span> — player cup
+							resolution (160 lines)
+						</div>
+						<div>
+							<span class="text-slate-700">src/routes/vidiprinter/+page.svelte:95-252</span> — cup
+							result rendering
+						</div>
+					</div>
+
+					<div class="rounded-lg border border-slate-200 bg-white p-3">
+						<div class="mb-2 text-xs tracking-wider text-slate-400 uppercase">
+							Before — resolution logic in 4 files
+						</div>
+						<div class="card-mermaid">
+							<pre class="mermaid">
+                flowchart LR
+                  A["config/cups.ts<br/>simulateCupTie()<br/>simulateCupRound()"] --> B["for AI-only cups"]
+                  C["season.svelte.ts<br/>simulateCupWeek()"] --> D["delegates to simulateCupRound"]
+                  E["match/+page.svelte<br/>player cup resolution<br/>~160 lines"] --> F["duplicates agg logic"]
+                  G["vidiprinter/+page.svelte<br/>cup result rendering"]
+                  E -.->|red: duplicate agg| A
+                  classDef leak stroke:#dc2626,stroke-width:2px;
+                  class E leak
+              </pre>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-3 gap-4 text-sm">
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Problem
+							</div>
+							<p class="text-slate-700">
+								Aggregate scoring, winner determination, and coin-toss logic is duplicated across
+								cups.ts (AI sim) and match/+page.svelte (player sim). A bug in one won't surface in
+								the other.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Solution
+							</div>
+							<p class="text-slate-700">
+								Push player-insertion into <code>simulateCupTie()</code> by accepting an optional
+								player outcome to inject. The route only calls one function.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Wins
+							</div>
+							<ul class="list-inside list-disc space-y-0.5 text-slate-700">
+								<li>locality: one cup resolution path</li>
+								<li>leverage: player and AI cup share one interface</li>
+								<li>testability: test cup resolution from one module</li>
+								<li>match route loses 160 lines</li>
+							</ul>
+						</div>
+					</div>
+				</article>
+
+				<!-- Candidate 5: Stats snapshot in wrong store -->
+				<article class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+					<div class="flex items-start justify-between">
+						<h2 class="text-lg font-bold">Move stat snapshot to player module</h2>
+						<div class="flex gap-2">
+							<span
+								class="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800"
+								>Worth exploring</span
+							>
+							<span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600"
+								>in-process</span
+							>
+						</div>
+					</div>
+
+					<div class="space-y-0.5 font-mono text-sm text-slate-500">
+						<div>
+							<span class="text-slate-700">src/lib/stores/season.svelte.ts:228-260</span> —
+							<code>recordStatsSnapshot</code>, <code>getStatsSinceSnapshot</code>
+						</div>
+						<div>
+							<span class="text-slate-700">src/lib/stores/player.svelte.ts:106-124</span> —
+							<code>archiveCurrentStats</code> calling back into season
+						</div>
+					</div>
+
+					<div class="rounded-lg border border-slate-200 bg-white p-4">
+						<div class="mb-2 text-xs tracking-wider text-slate-400 uppercase">
+							Cross-store coupling
+						</div>
+						<div class="card-mermaid">
+							<pre class="mermaid">
+                flowchart LR
+                  A["player.svelte.ts<br/>archiveCurrentStats()"] -->|calls| B["season.svelte.ts<br/>getStatsSinceSnapshot()"]
+                  B -->|returns season stats| A
+                  A -->|calls| B["season.svelte.ts<br/>recordStatsSnapshot()"]
+                  style B stroke:#dc2626,stroke-width:2px
+              </pre>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-3 gap-4 text-sm">
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Problem
+							</div>
+							<p class="text-slate-700">
+								The season store holds snapshot values that semantically belong to the player.
+								Player must call back into season to archive its own stats — inverted ownership.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Solution
+							</div>
+							<p class="text-slate-700">
+								Move <code>recordStatsSnapshot</code>/<code>getStatsSinceSnapshot</code> into the
+								player store. Season doesn't need to know about snapshot deltas.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Wins
+							</div>
+							<ul class="list-inside list-disc space-y-0.5 text-slate-700">
+								<li>locality: stat snapshot lives with player</li>
+								<li>interface: player owns its own history</li>
+								<li>season store shrinks by 8 fields</li>
+							</ul>
+						</div>
+					</div>
+				</article>
+
+				<!-- Candidate 6: Inbox nextId boilerplate -->
+				<article class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+					<div class="flex items-start justify-between">
+						<h2 class="text-lg font-bold">Encapsulate inbox message creation</h2>
+						<div class="flex gap-2">
+							<span
+								class="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800"
+								>Worth exploring</span
+							>
+							<span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600"
+								>in-process</span
+							>
+						</div>
+					</div>
+
+					<div class="space-y-0.5 font-mono text-sm text-slate-500">
+						<div>
+							<span class="text-slate-700">src/lib/stores/inbox.svelte.ts:17</span> —
+							<code>addIncident</code> generates nextId
+						</div>
+						<div>
+							<span class="text-slate-700">src/routes/vidiprinter/+page.svelte:433</span> — manual
+							nextId
+						</div>
+						<div>
+							<span class="text-slate-700">src/routes/match/+page.svelte:173</span> — manual nextId
+						</div>
+						<div>
+							<span class="text-slate-700">src/routes/shop/+page.svelte:100</span> — manual nextId
+						</div>
+						<div>
+							<span class="text-slate-700">src/lib/stores/player.svelte.ts:75</span> — manual nextId
+						</div>
+					</div>
+
+					<div class="rounded-lg border border-slate-200 bg-white p-4">
+						<div class="grid grid-cols-2 gap-4">
+							<div>
+								<div class="mb-2 text-xs tracking-wider text-slate-400 uppercase">
+									Before — boilerplate at each call site
+								</div>
+								<div class="rounded bg-stone-50 p-2 font-mono text-[10px] whitespace-pre">
+									const nextId = Math.max(0, ...inbox.items.map(i => i.id)) + 1; inbox.items =
+									[...inbox.items, { id: nextId, ... }];
+								</div>
+								<div class="mt-1 text-[10px] text-red-500">× 5 occurrences</div>
+							</div>
+							<div>
+								<div class="mb-2 text-xs tracking-wider text-slate-400 uppercase">
+									After — one method
+								</div>
+								<div class="rounded bg-stone-50 p-2 font-mono text-[10px] whitespace-pre">
+									inbox.addMessage({ type: 'news', subject, body });
+								</div>
+								<div class="mt-1 text-[10px] text-emerald-600">× 5 call sites unified</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-3 gap-4 text-sm">
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Problem
+							</div>
+							<p class="text-slate-700">
+								nextId generation and array spread is repeated verbatim across 5 files. If ID
+								generation changes, 5 places to update.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Solution
+							</div>
+							<p class="text-slate-700">
+								Add an <code>addMessage()</code> method to the inbox store that handles nextId,
+								spread, and default fields. Pass type/subject/body/actionRequired.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Wins
+							</div>
+							<ul class="list-inside list-disc space-y-0.5 text-slate-700">
+								<li>locality: ID strategy in one place</li>
+								<li>depth: one method replaces 6-line pattern</li>
+								<li>testable: inbox owns its invariants</li>
+							</ul>
+						</div>
+					</div>
+				</article>
+
+				<!-- Candidate 7: Transfer logic runs in routes -->
+				<article class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+					<div class="flex items-start justify-between">
+						<h2 class="text-lg font-bold">Extract transfer orchestration behind a seam</h2>
+						<div class="flex gap-2">
+							<span
+								class="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800"
+								>Worth exploring</span
+							>
+							<span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600"
+								>ports &amp; adapters</span
+							>
+						</div>
+					</div>
+
+					<div class="space-y-0.5 font-mono text-sm text-slate-500">
+						<div>
+							<span class="text-slate-700">src/routes/vidiprinter/+page.svelte:400-448</span> —
+							passive scouting orchestration
+						</div>
+						<div>
+							<span class="text-slate-700">src/routes/shop/+page.svelte:72-121</span> — transfer
+							card orchestration
+						</div>
+						<div>
+							<span class="text-slate-700">src/lib/transfer/evaluate.ts</span> — evaluation +
+							transfer processing
+						</div>
+					</div>
+
+					<div class="rounded-lg border border-slate-200 bg-white p-3">
+						<div class="card-mermaid">
+							<pre class="mermaid">
+                flowchart LR
+                  A["vidiprinter/+page.svelte"] --> B["rollPassiveScout()"]
+                  A --> C["evaluateScout()"]
+                  A --> D["processSameDivisionTransfer()"]
+                  A --> E["processDivisionUpTransfer()"]
+                  F["shop/+page.svelte"] --> C
+                  F --> D
+                  F --> E
+                  subgraph G["lib/transfer/evaluate.ts"]
+                    H["evaluateScout()"]
+                    I["processSameDivisionTransfer()"]
+                    J["processDivisionUpTransfer()"]
+                  end
+                  style A stroke:#dc2626,stroke-width:2px
+                  style F stroke:#dc2626,stroke-width:2px
+              </pre>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-3 gap-4 text-sm">
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Problem
+							</div>
+							<p class="text-slate-700">
+								Transfer orchestration (roll → evaluate → process → navigate) lives in two route
+								files. Adding a third path (e.g. season-end) requires copy-paste.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Solution
+							</div>
+							<p class="text-slate-700">
+								One <code>resolveTransfer()</code> function in evaluate.ts that takes a source
+								(passive/card) and returns a result. Routes call and react to the result.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Wins
+							</div>
+							<ul class="list-inside list-disc space-y-0.5 text-slate-700">
+								<li>locality: transfer resolution in one module</li>
+								<li>testability: test the full flow without routes</li>
+								<li>depth: 1 interface replaces N route spread</li>
+							</ul>
+						</div>
+					</div>
+				</article>
+
+				<!-- Candidate 8: Match route god component -->
+				<article class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+					<div class="flex items-start justify-between">
+						<h2 class="text-lg font-bold">Extract match XP and cup resolution from match route</h2>
+						<div class="flex gap-2">
+							<span
+								class="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800"
+								>Worth exploring</span
+							>
+							<span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600"
+								>ports &amp; adapters</span
+							>
+						</div>
+					</div>
+
+					<div class="space-y-0.5 font-mono text-sm text-slate-500">
+						<div><span class="text-slate-700">src/routes/match/+page.svelte</span> — 369 lines</div>
+						<div>
+							<span class="text-slate-700">src/lib/match/engine.ts</span> — <code>playGame</code>,
+							<code>skipGame</code>
+						</div>
+						<div>
+							<span class="text-slate-700">src/lib/stores/match.svelte.ts</span> — state holder
+						</div>
+					</div>
+
+					<div class="rounded-lg border border-slate-200 bg-white p-4">
+						<div class="grid grid-cols-2 gap-4">
+							<div>
+								<div class="mb-2 text-xs tracking-wider text-slate-400 uppercase">Before</div>
+								<div class="rounded bg-stone-50 p-2 font-mono text-[10px] leading-relaxed">
+									match/+page.svelte owns:<br />
+									• minigame orchestration<br />
+									• <span class="text-red-500">XP calculation</span><br />
+									• <span class="text-red-500">cup bracket updates (160 lines)</span><br />
+									• <span class="text-red-500">fixture result save on schedule</span><br />
+									• <span class="text-red-500">inbox message creation</span>
+								</div>
+							</div>
+							<div>
+								<div class="mb-2 text-xs tracking-wider text-slate-400 uppercase">After</div>
+								<div class="rounded bg-stone-50 p-2 font-mono text-[10px] leading-relaxed">
+									match/+page.svelte owns:<br />
+									• minigame orchestration<br />
+									<span class="text-slate-300">XP calc → engine.ts</span><br />
+									<span class="text-slate-300">cup writeback → engine.ts or cups.ts</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-3 gap-4 text-sm">
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Problem
+							</div>
+							<p class="text-slate-700">
+								The match route computes XP, writes cup bracket state, creates inbox messages, and
+								persists fixture results — none of which are view concerns.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Solution
+							</div>
+							<p class="text-slate-700">
+								Pull XP calc into engine.ts. Pull cup bracket writeback into a shared cup resolution
+								adapter. The match route only calls these rather than inlining them.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Wins
+							</div>
+							<ul class="list-inside list-disc space-y-0.5 text-slate-700">
+								<li>locality: XP logic in one module</li>
+								<li>testability: test XP and cup resolution without a browser</li>
+								<li>depth: route is thin, engine is deep</li>
+							</ul>
+						</div>
+					</div>
+				</article>
+
+				<!-- Candidate 9: Missing test coverage -->
+				<article class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+					<div class="flex items-start justify-between">
+						<h2 class="text-lg font-bold">
+							Cover untested seams: cup sim, transfer flow, match XP
+						</h2>
+						<div class="flex gap-2">
+							<span
+								class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-800"
+								>Speculative</span
+							>
+							<span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600"
+								>in-process</span
+							>
+						</div>
+					</div>
+
+					<div class="overflow-hidden rounded-lg border border-slate-200">
+						<table class="w-full text-sm">
+							<thead class="bg-slate-50 text-xs tracking-wider text-slate-500 uppercase">
+								<tr>
+									<th class="px-4 py-2 text-left">Module</th>
+									<th class="px-4 py-2 text-left">Tests</th>
+									<th class="px-4 py-2 text-left">Risk</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-slate-200">
+								<tr>
+									<td class="px-4 py-2 font-mono text-xs">simulateCupTie / simulateCupRound</td>
+									<td class="px-4 py-2 text-xs text-red-500">None</td>
+									<td class="px-4 py-2 text-xs">
+										High — cup draws + results can silently corrupt brackets
+									</td>
+								</tr>
+								<tr>
+									<td class="px-4 py-2 font-mono text-xs">transfer/evaluate.ts</td>
+									<td class="px-4 py-2 text-xs text-red-500">None</td>
+									<td class="px-4 py-2 text-xs">
+										High — scouting logic + transfer processing untested
+									</td>
+								</tr>
+								<tr>
+									<td class="px-4 py-2 font-mono text-xs">calcMatchXp (match route)</td>
+									<td class="px-4 py-2 text-xs text-red-500">None</td>
+									<td class="px-4 py-2 text-xs">
+										Medium — XP freezes at cap, result bonus edge cases
+									</td>
+								</tr>
+								<tr>
+									<td class="px-4 py-2 font-mono text-xs">engine.spec.ts</td>
+									<td class="px-4 py-2 text-xs text-emerald-500">Good</td>
+									<td class="px-4 py-2 text-xs">
+										Low — playGame, skipGame, simAiMatch well covered
+									</td>
+								</tr>
+								<tr>
+									<td class="px-4 py-2 font-mono text-xs">standings.spec.ts</td>
+									<td class="px-4 py-2 text-xs text-emerald-500">Good</td>
+									<td class="px-4 py-2 text-xs">Low</td>
+								</tr>
+								<tr>
+									<td class="px-4 py-2 font-mono text-xs">
+										save.spec.ts / persistence-flow.spec.ts
+									</td>
+									<td class="px-4 py-2 text-xs text-emerald-500">Good</td>
+									<td class="px-4 py-2 text-xs">Low</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="grid grid-cols-3 gap-4 text-sm">
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Problem
+							</div>
+							<p class="text-slate-700">
+								The highest-complexity additions (cups, transfers) have zero test coverage. Bugs in
+								bracket resolution or transfer processing will surface at runtime.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Solution
+							</div>
+							<p class="text-slate-700">
+								Add unit tests for <code>simulateCupTie</code>, <code>simulateCupRound</code>,
+								<code>evaluateScout</code>, <code>calcMatchXp</code> before the deepening above.
+								Tests validate the interface before we rearrange internals.
+							</p>
+						</div>
+						<div>
+							<div class="mb-1 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+								Wins
+							</div>
+							<ul class="list-inside list-disc space-y-0.5 text-slate-700">
+								<li>leverage: one suite covers all cup paths</li>
+								<li>locality: know where cup bugs live</li>
+								<li>safety: deepen with confidence</li>
+							</ul>
+						</div>
+					</div>
+				</article>
+			</section>
+
+			<!-- Top Recommendation -->
+			<section
+				id="top-recommendation"
+				class="space-y-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 p-6"
+			>
+				<div class="flex items-center gap-2">
+					<span class="text-xl">&#9650;</span>
+					<h2 class="text-lg font-bold text-emerald-800">Top recommendation</h2>
+				</div>
+				<p class="text-sm text-emerald-700">
+					<strong>Consolidate AI match simulation</strong> — both engine.ts and cups.ts
+					independently implement Poisson and remapPair, and cups.ts imports from engine.ts from a
+					<code>config/</code> directory (an inverted dependency). This is the freshest duplication
+					and the easiest to fix. It unlocks testing the cup simulation with the same Poisson
+					infrastructure the league uses, and is a prerequisite for any cup-related deepening.
+				</p>
+				<div class="text-sm text-emerald-600">
+					Then:
+					<a href="#candidates" class="underline"
+						>Extract week-resolution pipeline from vidiprinter</a
+					>
+					— the single highest-leverage structural change.
+				</div>
+			</section>
+		</main>
+	</body>
+</html>

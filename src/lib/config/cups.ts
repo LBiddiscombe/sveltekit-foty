@@ -1,7 +1,7 @@
 import type { CupBracket, CupRound, CupTie, CupType } from '$lib/types/game';
 import { CLUB_STRENGTHS } from './club-strengths';
 import { ALL_CLUBS } from './clubs';
-import { remapPair } from '$lib/match/engine';
+import { simulateMatch } from '$lib/match/engine';
 
 export const NON_LEAGUE_POOL = [
 	'Aldershot',
@@ -257,26 +257,6 @@ function getCupStrength(club: string): number {
 	return base * mult;
 }
 
-function simulateMatch(home: string, away: string): { homeGoals: number; awayGoals: number } {
-	const [homeStr, awayStr] = remapPair(getCupStrength(home), getCupStrength(away));
-	const homeAdv = 0.5;
-	const homeRate = Math.max(0.1, homeStr * 0.15 + homeAdv);
-	const awayRate = Math.max(0.1, awayStr * 0.15);
-
-	return { homeGoals: poissonRandom(homeRate), awayGoals: poissonRandom(awayRate) };
-}
-
-function poissonRandom(lambda: number): number {
-	const L = Math.exp(-lambda);
-	let k = 0;
-	let p = 1;
-	do {
-		k++;
-		p *= Math.random();
-	} while (p > L);
-	return k - 1;
-}
-
 export function simulateCupTie(
 	home: string,
 	away: string,
@@ -290,8 +270,8 @@ export function simulateCupTie(
 	aggAwayGoals?: number;
 } {
 	if (isTwoLeg) {
-		const leg1 = simulateMatch(home, away);
-		const leg2 = simulateMatch(away, home);
+		const leg1 = simulateMatch(getCupStrength(home), getCupStrength(away));
+		const leg2 = simulateMatch(getCupStrength(away), getCupStrength(home));
 		const aggHome = leg1.homeGoals + leg2.awayGoals;
 		const aggAway = leg1.awayGoals + leg2.homeGoals;
 
@@ -325,7 +305,7 @@ export function simulateCupTie(
 			};
 		}
 	} else {
-		const match = simulateMatch(home, away);
+		const match = simulateMatch(getCupStrength(home), getCupStrength(away));
 
 		if (match.homeGoals > match.awayGoals) {
 			return { ...match, winner: home, resolvedBy: 'match' };

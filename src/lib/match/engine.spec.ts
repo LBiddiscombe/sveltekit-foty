@@ -1,5 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
-import { playGame, skipGame, getMoraleDelta, consumeDeck, START_MORALE, simAiMatch, AI_DRAW_BREAKER } from './engine';
+import {
+	playGame,
+	skipGame,
+	getMoraleDelta,
+	consumeDeck,
+	START_MORALE,
+	simulateMatch,
+	AI_DRAW_BREAKER
+} from './engine';
 import type { Outcome } from '$lib/types/game';
 
 describe('playGame', () => {
@@ -142,16 +150,16 @@ describe('AI_DRAW_BREAKER', () => {
 	});
 });
 
-describe('simAiMatch', () => {
+describe('simulateMatch', () => {
 	it('returns homeGoals and awayGoals', () => {
-		const result = simAiMatch(5, 5);
+		const result = simulateMatch(5, 5);
 		expect(typeof result.homeGoals).toBe('number');
 		expect(typeof result.awayGoals).toBe('number');
 	});
 
 	it('nudges 35% of draws to a home win', () => {
 		vi.spyOn(Math, 'random').mockReturnValue(0);
-		const result = simAiMatch(5, 5);
+		const result = simulateMatch(5, 5);
 		expect(result.homeGoals).toBeGreaterThan(result.awayGoals);
 		vi.restoreAllMocks();
 	});

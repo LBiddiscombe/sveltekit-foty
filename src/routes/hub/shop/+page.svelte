@@ -6,7 +6,12 @@
 	import { standings } from '$lib/stores/standings.svelte';
 	import { inbox } from '$lib/stores/inbox.svelte';
 	import { pickRandomIncident } from '$lib/config/incidents';
-	import { goalCardPrice, incidentCardPrice, transferCardPrice, getTransferWindow } from '$lib/config/economy';
+	import {
+		goalCardPrice,
+		incidentCardPrice,
+		transferCardPrice,
+		getTransferWindow
+	} from '$lib/config/economy';
 	import {
 		evaluateScout,
 		processSameDivisionTransfer,
@@ -83,7 +88,12 @@
 		// In window — evaluate immediately
 		player.adjustBalance(-tCardPrice);
 
-		const report = evaluateScout(player.club, player.division, player.careerXp, season.divisionRosters);
+		const report = evaluateScout(
+			player.club,
+			player.division,
+			player.careerXp,
+			season.divisionRosters
+		);
 
 		if (report && report.success && report.signingFee) {
 			setScoutReport(report);
@@ -91,7 +101,14 @@
 			if (report.scoutDivision === player.division) {
 				processSameDivisionTransfer(player, season, report.scoutClub, report.signingFee);
 			} else {
-				processDivisionUpTransfer(player, season, standings, report.scoutClub, report.scoutDivision, report.signingFee);
+				processDivisionUpTransfer(
+					player,
+					season,
+					standings,
+					report.scoutClub,
+					report.scoutDivision,
+					report.signingFee
+				);
 			}
 
 			player.lastTransferWindow = { season: season.seasonNumber, window: transferWindow };
@@ -172,7 +189,10 @@
 					Buy Incident Card
 				</Button>
 				{#if showInboxHint}
-					<a href={resolveRoute('/hub/inbox')} class="mt-3 inline-block text-[10px] text-warning underline">
+					<a
+						href={resolveRoute('/hub/inbox')}
+						class="mt-3 inline-block text-[10px] text-warning underline"
+					>
 						Open your inbox to play it
 					</a>
 				{/if}
@@ -184,8 +204,7 @@
 				Transfer Cards
 			</h4>
 			<p class="text-[10px] text-subtle">
-				£{tCardPrice} — Triggers a scout evaluation. If you qualify, you'll be transferred
-				immediately.
+				£{tCardPrice} — Triggers a scout evaluation. If you qualify, you'll be transferred immediately.
 			</p>
 			<div class="mt-3">
 				<Button

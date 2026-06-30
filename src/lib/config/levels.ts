@@ -59,7 +59,10 @@ export function getLevelsInDivision(division: number): Level[] {
 	return LEVELS.filter((l) => l.division === division);
 }
 
-export function getLevelBand(division: number, xp: number): { level: Level; band: 1 | 2 | 3 } | null {
+export function getLevelBand(
+	division: number,
+	xp: number
+): { level: Level; band: 1 | 2 | 3 } | null {
 	const divLevels = getLevelsInDivision(division);
 	if (divLevels.length === 0) return null;
 	let current = divLevels[0];
@@ -73,10 +76,7 @@ export function getLevelBand(division: number, xp: number): { level: Level; band
 	return { level: current, band: (bandIndex + 1) as 1 | 2 | 3 };
 }
 
-export function getTargetBandsForScout(
-	scoutDivision: number,
-	playerDivision: number
-): Level[] {
+export function getTargetBandsForScout(scoutDivision: number, playerDivision: number): Level[] {
 	const divLevels = getLevelsInDivision(scoutDivision);
 	if (scoutDivision === playerDivision) {
 		return divLevels.slice(-2);

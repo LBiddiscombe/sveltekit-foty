@@ -19,7 +19,7 @@ function simulateFullCup(): CupBracket {
 }
 
 function getAliveTeamsAtRound(bracket: CupBracket, roundNumber: number): string[] {
-	const alive = new Set(bracket.rounds[0].ties.flatMap(t => [t.home, t.away]));
+	const alive = new Set(bracket.rounds[0].ties.flatMap((t) => [t.home, t.away]));
 	for (const [club, elimRound] of Object.entries(bracket.eliminated)) {
 		if (elimRound <= roundNumber) alive.delete(club);
 	}
@@ -28,18 +28,17 @@ function getAliveTeamsAtRound(bracket: CupBracket, roundNumber: number): string[
 
 function winnerDivision(winner: string | undefined): number {
 	if (!winner) return 0;
-	const club = ALL_CLUBS.find(c => c.name === winner);
+	const club = ALL_CLUBS.find((c) => c.name === winner);
 	return club?.division ?? 0;
 }
 
 const ITER = 5000;
 
-
 // Skip in normal test runs. Run with: change `skip` to `only` temporarily
 // or: npx vitest run src/lib/cups-distribution.spec.ts --project server
 describe.skip('Cup winner distribution', () => {
 	it('should show division of winner for league cup', () => {
-			const winsByDiv: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 };
+		const winsByDiv: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 };
 		const r2ByDiv: Record<number, number[]> = { 1: [], 2: [], 3: [], 4: [] };
 
 		for (let i = 0; i < ITER; i++) {
@@ -48,23 +47,25 @@ describe.skip('Cup winner distribution', () => {
 			winsByDiv[div]++;
 
 			for (let d = 1; d <= 4; d++) {
-				r2ByDiv[d].push(getAliveTeamsAtRound(b, 2).filter(c => DIV_CLUBS[d].has(c)).length);
+				r2ByDiv[d].push(getAliveTeamsAtRound(b, 2).filter((c) => DIV_CLUBS[d].has(c)).length);
 			}
 		}
 
 		const total = ITER;
 		console.log(`\n=== League Cup Winner Distribution (${ITER} iters, post-fix) ===`);
 		for (let d = 1; d <= 4; d++) {
-			const pct = (winsByDiv[d] / total * 100).toFixed(1);
+			const pct = ((winsByDiv[d] / total) * 100).toFixed(1);
 			const avg = (r2ByDiv[d].reduce((a, b) => a + b, 0) / r2ByDiv[d].length).toFixed(1);
-			const clubCount = d === 0 ? 36 : ALL_CLUBS.filter(c => c.division === d).length;
-			console.log(`  Div ${d} (${clubCount} clubs): ${winsByDiv[d]} wins (${pct}%)  —  avg ${avg}/${clubCount} alive at R2`);
+			const clubCount = d === 0 ? 36 : ALL_CLUBS.filter((c) => c.division === d).length;
+			console.log(
+				`  Div ${d} (${clubCount} clubs): ${winsByDiv[d]} wins (${pct}%)  —  avg ${avg}/${clubCount} alive at R2`
+			);
 		}
 
 		// With division multiplier fix (2.0/1.2/1.0/0.8), Div 1 should dominate
 		expect(winsByDiv[1] / total).toBeGreaterThan(0.85);
 		// Extreme scenario (≤5 Div1 at R2) should be very rare
-		const extreme = r2ByDiv[1].filter(n => n <= 5).length / r2ByDiv[1].length;
+		const extreme = r2ByDiv[1].filter((n) => n <= 5).length / r2ByDiv[1].length;
 		expect(extreme).toBeLessThan(0.005);
 
 		console.log(`\nReal-world benchmarks:`);

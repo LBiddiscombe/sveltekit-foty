@@ -5,7 +5,7 @@ import { transferSigningFee } from '$lib/config/economy';
 import { CLUB_STRENGTHS } from '$lib/config/club-strengths';
 import { generateDivisionSchedule } from '$lib/config/schedule';
 import { getLeagueWeeks } from '$lib/config/cups';
-import { simAiMatch } from '$lib/match/engine';
+import { simulateMatch } from '$lib/match/engine';
 import { standings } from '$lib/stores/standings.svelte';
 
 export function getTransferWindow(weekNumber: number): 1 | 2 | null {
@@ -41,9 +41,9 @@ export function pickScoutClub(
 	scoutDivision: number,
 	divisionRosters: Record<number, string[]>
 ): string | null {
-	const clubs = (divisionRosters[scoutDivision] ?? getClubsByDivision(scoutDivision).map((c) => c.name)).filter(
-		(c) => c !== playerClub
-	);
+	const clubs = (
+		divisionRosters[scoutDivision] ?? getClubsByDivision(scoutDivision).map((c) => c.name)
+	).filter((c) => c !== playerClub);
 	if (clubs.length === 0) return null;
 	return clubs[Math.floor(Math.random() * clubs.length)];
 }
@@ -81,11 +81,7 @@ export function evaluateScout(
 	};
 
 	if (success) {
-		const fee = transferSigningFee(
-			Math.max(75, careerXp * 2),
-			scoutDiv,
-			playerDivision
-		);
+		const fee = transferSigningFee(Math.max(75, careerXp * 2), scoutDiv, playerDivision);
 		report.signingFee = fee;
 	}
 
@@ -93,7 +89,14 @@ export function evaluateScout(
 }
 
 export function processSameDivisionTransfer(
-	player: { archiveCurrentStats: (season: number, division: number, pos: number | null) => void; club: string; division: number; adjustBalance: (n: number) => void; addDeckCards: (n: number) => void; wage: number },
+	player: {
+		archiveCurrentStats: (season: number, division: number, pos: number | null) => void;
+		club: string;
+		division: number;
+		adjustBalance: (n: number) => void;
+		addDeckCards: (n: number) => void;
+		wage: number;
+	},
 	seasonState: {
 		weekNumber: number;
 		seasonNumber: number;
@@ -140,11 +143,19 @@ export function processSameDivisionTransfer(
 	}
 
 	seasonState.fixtures = newFixtures;
-	seasonState.divisionRosters[currentDiv] = seasonState.divisionRosters[currentDiv] ?? getClubsByDivision(currentDiv).map((c) => c.name);
+	seasonState.divisionRosters[currentDiv] =
+		seasonState.divisionRosters[currentDiv] ?? getClubsByDivision(currentDiv).map((c) => c.name);
 }
 
 export function processDivisionUpTransfer(
-	player: { archiveCurrentStats: (season: number, division: number, pos: number | null) => void; club: string; division: number; adjustBalance: (n: number) => void; addDeckCards: (n: number) => void; wage: number },
+	player: {
+		archiveCurrentStats: (season: number, division: number, pos: number | null) => void;
+		club: string;
+		division: number;
+		adjustBalance: (n: number) => void;
+		addDeckCards: (n: number) => void;
+		wage: number;
+	},
 	seasonState: {
 		weekNumber: number;
 		seasonNumber: number;
@@ -166,7 +177,8 @@ export function processDivisionUpTransfer(
 	player.adjustBalance(signingFee);
 	player.addDeckCards(10);
 
-	const newDivClubs = seasonState.divisionRosters[newDivision] ?? getClubsByDivision(newDivision).map((c) => c.name);
+	const newDivClubs =
+		seasonState.divisionRosters[newDivision] ?? getClubsByDivision(newDivision).map((c) => c.name);
 
 	const leagueWeeks = getLeagueWeeks();
 	const fullSchedule = generateDivisionSchedule(newDivision, newDivClubs, leagueWeeks);
@@ -178,7 +190,7 @@ export function processDivisionUpTransfer(
 			if (!match.result) {
 				const homeStrength = CLUB_STRENGTHS[match.home] ?? 5;
 				const awayStrength = CLUB_STRENGTHS[match.away] ?? 5;
-				match.result = simAiMatch(homeStrength, awayStrength);
+				match.result = simulateMatch(homeStrength, awayStrength);
 			}
 		}
 	}

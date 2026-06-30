@@ -9,7 +9,7 @@
 	import Card from '$lib/components/Card.svelte';
 	import DeckCard from '$lib/components/DeckCard.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import type { CupType, Fixture } from '$lib/types/game';
+	import type { Fixture } from '$lib/types/game';
 	import {
 		CUP_SCHEDULE,
 		CUP_DISPLAY_NAMES,
