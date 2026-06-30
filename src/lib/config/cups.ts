@@ -341,7 +341,12 @@ export function simulateCupTie(
 	}
 
 	if (playerClub && playerLegs?.leg1) {
-		const { homeGoals: hG, awayGoals: aG } = toTiePerspective(playerLegs.leg1, home, away, playerClub);
+		const { homeGoals: hG, awayGoals: aG } = toTiePerspective(
+			playerLegs.leg1,
+			home,
+			away,
+			playerClub
+		);
 		const { winner, resolvedBy } = determineWinner(hG, aG, home, away);
 
 		return {

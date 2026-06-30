@@ -13,7 +13,13 @@
 	import { XP_CONFIG } from '$lib/config/xp';
 	import { DIVISION_XP_CAPS } from '$lib/config/levels';
 	import { saveGame } from '$lib/save';
-	import { CUP_SCHEDULE, CUP_PRIZES, CUP_DISPLAY_NAMES, CUP_ROUND_NAMES, simulateCupTie } from '$lib/config/cups';
+	import {
+		CUP_SCHEDULE,
+		CUP_PRIZES,
+		CUP_DISPLAY_NAMES,
+		CUP_ROUND_NAMES,
+		simulateCupTie
+	} from '$lib/config/cups';
 	import type { PlayerLegResult } from '$lib/config/cups';
 	import { inbox } from '$lib/stores/inbox.svelte';
 
@@ -138,10 +144,10 @@
 						outcomes: tie.result.playerLeg1Outcomes ?? []
 					};
 
-					const result = simulateCupTie(
-						tie.home, tie.away, true, player.club,
-						{ leg1: prevLeg, leg2: legResult }
-					);
+					const result = simulateCupTie(tie.home, tie.away, true, player.club, {
+						leg1: prevLeg,
+						leg2: legResult
+					});
 
 					const updatedTies = [...round.ties];
 					updatedTies[tieIdx] = { ...tie, result };
@@ -192,10 +198,9 @@
 						season.faCupBracket = { ...bracket, rounds: updatedRounds };
 					}
 				} else {
-					const result = simulateCupTie(
-						tie.home, tie.away, false, player.club,
-						{ leg1: legResult }
-					);
+					const result = simulateCupTie(tie.home, tie.away, false, player.club, {
+						leg1: legResult
+					});
 
 					const updatedTies = [...round.ties];
 					updatedTies[tieIdx] = { ...tie, result };
@@ -247,7 +252,16 @@
 
 		if (game.skipped) {
 			consumeDeck(player.deck, true);
-			match.setResult(skipGame(chances, season.morale, player.club, currentGame.fixture.opponent, currentGame.fixture.isHome, currentGame.fixture.isCup ?? false));
+			match.setResult(
+				skipGame(
+					chances,
+					season.morale,
+					player.club,
+					currentGame.fixture.opponent,
+					currentGame.fixture.isHome,
+					currentGame.fixture.isCup ?? false
+				)
+			);
 			finishCurrentGame();
 		} else {
 			match.start(chances);
@@ -282,7 +296,15 @@
 				const outcomes = match.pendingOutcomes;
 				consumeDeck(player.deck, false);
 				match.setResult(
-					playGame(chances, season.morale, outcomes, player.club, currentGame.fixture.opponent, currentGame.fixture.isHome, currentGame.fixture.isCup ?? false)
+					playGame(
+						chances,
+						season.morale,
+						outcomes,
+						player.club,
+						currentGame.fixture.opponent,
+						currentGame.fixture.isHome,
+						currentGame.fixture.isCup ?? false
+					)
 				);
 				finishCurrentGame();
 			}

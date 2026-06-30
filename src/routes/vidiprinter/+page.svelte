@@ -20,6 +20,7 @@
 	let autoContinued = $state(false);
 	let scrollContainer: HTMLDivElement | undefined = $state();
 	let userScrolledUp = $state(false);
+	let prevLineCount = $state(0);
 
 	onMount(() => {
 		if (resolution.status === 'auto-continue' && !autoContinued) {
@@ -38,7 +39,9 @@
 	);
 
 	$effect(() => {
-		pastLines;
+		const count = pastLines.length;
+		if (count === prevLineCount) return;
+		prevLineCount = count;
 		if (!scrollContainer || userScrolledUp) return;
 		const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
 		const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
@@ -91,11 +94,7 @@
 					{@const isPlayerWin = resolution.playerWinLines.includes(i)}
 					{@const isDrawFixture = resolution.playerDrawLines.includes(i)}
 					{@const isWinnerAnnounce = resolution.winnerAnnounceLines.includes(i)}
-					{@const specialClass = isElimination
-						? 'text-error'
-						: isPlayerWin
-							? 'text-success'
-							: ''}
+					{@const specialClass = isElimination ? 'text-error' : isPlayerWin ? 'text-success' : ''}
 
 					{#if line === ''}
 						<div class="h-2"></div>
@@ -111,15 +110,16 @@
 						/>
 					{:else}
 						<div
-							class="whitespace-pre {specialClass || (isResultLine
-								? 'text-subtle'
-								: isHeader
-									? 'text-warning'
-									: isTableLine || isDrawFixture
-										? 'text-primary'
-										: isWinnerAnnounce
+							class="whitespace-pre {specialClass ||
+								(isResultLine
+									? 'text-subtle'
+									: isHeader
+										? 'text-warning'
+										: isTableLine || isDrawFixture
 											? 'text-primary'
-											: 'text-subtle')}"
+											: isWinnerAnnounce
+												? 'text-primary'
+												: 'text-subtle')}"
 						>
 							{line}
 						</div>

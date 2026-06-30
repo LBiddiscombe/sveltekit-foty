@@ -5,7 +5,6 @@ import { standings } from '$lib/stores/standings.svelte';
 import { inbox } from '$lib/stores/inbox.svelte';
 import { generateDivisionSchedule } from '$lib/config/schedule';
 import { getLeagueWeeks, CUP_SCHEDULE } from '$lib/config/cups';
-import { getClubsByDivision } from '$lib/config/clubs';
 import { resolveWeek } from './resolveWeek';
 
 const CLUBS = ['Exetur', 'Barnett', 'Croo', 'Gillingham', 'Eton', 'Oxbridge'];

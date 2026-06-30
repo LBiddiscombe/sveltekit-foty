@@ -8,8 +8,7 @@ import {
 	CUP_SCHEDULE,
 	CUP_DISPLAY_NAMES,
 	CUP_ROUND_NAMES,
-	isFaCupFinalWeek,
-	FA_CUP_FINAL_WEEK
+	isFaCupFinalWeek
 } from '$lib/config/cups';
 import { simulateMatch } from '$lib/match/engine';
 import {
@@ -88,16 +87,19 @@ function buildCupLines(
 	cupName: string;
 } {
 	const bracket = cupInfo.type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
-	if (!bracket) return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
+	if (!bracket)
+		return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
 
 	const round = bracket.rounds[cupInfo.round - 1];
 	if (!round) return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
 
 	const hasResults = round.ties.some((t) => t.result);
-	if (!hasResults) return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
+	if (!hasResults)
+		return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
 
 	const playerTie = round.ties.find((t) => (t.home === club || t.away === club) && t.result);
-	if (!playerTie) return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
+	if (!playerTie)
+		return { lines: [], scoreEntries: [], eliminated: false, wonCup: false, cupName: '' };
 
 	const r = playerTie.result!;
 	const isTwoLeg = r.homeGoals2 !== undefined;
@@ -208,7 +210,13 @@ function buildCupLines(
 		lines.push(line);
 	}
 
-	return { lines, scoreEntries, eliminated: !playerWon, wonCup: playerWon && isFinalRound, cupName };
+	return {
+		lines,
+		scoreEntries,
+		eliminated: !playerWon,
+		wonCup: playerWon && isFinalRound,
+		cupName
+	};
 }
 
 function buildFinalResultLines(
@@ -216,7 +224,8 @@ function buildFinalResultLines(
 	cupInfo: { type: CupType; round: number }
 ): { lines: string[]; scoreEntries: CupEntry[]; winnerAnnounce: string; cupName: string } {
 	const bracket = cupInfo.type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
-	if (!bracket || !bracket.winner) return { lines: [], scoreEntries: [], winnerAnnounce: '', cupName: '' };
+	if (!bracket || !bracket.winner)
+		return { lines: [], scoreEntries: [], winnerAnnounce: '', cupName: '' };
 
 	const round = bracket.rounds[cupInfo.round - 1];
 	if (!round) return { lines: [], scoreEntries: [], winnerAnnounce: '', cupName: '' };
@@ -313,8 +322,19 @@ function buildLines(
 	club: string,
 	week: number,
 	weekFixtures: Fixture[],
-	cupResult: { lines: string[]; scoreEntries: CupEntry[]; eliminated: boolean; wonCup: boolean; cupName: string },
-	finalResult: { lines: string[]; scoreEntries: CupEntry[]; winnerAnnounce: string; cupName: string },
+	cupResult: {
+		lines: string[];
+		scoreEntries: CupEntry[];
+		eliminated: boolean;
+		wonCup: boolean;
+		cupName: string;
+	},
+	finalResult: {
+		lines: string[];
+		scoreEntries: CupEntry[];
+		winnerAnnounce: string;
+		cupName: string;
+	},
 	cupDraw: { lines: string[]; playerDrawLines: number[] },
 	scoreLines: Map<number, ScoreLine>,
 	playerDrawLines: number[],
@@ -607,8 +627,19 @@ export function resolveWeek(): WeekResolution {
 	const playerWinLines: number[] = [];
 	const winnerAnnounceLines: number[] = [];
 
-	let cupResult = { lines: [] as string[], scoreEntries: [] as CupEntry[], eliminated: false, wonCup: false, cupName: '' };
-	let finalResult = { lines: [] as string[], scoreEntries: [] as CupEntry[], winnerAnnounce: '', cupName: '' };
+	let cupResult = {
+		lines: [] as string[],
+		scoreEntries: [] as CupEntry[],
+		eliminated: false,
+		wonCup: false,
+		cupName: ''
+	};
+	let finalResult = {
+		lines: [] as string[],
+		scoreEntries: [] as CupEntry[],
+		winnerAnnounce: '',
+		cupName: ''
+	};
 	let cupDraw = { lines: [] as string[], playerDrawLines: [] as number[] };
 
 	if (cupInfo) {
@@ -632,13 +663,30 @@ export function resolveWeek(): WeekResolution {
 	}
 
 	const lines = buildLines(
-		club, week, weekFixtures,
-		cupResult, finalResult, cupDraw,
-		scoreLines, playerDrawLines, eliminationLines, playerWinLines, winnerAnnounceLines
+		club,
+		week,
+		weekFixtures,
+		cupResult,
+		finalResult,
+		cupDraw,
+		scoreLines,
+		playerDrawLines,
+		eliminationLines,
+		playerWinLines,
+		winnerAnnounceLines
 	);
 
 	const status = determineStatus(week, scoreLines, cupInfo !== null);
 	const onContinue = createContinuation(club, week, weekFixtures);
 
-	return { status, lines, scoreLines, playerDrawLines, eliminationLines, playerWinLines, winnerAnnounceLines, onContinue };
+	return {
+		status,
+		lines,
+		scoreLines,
+		playerDrawLines,
+		eliminationLines,
+		playerWinLines,
+		winnerAnnounceLines,
+		onContinue
+	};
 }

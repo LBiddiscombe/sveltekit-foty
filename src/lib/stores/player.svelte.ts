@@ -144,14 +144,7 @@ function createPlayer() {
 		division: number,
 		finalPosition: number | null
 	) {
-		const period = getStatsSinceSnapshot(
-			goals,
-			appearances,
-			careerXp,
-			chances,
-			saves,
-			misses
-		);
+		const period = getStatsSinceSnapshot(goals, appearances, careerXp, chances, saves, misses);
 		statsArchive = [
 			...statsArchive,
 			{
