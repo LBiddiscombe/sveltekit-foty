@@ -20,7 +20,7 @@ const KICK_VY_MAX = 18;
 const KICK_VZ = 25;
 const KICK_RADIUS = 100;
 const GOALIE_DECISIONS = ['read'];
-const MAX_REACTION_DELAY_MS = 800;
+const MAX_REACTION_DELAY_MS = 400;
 
 interface Ball {
 	x: number;
@@ -152,7 +152,8 @@ export function createFirstTimeFinishSketch({
 			let predY = ball.y + ball.vy * t - 0.5 * ft.gravity * t * t;
 			if (predY < ball.radius) predY = ball.radius;
 
-			ft.goalieReact(predX, predY, GOALIE_DECISIONS, MAX_REACTION_DELAY_MS);
+			const diveScale = p.random(0.5, 1);
+			ft.goalieReact(predX * diveScale, predY, GOALIE_DECISIONS, MAX_REACTION_DELAY_MS);
 		}
 
 		function updateBall() {

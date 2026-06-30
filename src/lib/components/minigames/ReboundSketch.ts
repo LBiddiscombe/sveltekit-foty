@@ -179,7 +179,8 @@ export function createReboundSketch({ onComplete, showCrowd = true }: ReboundSke
 			let predY = ball.y + ball.vy * predT - 0.5 * ft.gravity * predT * predT;
 			if (predY < ball.radius) predY = ball.radius;
 
-			ft.goalieReact(predX, predY, ['read'], 400);
+			const diveScale = p.random(0.5, 1);
+			ft.goalieReact(predX * diveScale, predY, ['read'], 400);
 		}
 
 		function updateKeeperRecovery() {
