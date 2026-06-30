@@ -28,7 +28,7 @@
 		player.adjustBalance(promotionBonus);
 	}
 
-	const seasonStats = season.getStatsSinceSnapshot(
+	const seasonStats = player.getStatsSinceSnapshot(
 		player.goals,
 		player.appearances,
 		player.careerXp

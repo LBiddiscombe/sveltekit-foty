@@ -19,7 +19,7 @@
 		season.fixtures = deriveFixturesFromSchedule(club, schedule);
 		season.divisionSchedule = schedule;
 		standings.init(div4Clubs);
-		season.recordStatsSnapshot(0, 0, 0, 0, 0, 0);
+		player.recordStatsSnapshot(0, 0, 0, 0, 0, 0);
 		season.initCupBrackets();
 		inbox.init(club);
 		await goto('/hub');

@@ -5,12 +5,12 @@
 	import { LEVELS, getLevel, getLevelIndex, getNextLevelXp } from '$lib/config/levels';
 
 	const currentSeason = $derived({
-		chances: player.chances - season.statsChancesAtStart,
-		saves: player.saves - season.statsSavesAtStart,
-		misses: player.misses - season.statsMissesAtStart,
-		goals: player.goals - season.statsGoalsAtStart,
-		appearances: player.appearances - season.statsAppsAtStart,
-		xp: player.careerXp - season.statsXpAtStart
+		chances: player.chances - player.statsChancesAtStart,
+		saves: player.saves - player.statsSavesAtStart,
+		misses: player.misses - player.statsMissesAtStart,
+		goals: player.goals - player.statsGoalsAtStart,
+		appearances: player.appearances - player.statsAppsAtStart,
+		xp: player.careerXp - player.statsXpAtStart
 	});
 
 	const archiveTotal = $derived(

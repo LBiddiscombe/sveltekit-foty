@@ -156,7 +156,7 @@
 
 					if (result.winner === player.club) {
 						const prize = CUP_PRIZES[cupType][roundInfo.round];
-						player.bankBalance += prize.prize;
+						player.adjustBalance(prize.prize);
 						if (prize.xp > 0) player.addXp(prize.xp);
 						const xpText = prize.xp > 0 ? ` +${prize.xp}XP` : '';
 						inbox.addMessage({
@@ -210,7 +210,7 @@
 
 					if (result.winner === player.club) {
 						const prize = CUP_PRIZES[cupType][roundInfo.round];
-						player.bankBalance += prize.prize;
+						player.adjustBalance(prize.prize);
 						if (prize.xp > 0) player.addXp(prize.xp);
 						const xpText = prize.xp > 0 ? ` +${prize.xp}XP` : '';
 						inbox.addMessage({

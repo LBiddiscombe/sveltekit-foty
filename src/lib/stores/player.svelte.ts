@@ -3,6 +3,7 @@ import { wageForLevel } from '$lib/config/economy';
 import { getLevel, getLevelIndex, LEVEL_UP_MESSAGES } from '$lib/config/levels';
 import { inbox } from './inbox.svelte';
 import { season } from './season.svelte';
+import type { SeasonStats } from './season.svelte';
 import { range, randomInt } from '$lib/utils';
 
 function randomDeck(size: number): number[] {
@@ -21,6 +22,12 @@ function createPlayer() {
 	let careerXp = $state(0);
 	let matchXpHistory = $state<number[]>([]);
 	let statsArchive = $state<StatsArchiveEntry[]>([]);
+	let statsXpAtStart = $state(0);
+	let statsGoalsAtStart = $state(0);
+	let statsAppsAtStart = $state(0);
+	let statsChancesAtStart = $state(0);
+	let statsSavesAtStart = $state(0);
+	let statsMissesAtStart = $state(0);
 	let chances = $state(0);
 	let saves = $state(0);
 	let misses = $state(0);
@@ -98,12 +105,46 @@ function createPlayer() {
 		}
 	}
 
+	function recordStatsSnapshot(
+		playerGoals: number,
+		playerApps: number,
+		playerXp: number,
+		playerChances: number = 0,
+		playerSaves: number = 0,
+		playerMisses: number = 0
+	) {
+		statsGoalsAtStart = playerGoals;
+		statsAppsAtStart = playerApps;
+		statsXpAtStart = playerXp;
+		statsChancesAtStart = playerChances;
+		statsSavesAtStart = playerSaves;
+		statsMissesAtStart = playerMisses;
+	}
+
+	function getStatsSinceSnapshot(
+		currentGoals: number,
+		currentApps: number,
+		currentXp: number,
+		currentChances: number = 0,
+		currentSaves: number = 0,
+		currentMisses: number = 0
+	): SeasonStats {
+		return {
+			chances: currentChances - statsChancesAtStart,
+			saves: currentSaves - statsSavesAtStart,
+			misses: currentMisses - statsMissesAtStart,
+			goals: currentGoals - statsGoalsAtStart,
+			appearances: currentApps - statsAppsAtStart,
+			xpEarned: currentXp - statsXpAtStart
+		};
+	}
+
 	function archiveCurrentStats(
 		seasonNumber: number,
 		division: number,
 		finalPosition: number | null
 	) {
-		const period = season.getStatsSinceSnapshot(
+		const period = getStatsSinceSnapshot(
 			goals,
 			appearances,
 			careerXp,
@@ -126,7 +167,7 @@ function createPlayer() {
 				finalPosition
 			}
 		];
-		season.recordStatsSnapshot(goals, appearances, careerXp, chances, saves, misses);
+		recordStatsSnapshot(goals, appearances, careerXp, chances, saves, misses);
 	}
 
 	return {
@@ -199,6 +240,42 @@ function createPlayer() {
 		set statsArchive(v: StatsArchiveEntry[]) {
 			statsArchive = v;
 		},
+		get statsXpAtStart() {
+			return statsXpAtStart;
+		},
+		set statsXpAtStart(v: number) {
+			statsXpAtStart = v;
+		},
+		get statsGoalsAtStart() {
+			return statsGoalsAtStart;
+		},
+		set statsGoalsAtStart(v: number) {
+			statsGoalsAtStart = v;
+		},
+		get statsAppsAtStart() {
+			return statsAppsAtStart;
+		},
+		set statsAppsAtStart(v: number) {
+			statsAppsAtStart = v;
+		},
+		get statsChancesAtStart() {
+			return statsChancesAtStart;
+		},
+		set statsChancesAtStart(v: number) {
+			statsChancesAtStart = v;
+		},
+		get statsSavesAtStart() {
+			return statsSavesAtStart;
+		},
+		set statsSavesAtStart(v: number) {
+			statsSavesAtStart = v;
+		},
+		get statsMissesAtStart() {
+			return statsMissesAtStart;
+		},
+		set statsMissesAtStart(v: number) {
+			statsMissesAtStart = v;
+		},
 		get chances() {
 			return chances;
 		},
@@ -243,6 +320,8 @@ function createPlayer() {
 		addSeasonCards,
 		recordMatchXp,
 		recordMatchOutcomes,
+		recordStatsSnapshot,
+		getStatsSinceSnapshot,
 		archiveCurrentStats
 	};
 }

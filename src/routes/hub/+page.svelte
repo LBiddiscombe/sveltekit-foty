@@ -58,8 +58,8 @@
 	});
 
 	const currentSeason = $derived({
-		goals: player.goals - season.statsGoalsAtStart,
-		appearances: player.appearances - season.statsAppsAtStart
+		goals: player.goals - player.statsGoalsAtStart,
+		appearances: player.appearances - player.statsAppsAtStart
 	});
 
 	const hasUnread = $derived(inbox.unreadCount > 0);

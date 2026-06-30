@@ -82,6 +82,12 @@ interface SaveState {
 		saves: number;
 		misses: number;
 		statsArchive: StatsArchiveEntry[];
+		statsXpAtStart: number;
+		statsGoalsAtStart: number;
+		statsAppsAtStart: number;
+		statsChancesAtStart: number;
+		statsSavesAtStart: number;
+		statsMissesAtStart: number;
 		queuedTransferCard: boolean;
 		lastTransferWindow: TransferWindowState | null;
 	};
@@ -95,12 +101,6 @@ interface SaveState {
 		morale: number;
 		lastWageWeek: number;
 		divisionRosters: Record<string, string[]>;
-		statsXpAtStart: number;
-		statsGoalsAtStart: number;
-		statsAppsAtStart: number;
-		statsChancesAtStart: number;
-		statsSavesAtStart: number;
-		statsMissesAtStart: number;
 		appearanceSkips: number;
 		leagueCupBracket: CupBracket | null;
 		faCupBracket: CupBracket | null;
@@ -133,6 +133,12 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 			saves: player.saves,
 			misses: player.misses,
 			statsArchive: JSON.parse(JSON.stringify(player.statsArchive)),
+			statsXpAtStart: player.statsXpAtStart,
+			statsGoalsAtStart: player.statsGoalsAtStart,
+			statsAppsAtStart: player.statsAppsAtStart,
+			statsChancesAtStart: player.statsChancesAtStart,
+			statsSavesAtStart: player.statsSavesAtStart,
+			statsMissesAtStart: player.statsMissesAtStart,
 			queuedTransferCard: player.queuedTransferCard,
 			lastTransferWindow: player.lastTransferWindow
 				? { season: player.lastTransferWindow.season, window: player.lastTransferWindow.window }
@@ -148,12 +154,6 @@ export function saveGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 			morale: season.morale,
 			lastWageWeek: season.lastWageWeek,
 			divisionRosters: JSON.parse(JSON.stringify(season.divisionRosters)),
-			statsXpAtStart: season.statsXpAtStart,
-			statsGoalsAtStart: season.statsGoalsAtStart,
-			statsAppsAtStart: season.statsAppsAtStart,
-			statsChancesAtStart: season.statsChancesAtStart,
-			statsSavesAtStart: season.statsSavesAtStart,
-			statsMissesAtStart: season.statsMissesAtStart,
 			appearanceSkips: season.appearanceSkips,
 			leagueCupBracket: season.leagueCupBracket
 				? JSON.parse(JSON.stringify(season.leagueCupBracket))
@@ -211,6 +211,12 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		player.saves = state.player.saves ?? 0;
 		player.misses = state.player.misses ?? 0;
 		player.statsArchive = state.player.statsArchive ?? [];
+		player.statsXpAtStart = state.player.statsXpAtStart ?? state.season?.statsXpAtStart ?? 0;
+		player.statsGoalsAtStart = state.player.statsGoalsAtStart ?? state.season?.statsGoalsAtStart ?? 0;
+		player.statsAppsAtStart = state.player.statsAppsAtStart ?? state.season?.statsAppsAtStart ?? 0;
+		player.statsChancesAtStart = state.player.statsChancesAtStart ?? state.season?.statsChancesAtStart ?? 0;
+		player.statsSavesAtStart = state.player.statsSavesAtStart ?? state.season?.statsSavesAtStart ?? 0;
+		player.statsMissesAtStart = state.player.statsMissesAtStart ?? state.season?.statsMissesAtStart ?? 0;
 		player.queuedTransferCard = state.player.queuedTransferCard ?? false;
 		player.lastTransferWindow = state.player.lastTransferWindow ?? null;
 
@@ -225,12 +231,6 @@ export function loadGame(adapter: SaveAdapter = localStorageAdapter): boolean {
 		if (state.season.divisionRosters) {
 			season.divisionRosters = state.season.divisionRosters;
 		}
-		season.statsXpAtStart = state.season.statsXpAtStart ?? 0;
-		season.statsGoalsAtStart = state.season.statsGoalsAtStart ?? 0;
-		season.statsAppsAtStart = state.season.statsAppsAtStart ?? 0;
-		season.statsChancesAtStart = state.season.statsChancesAtStart ?? 0;
-		season.statsSavesAtStart = state.season.statsSavesAtStart ?? 0;
-		season.statsMissesAtStart = state.season.statsMissesAtStart ?? 0;
 		season.appearanceSkips = state.season.appearanceSkips ?? 0;
 		season.leagueCupBracket = state.season.leagueCupBracket ?? null;
 		season.faCupBracket = state.season.faCupBracket ?? null;
