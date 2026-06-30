@@ -153,7 +153,7 @@
 		<span class="text-[10px] font-bold uppercase tracking-wider text-success">Pre-Match</span>
 	</div>
 
-	<div class="flex flex-1 flex-col items-center justify-center">
+	<div class="flex flex-1 flex-col items-center justify-center gap-4">
 		{#if season.leagueCupBracket && player.club in season.leagueCupBracket.eliminated && isLeagueCupDedicatedWeek(season.weekNumber)}
 			<Card>
 				<div class="flex flex-col items-center gap-2 py-4 text-center">
