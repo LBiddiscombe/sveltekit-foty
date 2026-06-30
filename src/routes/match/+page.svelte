@@ -34,6 +34,7 @@
 	let step = $state<'loading' | 'playing'>('loading');
 	let awaitingAdvance = $state(false);
 	let currentOutcomeText = $state<string | null>(null);
+	let goalsThisGame = $state(0);
 
 	const currentGame = $derived(match.pendingGames[match.currentGameIndex]);
 
@@ -244,6 +245,7 @@
 		gameType = pickGameType();
 		awaitingAdvance = false;
 		currentOutcomeText = null;
+		goalsThisGame = 0;
 
 		const game = match.pendingGames[match.currentGameIndex];
 		if (!game) return;
@@ -281,7 +283,12 @@
 		if (awaitingAdvance) return;
 		awaitingAdvance = true;
 
-		currentOutcomeText = outcome === 'goal' ? 'Goal!' : outcome === 'saved' ? 'Saved!' : 'Missed!';
+		if (outcome === 'goal') {
+			goalsThisGame++;
+			currentOutcomeText = goalsThisGame >= 3 ? 'HAT-TRICK!' : 'Goal!';
+		} else {
+			currentOutcomeText = outcome === 'saved' ? 'Saved!' : 'Missed!';
+		}
 
 		match.recordOutcome(outcome);
 
