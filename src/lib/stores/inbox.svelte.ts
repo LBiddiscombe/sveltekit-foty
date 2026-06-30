@@ -14,19 +14,18 @@ function createInbox() {
 	const unreadCount = $derived(items.filter((i) => !i.actioned).length);
 
 	function addIncident(card: { subject: string; body: string; incidentCardId: string }) {
+		addMessage({ type: 'incident', subject: card.subject, body: card.body, actionRequired: true, incidentCardId: card.incidentCardId });
+	}
+
+	function addMessage(msg: {
+		type: 'news' | 'incident';
+		subject: string;
+		body: string;
+		actionRequired: boolean;
+		incidentCardId?: string;
+	}) {
 		const nextId = Math.max(0, ...items.map((i) => i.id)) + 1;
-		items = [
-			...items,
-			{
-				id: nextId,
-				type: 'incident' as const,
-				subject: card.subject,
-				body: card.body,
-				actionRequired: true,
-				actioned: false,
-				incidentCardId: card.incidentCardId
-			}
-		];
+		items = [...items, { id: nextId, ...msg, actioned: false }];
 	}
 
 	function init(club: string) {
@@ -104,6 +103,7 @@ function createInbox() {
 		markRead,
 		clearActioned,
 		addIncident,
+		addMessage,
 		init,
 		addSeasonNews
 	};

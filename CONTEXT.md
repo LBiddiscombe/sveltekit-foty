@@ -1,5 +1,9 @@
 # FotY — Glossary
 
+## Week resolution
+
+**Week-resolution pipeline** — A single `resolveWeek()` module at `src/lib/week-resolve/resolveWeek.ts` extracted from the vidiprinter route. Owns all week-level computation: AI cup simulation, league match resolution, standings processing, line/score entry generation, and the decision tree for what happens after the user presses Continue (transfer scout, incident roll, season-end routing). Returns a `WeekResolution` with `status` (`display` | `auto-continue`), `lines`, `scoreLines`, and an `onContinue()` closure that mutates stores (advanceWeek, recordGamesPlayed, clearActioned, roll scouting/incident) and returns a destination string. The route renders and navigates based on it; `saveGame()` is called by the route. On cup-only weeks where the player is eliminated, the pipeline sets `status: 'auto-continue'` and the route skips display entirely. Store imports are direct (not parameterised). The `pre-match` detour on league-end weeks has been removed — the player returns to hub, can buy cards, and plays FA Cup ties from the normal pre-match flow.
+
 ## Project
 
 **FotY** — canonical short name for the app. Used in `short_name` for the web app manifest. "Footballer of the Year Remake" is the full title; "FotY Reboot" is the display name.
