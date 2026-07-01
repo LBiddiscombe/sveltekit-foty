@@ -1,6 +1,6 @@
 import type { Outcome, StatsArchiveEntry, TransferWindowState } from '$lib/types/game';
 import { wageForLevel } from '$lib/config/economy';
-import { getLevel, getLevelIndex, LEVEL_UP_MESSAGES } from '$lib/config/levels';
+import { DIVISION_XP_CAPS, getLevel, getLevelIndex, LEVEL_UP_MESSAGES } from '$lib/config/levels';
 import { inbox } from './inbox.svelte';
 import { season } from './season.svelte';
 import type { SeasonStats } from './season.svelte';
@@ -75,8 +75,10 @@ function createPlayer() {
 	}
 
 	function addXp(delta: number) {
+		const cap = DIVISION_XP_CAPS[division as keyof typeof DIVISION_XP_CAPS] ?? 500;
+		if (careerXp >= cap) return;
 		const oldLevel = getLevelIndex(careerXp);
-		careerXp = Math.max(0, careerXp + delta);
+		careerXp = Math.min(cap, Math.max(0, careerXp + delta));
 		const newLevel = getLevelIndex(careerXp);
 		wage = wageForLevel(newLevel);
 		if (newLevel > oldLevel && LEVEL_UP_MESSAGES[newLevel]) {

@@ -85,6 +85,7 @@ function buildCupLines(
 	eliminated: boolean;
 	wonCup: boolean;
 	cupName: string;
+	inDrawMessage?: string;
 } {
 	const bracket = cupInfo.type === 'league-cup' ? season.leagueCupBracket : season.faCupBracket;
 	if (!bracket)
@@ -210,12 +211,19 @@ function buildCupLines(
 		lines.push(line);
 	}
 
+	const nextRoundName = CUP_ROUND_NAMES[cupInfo.type]?.[cupInfo.round + 1];
+	const inDrawMessage =
+		playerWon && !isFinalRound
+			? `  YOU'RE IN THE DRAW FOR ${(nextRoundName ?? 'THE NEXT ROUND').toUpperCase()}!`
+			: undefined;
+
 	return {
 		lines,
 		scoreEntries,
 		eliminated: !playerWon,
 		wonCup: playerWon && isFinalRound,
-		cupName
+		cupName,
+		inDrawMessage
 	};
 }
 
@@ -292,14 +300,9 @@ function buildCupDrawLines(
 	const lines: string[] = [];
 	const playerDrawLines: number[] = [];
 
-	const hdr = ` ${cupName} DRAW`;
+	const hdr = ` ${cupName} ${roundName} DRAW`;
 	lines.push(hdr);
 	lines.push('-'.repeat(hdr.length));
-
-	const isInDraw = drawnTies.some((t) => t.home === club || t.away === club);
-	if (isInDraw) {
-		lines.push(`  You're in the draw for ${roundName}`);
-	}
 
 	for (const tie of drawnTies) {
 		const isPlayerTie = tie.home === club || tie.away === club;
@@ -310,7 +313,7 @@ function buildCupDrawLines(
 		lines.push(drawLine);
 	}
 
-	lines.push(`That concludes today's ${CUP_DISPLAY_NAMES[cupInfo.type]} draw.`);
+	lines.push(`That concludes the ${CUP_DISPLAY_NAMES[cupInfo.type]} draw.`);
 	if (nextWeek) {
 		lines.push(`All matches to be played in week ${nextWeek}.`);
 	}
@@ -328,6 +331,7 @@ function buildLines(
 		eliminated: boolean;
 		wonCup: boolean;
 		cupName: string;
+		inDrawMessage?: string;
 	},
 	finalResult: {
 		lines: string[];
@@ -376,6 +380,11 @@ function buildLines(
 			const winLine = `YOU WON THE ${cupResult.cupName}!`;
 			playerWinLines.push(l.length);
 			l.push(`  ${winLine}`);
+		}
+
+		if (cupResult.inDrawMessage) {
+			playerWinLines.push(l.length);
+			l.push(cupResult.inDrawMessage);
 		}
 
 		l.push('');

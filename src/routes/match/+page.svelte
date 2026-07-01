@@ -11,7 +11,6 @@
 	import type { DivisionMatch, Outcome } from '$lib/types/game';
 	import { playGame, skipGame, getMoraleDelta, consumeDeck } from '$lib/match/engine';
 	import { XP_CONFIG } from '$lib/config/xp';
-	import { DIVISION_XP_CAPS } from '$lib/config/levels';
 	import { saveGame } from '$lib/save';
 	import {
 		CUP_SCHEDULE,
@@ -57,9 +56,6 @@
 	}
 
 	function calcMatchXp(outcomes: Outcome[], score: [number, number]): number {
-		const cap = DIVISION_XP_CAPS[player.division as keyof typeof DIVISION_XP_CAPS] ?? 500;
-		if (player.careerXp >= cap) return 0;
-
 		const playerGoals = outcomes.filter((o) => o === 'goal').length;
 		const teamBase = score[0] - playerGoals;
 		const resultBonus = points(score[0], score[1]) - points(teamBase, score[1]);
